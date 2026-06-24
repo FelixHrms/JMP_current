@@ -83,3 +83,17 @@ preserve
     collapse (mean) bond_fe (count) n_obs = abs_haircut, by(isin)
     export delimited using "C:\Users\hermesf\Projects\JobMarket\Data\haircut_bond_fe.csv", replace
 restore
+
+*===============================================================================
+* 4. BOND-DAY COMPONENT CONTRIBUTIONS (position-weighted) for the amplification
+*    stage. margin = |haircut|; resid_comp is the part of the margin orthogonal
+*    to fund, dealer, bond, date and leg -> the leverage "counterfactual".
+*===============================================================================
+preserve
+    keep if e(sample)
+    gen double margin = abs_haircut
+    collapse (mean) margin fund_comp=fund_fe dealer_comp=dealer_fe ///
+        bond_comp=bond_fe resid_comp=resid_h [aw=nominal_euro], ///
+        by(business_date isin)
+    export delimited using "C:\Users\hermesf\Projects\JobMarket\Data\haircut_bondday.csv", replace
+restore

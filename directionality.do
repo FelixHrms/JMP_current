@@ -183,7 +183,7 @@ bysort duration_match: egen n_hf   = total(hf_involved == 1)
 bysort duration_match: egen n_nohf = total(hf_involved == 0)
 gen obs_id = _n
 
-tempfile full hfb nohfb mapp ypanel lppanel
+tempfile full hfb nohfb mapp ypanel
 save `full', replace
 
 * HF bonds (carry the holder regime tag)
@@ -275,10 +275,6 @@ rename isin nohf_isin
 gen hf_cumul_dy   = (hf_yld_h   - hf_yld_L1)   * 100
 gen nohf_cumul_dy = (nohf_yld_h - nohf_yld_L1) * 100
 
-* Persist the pair x horizon panel so Section 6 can re-estimate on a re-centered
-* outcome (deviation from each bond's own settled level) rather than reuse `lpm'.
-save `lppanel', replace
-
 * LP by horizon, split by holder regime (cluster on duration_match as in the paper)
 tempname mh2
 tempfile lpm
@@ -329,54 +325,34 @@ graph export "C:\Users\hermesf\Projects\JobMarket\Figures\IR_holder_dir_directio
 
 *===============================================================================
 * 6. LOCAL PROJECTIONS RE-CENTERED ON THE SETTLED LEVEL (overshooting view)
-* Same matched decomposition as Section 5, but RE-ESTIMATED on a re-centered
-* outcome: each leg's cumulative response is expressed relative to its OWN settled
-* level -- the pair-level mean over the last 6 horizons (5..10), by which point the
-* paths have flattened. The outcome is demeaned bond-by-bond BEFORE the projection,
-* so the confidence bands are the honest bands for the deviation from the settled
-* level (they carry the uncertainty of that average, not a shifted copy of the
-* Section-5 bands). Pre-event horizons are dropped: a path above 0 sits ABOVE where
-* it settles (overshooting) and below 0 sits below it.
-* Uses the pair x horizon panel saved in Section 5 (tempfile `lppanel').
+* Same matched decomposition as Section 5, but each response path is expressed
+* relative to its own settled level: the mean over the last 6 horizons (5..10), by
+* which point the paths have flattened out. Using this late window (rather than the
+* full post-event window) keeps the on-impact overshoot OUT of the reference, so it
+* is not averaged into the baseline and muted -- a path above 0 then sits ABOVE
+* where it settles (overshooting) and below 0 sits below it. Pre-event horizons are
+* dropped. Reuses the betas estimated in Section 5 (tempfile `lpm'); nothing is
+* re-estimated, each path is only shifted by a per-regime, per-leg constant, and
+* the CI bands are the Section-5 per-horizon bands shifted by that same constant.
 *===============================================================================
-use `lppanel', clear
+use `lpm', clear
 
-* Settled level per leg = pair-level mean cumulative response over horizons 5..10.
-* Subtract it from every horizon to get the deviation-from-settled outcome.
+* Re-center each leg on its settled level = mean response over the last 6 horizons
+* (5..10), within holder regime. CI bands are the Section-5 per-horizon bands
+* shifted by the same constant (the settled level is treated as a fixed reference).
 foreach v in hf nohf {
-    bysort pair_id (horizon): egen `v'_settled = mean(cond(inrange(horizon, 5, 10), `v'_cumul_dy, .))
-    gen `v'_dev = `v'_cumul_dy - `v'_settled
+    bysort grp (horizon): egen ref_`v' = mean(cond(inrange(horizon, 5, 10), beta_`v', .))
+    gen os_beta_`v'  = beta_`v' - ref_`v'
+    gen os_ci_up_`v' = os_beta_`v' + 1.64*se_`v'
+    gen os_ci_lo_`v' = os_beta_`v' - 1.64*se_`v'
 }
-
-* LP by horizon on the re-centered outcome, split by holder regime. Post-event
-* horizons only (0..10); cluster on duration_match as in Section 5.
-tempname mh3
-tempfile lpmdev
-postfile `mh3' grp horizon beta_hf se_hf beta_nohf se_nohf using `lpmdev', replace
-quietly forvalues g = 0/1 {
-    forvalues h = 0/10 {
-        reg hf_dev   ois_2y if horizon == `h' & hd_high == `g', vce(cluster duration_match)
-        local bhf = _b[ois_2y]
-        local shf = _se[ois_2y]
-        reg nohf_dev ois_2y if horizon == `h' & hd_high == `g', vce(cluster duration_match)
-        local bnh = _b[ois_2y]
-        local snh = _se[ois_2y]
-        post `mh3' (`g') (`h') (`bhf') (`shf') (`bnh') (`snh')
-    }
-}
-postclose `mh3'
-
-use `lpmdev', clear
-foreach v in hf nohf {
-    gen ci_up_`v' = beta_`v' + 1.64*se_`v'
-    gen ci_lo_`v' = beta_`v' - 1.64*se_`v'
-}
+drop if horizon < 0
 
 * (A) Hedged-held, re-centered -> saved on its own
-twoway (rarea ci_up_hf ci_lo_hf horizon if grp==0, color(red%20) lwidth(none)) ///
-       (rarea ci_up_nohf ci_lo_nohf horizon if grp==0, color(blue%20) lwidth(none)) ///
-       (line beta_hf horizon if grp==0, color(cranberry) lwidth(thick)) ///
-       (line beta_nohf horizon if grp==0, color(navy) lwidth(thick) lpattern(dash)), ///
+twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==0, color(red%20) lwidth(none)) ///
+       (rarea os_ci_up_nohf os_ci_lo_nohf horizon if grp==0, color(blue%20) lwidth(none)) ///
+       (line os_beta_hf horizon if grp==0, color(cranberry) lwidth(thick)) ///
+       (line os_beta_nohf horizon if grp==0, color(navy) lwidth(thick) lpattern(dash)), ///
     yline(0, lcolor(black) lpattern(dash)) ///
     ytitle("Deviation from settled level (days 5-10), per bp shock") xtitle("Days since shock") ///
     xlabel(0(1)10) title("Hedged-held") subtitle("Relative to settled level (days 5-10 mean)") ///
@@ -386,10 +362,10 @@ twoway (rarea ci_up_hf ci_lo_hf horizon if grp==0, color(red%20) lwidth(none)) /
 graph export "C:\Users\hermesf\Projects\JobMarket\Figures\IR_holder_dir_hedged_overshoot.png", replace width(2000)
 
 * (B) Directional-held, re-centered -> saved on its own
-twoway (rarea ci_up_hf ci_lo_hf horizon if grp==1, color(red%20) lwidth(none)) ///
-       (rarea ci_up_nohf ci_lo_nohf horizon if grp==1, color(blue%20) lwidth(none)) ///
-       (line beta_hf horizon if grp==1, color(cranberry) lwidth(thick)) ///
-       (line beta_nohf horizon if grp==1, color(navy) lwidth(thick) lpattern(dash)), ///
+twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==1, color(red%20) lwidth(none)) ///
+       (rarea os_ci_up_nohf os_ci_lo_nohf horizon if grp==1, color(blue%20) lwidth(none)) ///
+       (line os_beta_hf horizon if grp==1, color(cranberry) lwidth(thick)) ///
+       (line os_beta_nohf horizon if grp==1, color(navy) lwidth(thick) lpattern(dash)), ///
     yline(0, lcolor(black) lpattern(dash)) ///
     ytitle("Deviation from settled level (days 5-10), per bp shock") xtitle("Days since shock") ///
     xlabel(0(1)10) title("Directional-held") subtitle("Relative to settled level (days 5-10 mean)") ///

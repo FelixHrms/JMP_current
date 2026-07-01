@@ -347,6 +347,52 @@ restore
 
 
 
+*********************************************
+** OVERSHOOTING VIEW OF THE DECOMPOSITION LP **
+*********************************************
+* Re-centers the HF and matched non-HF response paths from the decomposition above
+* on a single SETTLED anchor: the level both legs converge to in the late window
+* (horizons 5..10), pooled across the two legs. One constant is subtracted from BOTH
+* legs, so the HF-vs-non-HF level gap is preserved -- the matched non-HF leg traces
+* its approach up to the settled line, while HF rises ABOVE that same line on impact
+* and decays back to it (overshooting). Pre-event horizons are dropped. Reuses the
+* betas estimated just above (tempfile `lp_results'); nothing is re-estimated, each
+* path is only shifted by that constant, and the CI bands are the per-horizon bands
+* shifted by the same constant.
+preserve
+    use `lp_results', clear
+
+    * Settled anchor = mean response over the late window (horizons 5..10), pooled
+    * equally across the two legs. Subtract this single constant from both legs.
+    foreach v in hf nonhf {
+        egen mean_`v' = mean(cond(inrange(horizon, 5, 10), beta_`v', .))
+    }
+    gen ref_all = (mean_hf + mean_nonhf) / 2
+    foreach v in hf nonhf {
+        gen os_beta_`v' = beta_`v' - ref_all
+        gen os_ci_up_`v' = os_beta_`v' + 1.64*se_`v'
+        gen os_ci_lo_`v' = os_beta_`v' - 1.64*se_`v'
+    }
+    drop if horizon < 0
+
+    twoway (rarea os_ci_up_hf os_ci_lo_hf horizon, color(red%20) lwidth(none)) ///
+           (rarea os_ci_up_nonhf os_ci_lo_nonhf horizon, color(blue%20) lwidth(none)) ///
+           (line os_beta_hf horizon, color(cranberry) lwidth(thick)) ///
+           (line os_beta_nonhf horizon, color(navy) lwidth(thick) lpattern(dash)), ///
+           yline(0, lcolor(black) lpattern(dash)) ///
+           ytitle("Deviation from shared settled level (days 5-10), per bp shock") ///
+           xtitle("Days since Shock (Horizon)") ///
+           xlabel(0(1)10) ///
+           subtitle("Relative to shared settled level (days 5-10, both legs)") ///
+           legend(order(3 "HF bonds" 4 "Matched non-HF bonds") ///
+                  rows(1) position(6) region(lstyle(none))) ///
+           graphregion(color(white))
+    graph export "C:\Users\hermesf\Projects\JobMarket\Figures\IR_baseline_decomposition_overshoot.png", replace width(2000)
+restore
+
+
+
+
 
 
 

@@ -1,23 +1,19 @@
 ********************************************************************************
-* POSITION ADJUSTMENT BY REGIME  —  Figure for Result 4 (symmetry)
-* "Positions adjust in both regimes -> the yield response is symmetric"
+* POSITION ADJUSTMENT BY BOOK & SHOCK  —  Figure for Result 4 (symmetry)
+* "The favoured book grows, the hurt book shrinks -> symmetric adjustment"
 *
 * Input : Data\monetary_policy_induced_position.csv  (build\build_main_panel.ipynb)
 * Output: Figures\position_adjustment_bars.png
 *
-* Two simple bars: the average change in the hedge fund's position SIZE around a
-* shock (from the position held going into the shock through 10 business days
-* after), split by regime. This is the h=10 endpoint of position_irf_momentum.do,
-* shown as raw group means instead of the full impulse response.
-*
-* Regimes (as in Table VIII / position_irf_momentum.do):
-*   Constraining = shock hurts the position: long & tightening, or short & easing
-*   Relaxing     = shock helps the position: long & easing,    or short & tightening
-*
-* Outcome = change in position SIZE in EUR bn, |net_pos|(t+10) - |net_pos|(t-1).
-* Using size (absolute value) keeps longs and shorts from cancelling within a
-* regime: a shrinking long and a covering short both read as a negative change
-* (deleveraging). net_pos is (borrowing - lending) in EUR bn.
+* Simple descriptive chart. For each shock event we track the gross book directly:
+*   borrowing_volume = long book,  lending_volume = short book.
+* We plot the average change in each book's volume over the 10 business days after a
+* shock (from the level entering the shock, t-1, to t+10), split by whether the
+* shock helps or hurts that book:
+*   Borrowing (long) : favourable = easing (ois_2y<0),  hurting = tightening (ois_2y>0)
+*   Lending  (short) : favourable = tightening (ois_2y>0), hurting = easing (ois_2y<0)
+* Expectation: favourable -> volume rises, hurting -> volume falls, symmetrically
+* across the two books. Volumes are converted to EUR bn. Raw group means, 90% CIs.
 ********************************************************************************
 
 clear all
@@ -29,40 +25,54 @@ import delimited "C:\Users\hermesf\Projects\JobMarket\Data\monetary_policy_induc
 egen isin_id  = group(isin)
 gen  date_num = date(business_date, "YMD")
 format date_num %td
-collapse (firstnm) net_pos is_long_pre is_short_pre ois_2y, by(isin_id date_num)
+collapse (firstnm) borrowing_volume lending_volume ois_2y, by(isin_id date_num)
 
 sort isin_id date_num
 by isin_id: gen bday_time = _n
 xtset isin_id bday_time
 
-* 3. Change in position size from entering the shock (t-1) to 10 days after (t+10)
-gen size       = abs(net_pos)              // position size, EUR bn
-gen delta_size = F10.size - L1.size        // total change over the window, EUR bn
+* 3. Volumes in EUR bn, and their change over the window (entering shock -> +10 days)
+replace borrowing_volume = borrowing_volume/1e9
+replace lending_volume   = lending_volume/1e9
 
-* 4. Regime at the shock (direction entering the shock x sign of the surprise)
-gen regime = .
-replace regime = 1 if ois_2y > 0 & is_long_pre  == 1   // constraining: long & tightening
-replace regime = 1 if ois_2y < 0 & is_short_pre == 1   // constraining: short & easing
-replace regime = 2 if ois_2y > 0 & is_short_pre == 1   // relaxing: short & tightening
-replace regime = 2 if ois_2y < 0 & is_long_pre  == 1   // relaxing: long & easing
-label define regime_lbl 1 "Constraining" 2 "Relaxing"
-label values regime regime_lbl
+gen pre_borrow = L1.borrowing_volume
+gen pre_lend   = L1.lending_volume
+gen d_borrow   = F10.borrowing_volume - L1.borrowing_volume
+gen d_lend     = F10.lending_volume   - L1.lending_volume
 
-* keep shock events (nonzero surprise, HF holds the bond) with a computable window
-keep if !missing(regime) & !missing(delta_size)
-tab regime
+* 4. Average change per book x shock (only where the book exists entering the shock)
+*    book: 1 = borrowing (long), 2 = lending (short);  fav: 1 = favourable, 0 = hurting
+tempname M
+tempfile bars
+postfile `M' book fav mean se n using `bars', replace
 
-* 5. Average adjustment per regime, with 90% confidence whiskers
-collapse (mean) mean_ds=delta_size (semean) se_ds=delta_size (count) n=delta_size, by(regime)
-gen hi = mean_ds + 1.64*se_ds
-gen lo = mean_ds - 1.64*se_ds
+summarize d_borrow if pre_borrow > 0 & ois_2y < 0        // long, favourable (easing)
+post `M' (1) (1) (r(mean)) (r(sd)/sqrt(r(N))) (r(N))
+summarize d_borrow if pre_borrow > 0 & ois_2y > 0        // long, hurting (tightening)
+post `M' (1) (0) (r(mean)) (r(sd)/sqrt(r(N))) (r(N))
+summarize d_lend   if pre_lend   > 0 & ois_2y > 0        // short, favourable (tightening)
+post `M' (2) (1) (r(mean)) (r(sd)/sqrt(r(N))) (r(N))
+summarize d_lend   if pre_lend   > 0 & ois_2y < 0        // short, hurting (easing)
+post `M' (2) (0) (r(mean)) (r(sd)/sqrt(r(N))) (r(N))
+postclose `M'
 
-* 6. Two simple bars
-twoway (bar mean_ds regime if regime == 1, barwidth(0.6) color(navy)) ///
-       (bar mean_ds regime if regime == 2, barwidth(0.6) color(maroon)) ///
-       (rcap hi lo regime, lcolor(gs7) msize(small)), ///
+* 5. Four bars, grouped by book, coloured by favourable vs hurting
+use `bars', clear
+gen hi = mean + 1.64*se
+gen lo = mean - 1.64*se
+gen xpos = .
+replace xpos = 1 if book == 1 & fav == 1
+replace xpos = 2 if book == 1 & fav == 0
+replace xpos = 4 if book == 2 & fav == 1
+replace xpos = 5 if book == 2 & fav == 0
+
+twoway (bar mean xpos if fav == 1, barwidth(0.8) color(forest_green)) ///
+       (bar mean xpos if fav == 0, barwidth(0.8) color(cranberry)) ///
+       (rcap hi lo xpos, lcolor(gs7) msize(small)), ///
     yline(0, lcolor(black) lwidth(thin)) ///
-    xlabel(1 "Constraining" 2 "Relaxing", noticks) xscale(range(0.5 2.5)) ///
-    ytitle("Change in position size over 10 days (EUR bn)") xtitle("") ///
-    legend(off) graphregion(color(white)) name(pos_adj, replace)
+    xlabel(1.5 "Borrowing (long book)" 4.5 "Lending (short book)", noticks) ///
+    xscale(range(0.3 5.7)) ///
+    ytitle("Change in volume over 10 days (EUR bn)") xtitle("") ///
+    legend(order(1 "Favourable shock" 2 "Hurting shock") rows(1) position(6) region(lstyle(none))) ///
+    graphregion(color(white)) name(vol_adj, replace)
 graph export "C:\Users\hermesf\Projects\JobMarket\Figures\position_adjustment_bars.png", replace width(2000)

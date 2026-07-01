@@ -323,4 +323,52 @@ twoway (rarea ci_up_hf ci_lo_hf horizon if grp==1, color(red%20) lwidth(none)) /
 graph export "C:\Users\hermesf\Projects\JobMarket\Figures\IR_holder_dir_directional.png", replace width(2000)
 
 
+*===============================================================================
+* 6. LOCAL PROJECTIONS RE-CENTERED ON THE POST-EVENT AVERAGE (overshooting view)
+* Same matched decomposition as Section 5, but each response path is expressed
+* relative to its own 10-day post-event mean (horizons 1..10). Subtracting that
+* mean re-anchors the zero line on the level the yield settles at: a path above 0
+* then sits ABOVE its 10-day post-event average (overshooting) and below 0 sits
+* below it. Reuses the betas estimated in Section 5 (tempfile `lpm'); nothing is
+* re-estimated, each path is only shifted by a per-regime, per-leg constant.
+*===============================================================================
+use `lpm', clear
+
+* Re-center each leg on its 10-day post-event mean response, within holder regime.
+* CI bands are the Section-5 per-horizon bands shifted by the same constant (the
+* post-event mean is treated as a fixed reference level).
+foreach v in hf nohf {
+    bysort grp (horizon): egen ref_`v' = mean(cond(inrange(horizon, 1, 10), beta_`v', .))
+    gen os_beta_`v'  = beta_`v' - ref_`v'
+    gen os_ci_up_`v' = os_beta_`v' + 1.64*se_`v'
+    gen os_ci_lo_`v' = os_beta_`v' - 1.64*se_`v'
+}
+
+* (A) Hedged-held, re-centered -> saved on its own
+twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==0, color(red%20) lwidth(none)) ///
+       (rarea os_ci_up_nohf os_ci_lo_nohf horizon if grp==0, color(blue%20) lwidth(none)) ///
+       (line os_beta_hf horizon if grp==0, color(cranberry) lwidth(thick)) ///
+       (line os_beta_nohf horizon if grp==0, color(navy) lwidth(thick) lpattern(dash)), ///
+    yline(0, lcolor(black) lpattern(dash)) xline(0, lcolor(gs10) lpattern(dot)) ///
+    ytitle("Deviation from 10-day post-event mean, per bp shock") xtitle("Days since shock") ///
+    xlabel(-5(1)10) title("Hedged-held") subtitle("Relative to 10-day post-event average") ///
+    name(lpm_hedged_os, replace) ///
+    legend(order(3 "HF bonds" 4 "Matched non-HF bonds") rows(1) position(6) region(lstyle(none))) ///
+    graphregion(color(white))
+graph export "C:\Users\hermesf\Projects\JobMarket\Figures\IR_holder_dir_hedged_overshoot.png", replace width(2000)
+
+* (B) Directional-held, re-centered -> saved on its own
+twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==1, color(red%20) lwidth(none)) ///
+       (rarea os_ci_up_nohf os_ci_lo_nohf horizon if grp==1, color(blue%20) lwidth(none)) ///
+       (line os_beta_hf horizon if grp==1, color(cranberry) lwidth(thick)) ///
+       (line os_beta_nohf horizon if grp==1, color(navy) lwidth(thick) lpattern(dash)), ///
+    yline(0, lcolor(black) lpattern(dash)) xline(0, lcolor(gs10) lpattern(dot)) ///
+    ytitle("Deviation from 10-day post-event mean, per bp shock") xtitle("Days since shock") ///
+    xlabel(-5(1)10) title("Directional-held") subtitle("Relative to 10-day post-event average") ///
+    name(lpm_directional_os, replace) ///
+    legend(order(3 "HF bonds" 4 "Matched non-HF bonds") rows(1) position(6) region(lstyle(none))) ///
+    graphregion(color(white))
+graph export "C:\Users\hermesf\Projects\JobMarket\Figures\IR_holder_dir_directional_overshoot.png", replace width(2000)
+
+
 capture log close

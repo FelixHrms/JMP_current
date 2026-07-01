@@ -380,7 +380,7 @@ preserve
            (line os_beta_hf horizon, color(cranberry) lwidth(thick)) ///
            (line os_beta_nonhf horizon, color(navy) lwidth(thick) lpattern(dash)), ///
            yline(0, lcolor(black) lpattern(dash)) ///
-           ytitle("Deviation from shared settled level (days 5-10), per bp shock") ///
+           ytitle("Cumulative yield response relative to" "5-10 day average, per bp shock") ///
            xtitle("Days since Shock (Horizon)") ///
            xlabel(0(1)10) ///
            subtitle("Relative to shared settled level (days 5-10, both legs)") ///

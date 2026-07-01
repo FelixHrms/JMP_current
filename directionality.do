@@ -358,7 +358,7 @@ twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==0, color(red%20) lwidth(no
        (line os_beta_hf horizon if grp==0, color(cranberry) lwidth(thick)) ///
        (line os_beta_nohf horizon if grp==0, color(navy) lwidth(thick) lpattern(dash)), ///
     yline(0, lcolor(black) lpattern(dash)) ///
-    ytitle("Deviation from shared settled level (days 5-10), per bp shock") xtitle("Days since shock") ///
+    ytitle("Cumulative yield response relative to" "5-10 day average, per bp shock") xtitle("Days since shock") ///
     xlabel(0(1)10) title("Hedged-held") subtitle("Relative to shared settled level (days 5-10, both legs)") ///
     name(lpm_hedged_os, replace) ///
     legend(order(3 "HF bonds" 4 "Matched non-HF bonds") rows(1) position(6) region(lstyle(none))) ///
@@ -371,7 +371,7 @@ twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==1, color(red%20) lwidth(no
        (line os_beta_hf horizon if grp==1, color(cranberry) lwidth(thick)) ///
        (line os_beta_nohf horizon if grp==1, color(navy) lwidth(thick) lpattern(dash)), ///
     yline(0, lcolor(black) lpattern(dash)) ///
-    ytitle("Deviation from shared settled level (days 5-10), per bp shock") xtitle("Days since shock") ///
+    ytitle("Cumulative yield response relative to" "5-10 day average, per bp shock") xtitle("Days since shock") ///
     xlabel(0(1)10) title("Directional-held") subtitle("Relative to shared settled level (days 5-10, both legs)") ///
     name(lpm_directional_os, replace) ///
     legend(order(3 "HF bonds" 4 "Matched non-HF bonds") rows(1) position(6) region(lstyle(none))) ///

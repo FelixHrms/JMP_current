@@ -324,21 +324,23 @@ graph export "C:\Users\hermesf\Projects\JobMarket\Figures\IR_holder_dir_directio
 
 
 *===============================================================================
-* 6. LOCAL PROJECTIONS RE-CENTERED ON THE POST-EVENT AVERAGE (overshooting view)
+* 6. LOCAL PROJECTIONS RE-CENTERED ON THE SETTLED LEVEL (overshooting view)
 * Same matched decomposition as Section 5, but each response path is expressed
-* relative to its own 10-day post-event mean (horizons 1..10). Subtracting that
-* mean re-anchors the zero line on the level the yield settles at: a path above 0
-* then sits ABOVE its 10-day post-event average (overshooting) and below 0 sits
-* below it. Reuses the betas estimated in Section 5 (tempfile `lpm'); nothing is
-* re-estimated, each path is only shifted by a per-regime, per-leg constant.
+* relative to its own settled level: the mean over the last 5 horizons (6..10), by
+* which point the paths have flattened out. Using this late window (rather than the
+* full 1..10 post-event window) keeps the on-impact overshoot OUT of the reference,
+* so the overshoot is not averaged into the baseline and muted -- a path above 0
+* then sits ABOVE where it settles (overshooting) and below 0 sits below it. Reuses
+* the betas estimated in Section 5 (tempfile `lpm'); nothing is re-estimated, each
+* path is only shifted by a per-regime, per-leg constant.
 *===============================================================================
 use `lpm', clear
 
-* Re-center each leg on its 10-day post-event mean response, within holder regime.
-* CI bands are the Section-5 per-horizon bands shifted by the same constant (the
-* post-event mean is treated as a fixed reference level).
+* Re-center each leg on its settled level = mean response over the last 5 horizons
+* (6..10), within holder regime. CI bands are the Section-5 per-horizon bands
+* shifted by the same constant (the settled level is treated as a fixed reference).
 foreach v in hf nohf {
-    bysort grp (horizon): egen ref_`v' = mean(cond(inrange(horizon, 1, 10), beta_`v', .))
+    bysort grp (horizon): egen ref_`v' = mean(cond(inrange(horizon, 6, 10), beta_`v', .))
     gen os_beta_`v'  = beta_`v' - ref_`v'
     gen os_ci_up_`v' = os_beta_`v' + 1.64*se_`v'
     gen os_ci_lo_`v' = os_beta_`v' - 1.64*se_`v'
@@ -350,8 +352,8 @@ twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==0, color(red%20) lwidth(no
        (line os_beta_hf horizon if grp==0, color(cranberry) lwidth(thick)) ///
        (line os_beta_nohf horizon if grp==0, color(navy) lwidth(thick) lpattern(dash)), ///
     yline(0, lcolor(black) lpattern(dash)) xline(0, lcolor(gs10) lpattern(dot)) ///
-    ytitle("Deviation from 10-day post-event mean, per bp shock") xtitle("Days since shock") ///
-    xlabel(-5(1)10) title("Hedged-held") subtitle("Relative to 10-day post-event average") ///
+    ytitle("Deviation from settled level (days 6-10), per bp shock") xtitle("Days since shock") ///
+    xlabel(-5(1)10) title("Hedged-held") subtitle("Relative to settled level (days 6-10 mean)") ///
     name(lpm_hedged_os, replace) ///
     legend(order(3 "HF bonds" 4 "Matched non-HF bonds") rows(1) position(6) region(lstyle(none))) ///
     graphregion(color(white))
@@ -363,8 +365,8 @@ twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==1, color(red%20) lwidth(no
        (line os_beta_hf horizon if grp==1, color(cranberry) lwidth(thick)) ///
        (line os_beta_nohf horizon if grp==1, color(navy) lwidth(thick) lpattern(dash)), ///
     yline(0, lcolor(black) lpattern(dash)) xline(0, lcolor(gs10) lpattern(dot)) ///
-    ytitle("Deviation from 10-day post-event mean, per bp shock") xtitle("Days since shock") ///
-    xlabel(-5(1)10) title("Directional-held") subtitle("Relative to 10-day post-event average") ///
+    ytitle("Deviation from settled level (days 6-10), per bp shock") xtitle("Days since shock") ///
+    xlabel(-5(1)10) title("Directional-held") subtitle("Relative to settled level (days 6-10 mean)") ///
     name(lpm_directional_os, replace) ///
     legend(order(3 "HF bonds" 4 "Matched non-HF bonds") rows(1) position(6) region(lstyle(none))) ///
     graphregion(color(white))

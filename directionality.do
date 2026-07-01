@@ -324,25 +324,28 @@ graph export "C:\Users\hermesf\Projects\JobMarket\Figures\IR_holder_dir_directio
 
 
 *===============================================================================
-* 6. LOCAL PROJECTIONS RE-CENTERED ON THE SETTLED LEVEL (overshooting view)
-* Same matched decomposition as Section 5, but each response path is expressed
-* relative to its own settled level: the mean over the last 6 horizons (5..10), by
-* which point the paths have flattened out. Using this late window (rather than the
-* full post-event window) keeps the on-impact overshoot OUT of the reference, so it
-* is not averaged into the baseline and muted -- a path above 0 then sits ABOVE
-* where it settles (overshooting) and below 0 sits below it. Pre-event horizons are
-* dropped. Reuses the betas estimated in Section 5 (tempfile `lpm'); nothing is
-* re-estimated, each path is only shifted by a per-regime, per-leg constant, and
-* the CI bands are the Section-5 per-horizon bands shifted by that same constant.
+* 6. LOCAL PROJECTIONS RE-CENTERED ON THE OVERALL DAY-0..10 AVERAGE (overshoot view)
+* Same matched decomposition as Section 5, but each regime's two response paths are
+* expressed relative to a single OVERALL average: the mean response over horizons
+* 0..10, pooled across the HF and matched non-HF legs. One constant per regime is
+* subtracted from BOTH legs, so the HF-vs-non-HF level gap is preserved and each
+* figure is centered on its common day-0..10 mean -- a line above 0 sits above that
+* average and below 0 below it. Pre-event horizons are dropped. Reuses the betas
+* estimated in Section 5 (tempfile `lpm'); nothing is re-estimated, each path is
+* shifted by that per-regime constant, and the CI bands are the Section-5
+* per-horizon bands shifted by the same constant.
 *===============================================================================
 use `lpm', clear
 
-* Re-center each leg on its settled level = mean response over the last 6 horizons
-* (5..10), within holder regime. CI bands are the Section-5 per-horizon bands
-* shifted by the same constant (the settled level is treated as a fixed reference).
+* Overall reference per regime = mean response over horizons 0..10, pooled equally
+* across the two legs. Subtract this single constant from both legs. CI bands are the
+* Section-5 per-horizon bands shifted by the same constant (it is treated as fixed).
 foreach v in hf nohf {
-    bysort grp (horizon): egen ref_`v' = mean(cond(inrange(horizon, 5, 10), beta_`v', .))
-    gen os_beta_`v'  = beta_`v' - ref_`v'
+    bysort grp (horizon): egen mean_`v' = mean(cond(inrange(horizon, 0, 10), beta_`v', .))
+}
+gen ref_all = (mean_hf + mean_nohf) / 2
+foreach v in hf nohf {
+    gen os_beta_`v'  = beta_`v' - ref_all
     gen os_ci_up_`v' = os_beta_`v' + 1.64*se_`v'
     gen os_ci_lo_`v' = os_beta_`v' - 1.64*se_`v'
 }
@@ -354,8 +357,8 @@ twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==0, color(red%20) lwidth(no
        (line os_beta_hf horizon if grp==0, color(cranberry) lwidth(thick)) ///
        (line os_beta_nohf horizon if grp==0, color(navy) lwidth(thick) lpattern(dash)), ///
     yline(0, lcolor(black) lpattern(dash)) ///
-    ytitle("Deviation from settled level (days 5-10), per bp shock") xtitle("Days since shock") ///
-    xlabel(0(1)10) title("Hedged-held") subtitle("Relative to settled level (days 5-10 mean)") ///
+    ytitle("Deviation from overall day 0-10 average, per bp shock") xtitle("Days since shock") ///
+    xlabel(0(1)10) title("Hedged-held") subtitle("Relative to overall day 0-10 average (both legs)") ///
     name(lpm_hedged_os, replace) ///
     legend(order(3 "HF bonds" 4 "Matched non-HF bonds") rows(1) position(6) region(lstyle(none))) ///
     graphregion(color(white))
@@ -367,8 +370,8 @@ twoway (rarea os_ci_up_hf os_ci_lo_hf horizon if grp==1, color(red%20) lwidth(no
        (line os_beta_hf horizon if grp==1, color(cranberry) lwidth(thick)) ///
        (line os_beta_nohf horizon if grp==1, color(navy) lwidth(thick) lpattern(dash)), ///
     yline(0, lcolor(black) lpattern(dash)) ///
-    ytitle("Deviation from settled level (days 5-10), per bp shock") xtitle("Days since shock") ///
-    xlabel(0(1)10) title("Directional-held") subtitle("Relative to settled level (days 5-10 mean)") ///
+    ytitle("Deviation from overall day 0-10 average, per bp shock") xtitle("Days since shock") ///
+    xlabel(0(1)10) title("Directional-held") subtitle("Relative to overall day 0-10 average (both legs)") ///
     name(lpm_directional_os, replace) ///
     legend(order(3 "HF bonds" 4 "Matched non-HF bonds") rows(1) position(6) region(lstyle(none))) ///
     graphregion(color(white))

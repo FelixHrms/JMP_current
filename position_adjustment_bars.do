@@ -46,6 +46,18 @@ replace regime = 2 if is_short_pre == 1 & ois_2y > 0   // relaxing: short & tigh
 label define regime_lbl 1 "Constraining" 2 "Relaxing"
 label values regime regime_lbl
 
+* --- DIAGNOSTIC: is the negativity just background drift? -----------------------
+* Average 10-day book change on NON-shock days (ois_2y==0). If these are negative
+* too, the negative bars are a within-bond lifecycle drift (positions roll off as
+* bonds age), not the shock. Compare with the shock-day averages just below.
+di as txt "Non-shock days (background drift):"
+summarize d_borrow if is_long_pre  == 1 & ois_2y == 0
+summarize d_lend   if is_short_pre == 1 & ois_2y == 0
+di as txt "Shock days:"
+summarize d_borrow if is_long_pre  == 1 & ois_2y != 0
+summarize d_lend   if is_short_pre == 1 & ois_2y != 0
+* -------------------------------------------------------------------------------
+
 keep if !missing(regime, adj)
 tab regime
 

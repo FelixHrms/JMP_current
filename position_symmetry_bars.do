@@ -1,33 +1,33 @@
 ********************************************************************************
-* AGGREGATE BOOK ADJUSTMENT BY REGIME  —  Figure for Result 3 (slide walkthrough 3)
+* WITHIN-EVENT BOOK GAP  —  diagnostic for the slide 8 walkthrough figure
 * "The effect is symmetric, whether the shock helps or hurts the position"
 *
 * Input : Data\monetary_policy_induced_position.csv  (build\build_main_panel.ipynb)
-* Output: Figures\position_symmetry_bars.png
+* Output: console only for now, no figure until the diagnostic passes
 *
-* One aggregate sector book per day and side. Cash borrowing (repo against the
-* bond) finances the LONG side, cash lending (reverse repo) sources bonds for
-* the SHORT side. A surprise hits both books at once and its sign says which
-* one it hurts:
-*   tightening -> long book constrained,  short book relaxed
-*   easing     -> short book constrained, long book relaxed
-* Two bars: the average change of the constrained and the relaxed book from the
-* day before the shock (t-1) to H business days after (t+H), in EUR bn.
+* Why this design. The raw two-bar version (see git history of this file) put
+* both regimes deep in negative territory because aggregate books shrink after
+* announcements no matter which side the shock favors (common de-grossing) and
+* because several event windows cross quarter ends, where repo books contract
+* mechanically by billions. Differencing WITHIN the event removes everything
+* that hits both books in the same window, and working in percent of the book
+* entering the shock removes the long/short size asymmetry.
 *
-* Lesson from the deleted bond-level version (position_adjustment_bars.do): raw
-* bond-level changes are dominated by positions rolling off as bonds age, which
-* made both bars negative. Aggregating per day nets roll-offs across bonds, and
-* the remaining trend in the sector footprint is removed by subtracting the
-* average change over non-shock windows of the same length. Raw and adjusted
-* means are both printed below for comparison.
+* Object of interest, one number per shock event
+*   gap = %change of the book the shock favors  -  %change of the book it hurts
+* over the window t-1 to t+H. The mechanism predicts gap > 0.
+*
+* The diagnostic passes if the mean gap is positive and significant, survives
+* dropping quarter-end windows, is positive for tightening and easing
+* separately, and ideally scales with the size of the surprise. Then the slide
+* shows it as a single headline statistic rather than two fragile bars.
 ********************************************************************************
 
 clear all
 
 local H 10   // event window end, business days after the shock
 
-* 1. Import and aggregate to one observation per day, the sector's long and
-*    short book in EUR bn
+* 1. Aggregate to one observation per day, the sector's long and short book
 import delimited "C:\Users\hermesf\Projects\JobMarket\Data\monetary_policy_induced_position.csv", clear
 gen date_num = date(business_date, "YMD")
 format date_num %td
@@ -36,67 +36,61 @@ collapse (sum) long_book=borrowing_volume short_book=lending_volume ///
 replace long_book  = long_book/1e9
 replace short_book = short_book/1e9
 
-* 2. Trading-day index for leads and lags
 sort date_num
 gen bday = _n
 tsset bday
 
-* 3. Book changes over the event window, t-1 to t+H, in EUR bn
-gen d_long  = F`H'.long_book  - L1.long_book
-gen d_short = F`H'.short_book - L1.short_book
+* 2. Window changes from t-1 to t+H, in EUR bn and in percent of the book
+*    entering the shock
+gen d_long_bn   = F`H'.long_book  - L1.long_book
+gen d_short_bn  = F`H'.short_book - L1.short_book
+gen d_long_pct  = 100 * d_long_bn  / L1.long_book
+gen d_short_pct = 100 * d_short_bn / L1.short_book
 
-* 4. Background drift, the same change measured on non-shock days. The sector
-*    footprint trends over the sample, so the no-reaction counterfactual is
-*    not zero.
-quietly summarize d_long  if ois_2y == 0
+* flag windows that cross a quarter end, where repo books contract mechanically
+gen qend = qofd(F`H'.date_num) != qofd(L1.date_num) if !missing(F`H'.date_num, L1.date_num)
+
+* book-specific percent drift on non-shock days, in case the two books trend at
+* different rates (windows overlapping a shock mildly contaminate this, accepted)
+quietly summarize d_long_pct if ois_2y == 0
 local drift_long = r(mean)
-quietly summarize d_short if ois_2y == 0
+quietly summarize d_short_pct if ois_2y == 0
 local drift_short = r(mean)
-local W = `H' + 1
-di as txt "Drift over a `W'-day window, long book:  " %6.3f `drift_long'  " EUR bn"
-di as txt "Drift over a `W'-day window, short book: " %6.3f `drift_short' " EUR bn"
+di as txt "Percent drift per window, long book:  " %5.2f `drift_long'
+di as txt "Percent drift per window, short book: " %5.2f `drift_short'
 
-* 5. Regime per shock day. Constraining is the book the shock moves against,
-*    relaxing the book it moves in favor of. Every shock day contributes one
-*    observation to each bar.
-gen     d_cons  = d_long  - `drift_long'  if ois_2y > 0
-replace d_cons  = d_short - `drift_short' if ois_2y < 0
-gen     d_relax = d_short - `drift_short' if ois_2y > 0
-replace d_relax = d_long  - `drift_long'  if ois_2y < 0
-keep if ois_2y != 0 & !missing(d_cons, d_relax)
+* 3. Shock events. The sign of the surprise says which book it favors
+keep if ois_2y != 0 & !missing(d_long_pct, d_short_pct)
+gen tightening = ois_2y > 0
+gen abs_shock  = abs(ois_2y)
 
-* Diagnostics: event counts, raw means (drift added back), adjusted means
-quietly count if ois_2y > 0
-di as txt "Tightening surprises: " r(N)
-quietly count if ois_2y < 0
-di as txt "Easing surprises:     " r(N)
-di as txt "Drift-adjusted book changes by regime (EUR bn):"
-summarize d_cons d_relax
-* If the EUR bn bars look lopsided because the long book is much larger than
-* the short book, switch the outcome to percent of the book entering the shock:
-* replace d_long/d_short in step 3 by
-*   gen d_long  = 100*(F`H'.long_book  - L1.long_book) /L1.long_book
-*   gen d_short = 100*(F`H'.short_book - L1.short_book)/L1.short_book
-* and relabel the y axis accordingly.
+gen pct_relax = cond(tightening, d_short_pct, d_long_pct)   // favored book
+gen pct_cons  = cond(tightening, d_long_pct,  d_short_pct)  // hurt book
 
-* 6. Two bars in the deck's regime colors, constraining red, relaxing green
-keep d_cons d_relax
-stack d_cons d_relax, into(adj) clear
-rename _stack regime
-collapse (mean) adj, by(regime)
-format adj %5.2f
-gen vpos = cond(adj >= 0, 12, 6)   // value label above positive, below negative
+* within-event gap, raw and net of the differential drift of the two books
+gen gap_pct     = pct_relax - pct_cons
+gen gap_pct_adj = gap_pct - cond(tightening, `drift_short' - `drift_long', ///
+                                             `drift_long'  - `drift_short')
 
-twoway (bar adj regime if regime == 1, barwidth(0.6) color("196 61 33")) ///
-       (bar adj regime if regime == 2, barwidth(0.6) color("0 128 96")) ///
-       (scatter adj regime, msymbol(none) mlabel(adj) mlabvposition(vpos) ///
-            mlabcolor(black) mlabsize(medium)), ///
-    yline(0, lcolor(black) lwidth(thin)) ///
-    xlabel(1 `""Constraining" "shock moves against the book""' ///
-           2 `""Relaxing" "shock moves in favor""', noticks labsize(medsmall)) ///
-    xscale(range(0.4 2.6)) xtitle("") ///
-    ytitle("Change in aggregate positions, day -1 to +`H' (EUR bn)") ///
-    note("Average across monetary surprises 2021 to 2025, net of the average" ///
-         "change over non-shock windows of the same length.", size(vsmall) color(gs7)) ///
-    legend(off) graphregion(color(white))
-graph export "C:\Users\hermesf\Projects\JobMarket\Figures\position_symmetry_bars.png", replace width(2000)
+* 4. Per-event listing, to spot dominant events (December windows in particular)
+format ois_2y %6.2f
+format d_long_bn d_short_bn %7.2f
+format d_long_pct d_short_pct gap_pct gap_pct_adj %6.1f
+list date_num ois_2y d_long_bn d_short_bn d_long_pct d_short_pct ///
+     gap_pct qend, sep(0) noobs
+
+* 5. The headline candidate
+di as txt _n "Gap, all events (favored minus hurt book, percent):"
+ttest gap_pct == 0
+di as txt _n "Gap net of differential book drift:"
+ttest gap_pct_adj == 0
+di as txt _n "Excluding windows that cross a quarter end:"
+ttest gap_pct == 0 if qend == 0
+di as txt _n "Tightening surprises only:"
+ttest gap_pct == 0 if tightening == 1
+di as txt _n "Easing surprises only:"
+ttest gap_pct == 0 if tightening == 0
+di as txt _n "Median as an outlier check:"
+summarize gap_pct, detail
+di as txt _n "Does the gap scale with the size of the surprise:"
+reg gap_pct abs_shock, robust

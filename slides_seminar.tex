@@ -493,7 +493,7 @@ Whether hedge funds increase or decrease price sensitivity in a given situation 
 \begin{frame}{It is concentrated in directional books}
 \svs
 \begin{center}
-\figph{impulse response of the yield to a shock, bonds in directional books versus hedged books. Overshoot only for directional books}
+\includegraphics[width=0.72\textwidth,height=0.6\textheight,keepaspectratio]{Figures/motivation_chart.png}
 \end{center}
 \takeaway{So the directionality of the book matters, beyond how much hedge funds hold}
 \end{frame}
@@ -584,30 +584,6 @@ Easing surprise (bps) & $-4.17$ & $-3.13$ \\
 \end{column}
 \end{columns}
 \navbtn{summ_full}{Full table}
-\end{frame}
-
-%========================================================================================
-\sectionframe{Stylized Facts}
-%========================================================================================
-
-% Verbal cues:
-% pre-hike = carry trade (long Italy, short Germany); hike = directional, short both;
-% pivot to cuts = back to carry. Positioning is dynamic, direction matters.
-\begin{frame}{Hedge fund positioning rotates with the policy cycle}
-\begin{center}
-\measureplot{0.062}{0.991}{\includegraphics[height=0.72\textheight,keepaspectratio]{Figures/motivation_chart.png}}
-\end{center}
-\fignote{Aggregate net repo positions of offshore hedge funds in German and Italian sovereign bonds, EUR outstanding. Positive values are net cash borrowing (a proxy for long), negative values net cash lending (a proxy for short). Sample period 2021 to 2025.}
-\end{frame}
-
-% Verbal cues:
-% non-HF bonds: roughly one-to-one; HF bonds steeper on both sides;
-% at zero shock no difference -> presence alone does not move yields.
-\begin{frame}{Yields move more on shock days when hedge funds are active}
-\begin{center}
-\measureplot{0.067}{0.972}{\includegraphics[width=0.76\textwidth,height=0.66\textheight,keepaspectratio]{Figures/shock_reaction_scatterplot.png}}
-\end{center}
-\fignote{Binned scatterplot of daily yield changes against monetary policy shocks, separately for bonds with and without active hedge fund positions. Yield changes are residualized for bond fixed effects. Lines are linear fits on the bond level data. Sample period 2021 to 2025.}
 \end{frame}
 
 %========================================================================================

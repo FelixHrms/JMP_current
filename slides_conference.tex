@@ -3,25 +3,26 @@
 % "Hedge Fund Trading and Sovereign Bond Yield Sensitivity"
 % Felix Hermes (Goethe University Frankfurt & ECB)
 %
-% Cut down from the 60 minute seminar deck. 13 numbered content frames in the
+% Cut down from the 60 minute seminar deck. 15 numbered content frames in the
 % main part, everything else lives in the annex and is reachable through the
 % navigation buttons for Q&A.
 %
-% Suggested timing (about 19 minutes, leaving a small buffer)
-%   1  Footprint and why now .............. 1.5
+% Suggested timing (about 20 minutes)
+%   1  Footprint ........................... 1.0
 %   2  Two views ........................... 1.5
-%   3  This paper (question + findings) .... 2.0
+%   3  This paper (question + findings) .... 1.5
 %   4  Data ................................ 1.5
 %   5  Mechanism ........................... 1.5
-%   6  Specification and identification .... 2.0
-%   7  Finding 1, volatility ............... 1.5
+%   6  Specification and identification .... 1.5
+%   7  Finding 1, weak vs strong design .... 1.5
 %   8  Finding 2, scatter .................. 1.0
-%   9  Finding 2, baseline table ........... 1.5
+%   9  Finding 2, tightest designs ......... 1.5
 %  10  Magnitude ........................... 1.0
 %  11  Overshooting ........................ 1.5
 %  12  Finding 3, symmetry ................. 1.5
-%  13  Finding 4, directionality ........... 2.0
-%  14  Conclusion .......................... 1.0
+%  13  Finding 4, net positions ............ 1.0
+%  14  Finding 4, directionality ........... 1.5
+%  15  Conclusion .......................... 1.0
 %
 % Style: clean Goldsmith-Pinkham / BSS layout (Lato, no outer theme),
 %        re-coloured to a Goethe Frankfurt deep-blue identity.
@@ -363,31 +364,33 @@
 %	MOTIVATION (2 slides)
 %========================================================================================
 
-% --- Scene setter: footprint and why the question matters now (merges the seminar
-%     footprint and "why now" slides) ---
+% --- Scene setter: the growing hedge fund footprint (as in the seminar deck) ---
 \begin{frame}{Hedge funds hold a growing footprint in government bond markets}
 \lvs
 \begin{columns}[c]
-\begin{column}{0.60\textwidth}
+\begin{column}{0.63\textwidth}
 \centering
 \includegraphics[width=\textwidth]{Figures/tradeweb.png}
 \end{column}
-\begin{column}{0.37\textwidth}
+\begin{column}{0.34\textwidth}
 \begin{wideitemize}
-  \item Their share of trading volume keeps rising since 2020, in \hibl{Europe} from a third to \hibl{more than half}
-  \item They are opaque, heavily \hird{leveraged}, and finance positions with short term repo {\scriptsize\color{softgrey}\citep{barth2025cross, aramonte2023}}
-  \item In March 2020 their forced deleveraging intensified US Treasury stress {\scriptsize\color{softgrey}\citep{barth2025, kruttli2025}}
+  \item Their share of trading volume keeps rising since 2020
+  \item In \hibl{Europe} it went from a third to \hibl{more than half} of volumes
+  \item The rise is broad, across the US, Europe, and the UK
 \end{wideitemize}
 \end{column}
 \end{columns}
 \vfill
-\takeaway{Do hedge funds change how prices incorporate new information, also outside crises?}
+\takeaway{Do hedge funds change how prices incorporate new information?}
 \end{frame}
 
 
-% --- Two opposing views, closing with the answer (early reveal for the short format) ---
+% --- Two opposing views (as in the seminar deck) ---
 \begin{frame}{Two views on the impact of leveraged investors on price}
 \lvs
+{\itshape ``On the one hand, hedge funds are frequently credited with \higr{enhancing market efficiency} and liquidity. On the other hand, they could also act as potential \hird{amplifiers of volatility and market shocks}.''}\\[3pt]
+{\scriptsize\color{softgrey} The ECB Blog, \textit{Hedge funds: good or bad for market functioning?}, September 2024}
+\svs
 \begin{columns}[t]
 \begin{column}{0.48\textwidth}
   \begin{center}
@@ -413,10 +416,8 @@
 \end{column}
 \end{columns}
 \lvs
-Ultimately an empirical question. Granular evidence remains scarce, concentrated in stress episodes, and focused on market functioning rather than the pricing of individual bonds.
-\vfill
+Whether hedge funds increase or decrease price sensitivity in a given situation is ultimately an empirical question, and granular evidence remains scarce.
 \takeaway{This paper shows hedge funds amplify the sensitivity of sovereign bond prices to shocks}
-\navbtn{relatedlit}{Literature}
 \end{frame}
 
 
@@ -432,9 +433,8 @@ Ultimately an empirical question. Granular evidence remains scarce, concentrated
 \svs
 \lead{Approach}
 \bit\itemsep2pt
-  \item Daily hedge fund positions in \hibl{individual sovereign bonds}, constructed from regulatory repo data
-  \item High frequency \hibl{monetary policy surprises} as exogenous shocks {\scriptsize\color{softgrey}\citep{altavilla2019}}
-  \item Interact \hibl{predetermined} positions with the shock to recover the additional yield sensitivity that arises when hedge funds trade a given bond
+  \item Interact \hibl{predetermined} hedge fund positions in individual sovereign bonds with high frequency \hibl{monetary policy surprises}
+  \item The interaction recovers the additional yield sensitivity that arises when hedge funds trade a given bond
 \eit
 \svs
 \lead{Four findings}
@@ -544,23 +544,49 @@ Ultimately an empirical question. Granular evidence remains scarce, concentrated
 
 
 %========================================================================================
-%	FINDING 1 (1 slide, regression table in the annex)
+%	FINDING 1 (1 slide, weak vs strong design; full table and raw pattern in the annex)
 %========================================================================================
+% Verbal cues: col 1 raw -> HF bonds more volatile everywhere (level 0.459) and more
+% responsive to shocks; col 2 within dur x country x date cells -> level collapses to
+% insignificant, interaction unchanged. The differential is shock conditional.
 \begin{frame}{Finding 1: Hedge funds increase the volatility of bond yields on shock days}
 \hypertarget{f1}{}
-\svs
+\vspace{0.2cm}
 \begin{center}
-\measureplot{0.075}{0.99}{\includegraphics[width=0.70\textwidth,height=0.54\textheight,keepaspectratio]{Figures/intensity_volatility_bars.png}}
+\scriptsize
+\setlength{\tabcolsep}{12pt}
+\renewcommand{\arraystretch}{1.25}
+\measurebox{\begin{tabular}{lcc}
+\toprule
+\textbf{$|\Delta$ yield$|$ (bps)} & (1) Raw comparison & (2) Comparable bonds \\
+\midrule
+\rowcolor{goetheblue!8}
+HF involved $\times$ $|$Shock$|$ & 0.240$^{***}$ & 0.246$^{***}$ \\
+HF involved (level)              & 0.459$^{***}$ & $-$0.098 \\
+$|$Shock$|$                      & 0.545$^{***}$ &  \\
+\midrule
+Bond controls                    & No & Yes \\
+Bond FE                          & No & Yes \\
+Duration $\times$ Date $\times$ Country FE & No & Yes \\
+\bottomrule
+\end{tabular}}
 \end{center}
-\fignote{Average absolute daily yield change in basis points on days without a monetary policy shock. Buckets are quartiles of hedge fund intensity, the five day net position scaled by amount outstanding, among bonds with active positions, next to a no hedge fund reference. Raw group means without controls. Sample period 2021 to 2025.}
-\takeaway{Hedge funds select more volatile bonds}
-\takeaway{Among comparable bonds the extra volatility appears only when a shock meets the position}
-\navbtn{voltable}{Regression table}
+\fignote{Dependent variable is the absolute daily yield change. Column 2 identifies the effect within cells of bonds with similar duration from the same issuer on the same day. Intermediate specifications in the annex. Standard errors clustered by date and bond. $^{***}\,p<0.01$.}
+\begin{columns}[t]
+\begin{column}{0.5\textwidth}
+{\footnotesize In the raw comparison hedge fund bonds are more volatile on \hird{every} day, hedge funds select volatile bonds.}
+\end{column}
+\begin{column}{0.5\textwidth}
+{\footnotesize Among comparable bonds the \hird{level} differential disappears while the \hibl{interaction} with the shock survives.}
+\end{column}
+\end{columns}
+\takeaway{The excess volatility is shock conditional, so what changes is how yields react to shocks}
+\navbtnTwo{voltable}{Full table}{volbars}{Raw pattern}
 \end{frame}
 
 
 %========================================================================================
-%	FINDING 2 (scatter, baseline table, magnitude, overshooting)
+%	FINDING 2 (scatter, tightest designs, magnitude, overshooting)
 %========================================================================================
 \begin{frame}{Finding 2: Hedge fund trading raises the sensitivity of yields to shocks}
 \svs
@@ -571,41 +597,45 @@ Ultimately an empirical question. Granular evidence remains scarce, concentrated
 \takeaway{The same surprise moves yields visibly more where hedge funds are positioned}
 \end{frame}
 
-% Verbal cues: coefficient 0.288 to 0.304 across 5 specs; stable through bond FE,
-% dur x country x date FE, and matched sample. Direct HF effect insignificant.
-\begin{frame}{The amplification is stable across progressively tighter designs}
+% Verbal cues: presence stable 0.291/0.304 in the two tightest designs (dur x ctry x
+% date FE, matched twins); intensity 0.164 within the same bond -> dose response.
+% Intensity is the measure Finding 3 continues with.
+\begin{frame}{The amplification holds in the tightest designs and scales with the position}
 \hypertarget{baseline}{}
 \vspace{0.2cm}
 \begin{center}
 \scriptsize
-\setlength{\tabcolsep}{7pt}
+\setlength{\tabcolsep}{10pt}
 \renewcommand{\arraystretch}{1.2}
-\measurebox{\begin{tabular}{lccccc}
+\measurebox{\begin{tabular}{lccc}
 \toprule
-\textbf{$\Delta$ yield (bps)} & (1) & (2) & (3) & (4) & (5) \\
+ & \multicolumn{2}{c}{Presence} & Intensity \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-4}
+\textbf{$\Delta$ yield (bps)} & (1) & (2) Matched & (3) \\
 \midrule
 \rowcolor{goetheblue!8}
-HF involved $\times$ Shock & 0.288$^{***}$ & 0.288$^{***}$ & 0.287$^{***}$ & 0.291$^{***}$ & 0.304$^{***}$ \\
-Shock                      & 0.757$^{***}$ & 0.757$^{***}$ &  &  &  \\
-HF involved (level)        & 0.083$^{**}$ & 0.062 & $-$0.000 & $-$0.022 & $-$0.002 \\
+HF involved $\times$ Shock  & 0.291$^{***}$ & 0.304$^{***}$ &  \\
+\rowcolor{goetheblue!8}
+HF intensity $\times$ Shock &  &  & 0.164$^{***}$ \\
+HF involved (level)         & $-$0.022 & $-$0.002 &  \\
+HF intensity (level)        &  &  & $-$0.011 \\
 \midrule
-Bond controls              & No & Yes & Yes & Yes & Yes \\
-Bond FE                    & No & No & Yes & Yes & No \\
-Date FE                    & No & No & Yes & No & No \\
-Dur. $\times$ Date $\times$ Country FE & No & No & No & Yes & No \\
-Matched pair FE            & No & No & No & No & Yes \\
+Bond controls               & Yes & Yes & Yes \\
+Bond FE                     & Yes & No & Yes \\
+Dur. $\times$ Date $\times$ Country FE & Yes & No & Yes \\
+Matched pair FE             & No & Yes & No \\
 \bottomrule
 \end{tabular}}
 \end{center}
-\fignote{Dependent variable is the daily yield change. Column 5 is the matched sample. Standard errors clustered by date and bond, and by cell and twin in column 5. $^{***}\,p<0.01$, $^{**}\,p<0.05$.}
-The interaction is stable from \hibl{0.288} to \hibl{0.304} across progressively tighter designs, while the direct effect of presence stays at zero. It also survives a dealer level panel and \hibl{scales} with position size within the same bond.
-\navbtnTwo{dealer}{Not dealers}{intensity}{Dose response}
+\fignote{Only the two tightest designs and the continuous dose response, all weaker specifications in the annex. HF intensity is the log of one plus the five day net position scaled by amount outstanding. Column 2 pairs each hedge fund bond with the twin closest in liquidity within its cell. Standard errors clustered by date and bond, and by cell and twin in column 2. $^{***}\,p<0.01$.}
+Presence and intensity point the same way. Within the \hibl{same bond} over time, a larger position produces a larger reaction, which pure selection cannot explain.
+\navbtnTwo{basefull}{All specifications}{dealer}{Not dealers}
 \end{frame}
 
 \begin{frame}{The amplification is economically large}
 \hypertarget{magnitude}{}
 \svs
-For an average tightening surprise of \hibl{6 bps}, using column 1.
+For an average tightening surprise of \hibl{6 bps}, coefficients from the unsaturated specification {\footnotesize\color{softgrey}(all specifications in the annex)}.
 \svs
 \begin{center}
 \begin{tikzpicture}[font=\small,>=Stealth]
@@ -654,7 +684,9 @@ For an average tightening surprise of \hibl{6 bps}, using column 1.
 % Verbal cues: constraining 0.140, relaxing 0.224, Wald p=0.16 (not distinguishable).
 \begin{frame}{Finding 3: The amplification holds whether shocks help or hurt the position}
 \hypertarget{finding3}{}
-\lvs
+\svs
+The same \hibl{intensity} specification as before, now estimated separately by regime.
+\svs
 \begin{columns}[c]
 \begin{column}{0.46\textwidth}
 \centering
@@ -693,11 +725,21 @@ Dur.$\times$Date$\times$Ctry FE & Yes & Yes \\
 
 
 %========================================================================================
-%	FINDING 4 (1 slide, measure and trends in the annex)
+%	FINDING 4 (2 slides, measure and trends in the annex)
 %========================================================================================
+% --- The aggregate net positions graph opens the finding (memorable scene setter) ---
+\begin{frame}{Finding 4: The directionality of the book governs the strength}
+\svs
+\begin{center}
+\measureplot{0.062}{0.991}{\includegraphics[width=0.72\textwidth,height=0.56\textheight,keepaspectratio]{Figures/motivation_chart.png}}
+\end{center}
+\fignote{Aggregate net repo positions of offshore hedge funds in German and Italian sovereign bonds, EUR outstanding. Positive values are net cash borrowing (a proxy for long), negative values net cash lending (a proxy for short). Sample period 2021 to 2025.}
+\takeaway{So the directionality of the book could matter, beyond how much hedge funds hold}
+\end{frame}
+
 % Verbal cues: hedged 0.098, directional 0.363, F=24.8; quartiles rise monotonically
 % 0.057 -> 0.367. Within-cell FE absorbs the common monetary environment.
-\begin{frame}{Finding 4: The amplification is concentrated in directional books}
+\begin{frame}{Amplification is concentrated in directional books}
 \hypertarget{finding4}{}
 \svs
 The constraint binds at the level of the \hibl{whole book}. A book long Italy and short Germany of similar duration carries little net exposure, a one sided book absorbs the full loss. Each bond inherits the position weighted \hibl{directionality} of the funds holding it.
@@ -724,7 +766,7 @@ Q4 most directional $\times$ Shock & 0.367$^{***}$ \\
 \end{tabular}}
 \end{center}
 \fignote{Bond and duration $\times$ country $\times$ date fixed effects with controls. Wald tests reject equality of the hedged and directional groups ($F=24.8$) and of the extreme quartiles ($F=28.3$). Standard errors clustered by date and bond. $^{***}\,p<0.01$.}
-\takeaway{The amplification rises monotonically with directionality and vanishes in hedged books, so the structure of the book matters beyond how much hedge funds hold}
+\takeaway{The amplification rises monotonically with directionality and is not distinguishable from zero in the most hedged quartile}
 \navbtn{dirmeasure}{Measure and trends}
 \end{frame}
 
@@ -980,6 +1022,50 @@ Duration $\times$ Date $\times$ Country FE & No & No & No & Yes \\
 \fignote{Dependent variable is the absolute daily yield change. Controls included from column 2. Standard errors clustered by date and bond. $^{***}\,p<0.01$, $^{*}\,p<0.10$.}
 The \hird{level} differential disappears once we compare bonds of similar duration from the same issuer on the same day (column 4), while the \hibl{interaction} with the shock stays positive throughout.
 \navbtn{f1}{Back}
+\end{frame}
+
+% --- Raw volatility pattern (linked from the Finding 1 slide) ---
+\begin{frame}{Raw volatility by hedge fund intensity}
+\hypertarget{volbars}{}
+\svs
+\begin{center}
+\measureplot{0.075}{0.99}{\includegraphics[width=0.70\textwidth,height=0.54\textheight,keepaspectratio]{Figures/intensity_volatility_bars.png}}
+\end{center}
+\fignote{Average absolute daily yield change in basis points on days without a monetary policy shock. Buckets are quartiles of hedge fund intensity, the five day net position scaled by amount outstanding, among bonds with active positions, next to a no hedge fund reference. Raw group means without controls. Sample period 2021 to 2025.}
+\takeaway{Unconditionally, hedge funds sit in more volatile bonds}
+\navbtn{f1}{Back}
+\end{frame}
+
+% --- Full presence table (linked from the Finding 2 slide) ---
+% Verbal cues: coefficient 0.288 to 0.304 across 5 specs; stable through bond FE,
+% dur x country x date FE, and matched sample. Direct HF effect insignificant.
+\begin{frame}{Hedge fund presence amplifies the yield reaction, all specifications}
+\hypertarget{basefull}{}
+\vspace{0.2cm}
+\begin{center}
+\scriptsize
+\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{1.2}
+\measurebox{\begin{tabular}{lccccc}
+\toprule
+\textbf{$\Delta$ yield (bps)} & (1) & (2) & (3) & (4) & (5) \\
+\midrule
+\rowcolor{goetheblue!8}
+HF involved $\times$ Shock & 0.288$^{***}$ & 0.288$^{***}$ & 0.287$^{***}$ & 0.291$^{***}$ & 0.304$^{***}$ \\
+Shock                      & 0.757$^{***}$ & 0.757$^{***}$ &  &  &  \\
+HF involved (level)        & 0.083$^{**}$ & 0.062 & $-$0.000 & $-$0.022 & $-$0.002 \\
+\midrule
+Bond controls              & No & Yes & Yes & Yes & Yes \\
+Bond FE                    & No & No & Yes & Yes & No \\
+Date FE                    & No & No & Yes & No & No \\
+Dur. $\times$ Date $\times$ Country FE & No & No & No & Yes & No \\
+Matched pair FE            & No & No & No & No & Yes \\
+\bottomrule
+\end{tabular}}
+\end{center}
+\fignote{Dependent variable is the daily yield change. Column 5 is the matched sample. Standard errors clustered by date and bond, and by cell and twin in column 5. $^{***}\,p<0.01$, $^{**}\,p<0.05$.}
+The interaction is stable from \hibl{0.288} to \hibl{0.304} across progressively tighter designs, while the direct effect of presence stays at zero.
+\navbtnTwo{intensity}{Dose response}{baseline}{Back}
 \end{frame}
 
 % --- Dealer evidence (linked from the baseline table slide) ---
@@ -1241,15 +1327,6 @@ Dur. $\times$ Date $\times$ Country FE  & Yes & Yes & Yes & Yes \\
 \end{center}
 \fignote{Monetary shock dates shifted by 15 trading days, which breaks the timing. Standard errors clustered by date and bond.}
 Shifting the shock dates removes the coincidence with announcements. The amplification disappears entirely, which ties it to the actual shock.
-\end{frame}
-
-% --- Aggregate books over time (extra background for Finding 4) ---
-\begin{frame}{Aggregate hedge fund books switch sides over the cycle}
-\begin{center}
-\measureplot{0.062}{0.991}{\includegraphics[width=0.68\textwidth,height=0.58\textheight,keepaspectratio]{Figures/motivation_chart.png}}
-\end{center}
-\fignote{Aggregate net repo positions of offshore hedge funds in German and Italian sovereign bonds, EUR outstanding. Positive values are net cash borrowing (a proxy for long), negative values net cash lending (a proxy for short). Sample period 2021 to 2025.}
-\navbtn{finding4}{Back}
 \end{frame}
 
 \end{document}

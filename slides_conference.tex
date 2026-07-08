@@ -3,7 +3,7 @@
 % "Hedge Fund Trading and Sovereign Bond Yield Sensitivity"
 % Felix Hermes (Goethe University Frankfurt & ECB)
 %
-% Cut down from the 60 minute seminar deck. 15 numbered content frames in the
+% Cut down from the 60 minute seminar deck. 14 numbered content frames in the
 % main part, everything else lives in the annex and is reachable through the
 % navigation buttons for Q&A.
 %
@@ -15,14 +15,13 @@
 %   5  Mechanism ........................... 1.5
 %   6  Specification and identification .... 1.5
 %   7  Finding 1, weak vs strong design .... 1.5
-%   8  Finding 2, scatter .................. 1.0
-%   9  Finding 2, tightest designs ......... 1.5
-%  10  Magnitude ........................... 1.0
-%  11  Overshooting ........................ 1.5
-%  12  Finding 3, symmetry ................. 1.5
-%  13  Finding 4, net positions ............ 1.0
-%  14  Finding 4, directionality ........... 1.5
-%  15  Conclusion .......................... 1.0
+%   8  Finding 2, tightest designs ......... 2.0
+%   9  Magnitude ........................... 1.0
+%  10  Overshooting (two step build) ....... 2.0
+%  11  Finding 3, symmetry ................. 1.5
+%  12  Finding 4, net positions ............ 1.0
+%  13  Finding 4, directionality ........... 2.0
+%  14  Conclusion .......................... 1.0
 %
 % Style: clean Goldsmith-Pinkham / BSS layout (Lato, no outer theme),
 %        re-coloured to a Goethe Frankfurt deep-blue identity.
@@ -586,21 +585,12 @@ Duration $\times$ Date $\times$ Country FE & No & Yes \\
 
 
 %========================================================================================
-%	FINDING 2 (scatter, tightest designs, magnitude, overshooting)
+%	FINDING 2 (tightest designs, magnitude, overshooting; binned scatter in the annex)
 %========================================================================================
-\begin{frame}{Finding 2: Hedge fund trading raises the sensitivity of yields to shocks}
-\svs
-\begin{center}
-\measureplot{0.067}{0.972}{\includegraphics[width=0.72\textwidth,height=0.6\textheight,keepaspectratio]{Figures/shock_reaction_scatterplot.png}}
-\end{center}
-\fignote{Binned scatterplot of daily yield changes against monetary policy shocks, separately for bonds with and without active hedge fund positions. Yield changes are residualized for bond fixed effects. Lines are linear fits on the bond level data. Sample period 2021 to 2025.}
-\takeaway{The same surprise moves yields visibly more where hedge funds are positioned}
-\end{frame}
-
 % Verbal cues: presence stable 0.291/0.304 in the two tightest designs (dur x ctry x
 % date FE, matched twins); intensity 0.164 within the same bond -> dose response.
 % Intensity is the measure Finding 3 continues with.
-\begin{frame}{The amplification holds in the tightest designs and scales with the position}
+\begin{frame}{Finding 2: Hedge fund trading raises the sensitivity of yields to shocks}
 \hypertarget{baseline}{}
 \vspace{0.2cm}
 \begin{center}
@@ -635,27 +625,31 @@ Presence and intensity point the same way. Within the \hibl{same bond} over time
 \begin{frame}{The amplification is economically large}
 \hypertarget{magnitude}{}
 \svs
-For an average tightening surprise of \hibl{6 bps}, coefficients from the unsaturated specification {\footnotesize\color{softgrey}(all specifications in the annex)}.
-\svs
+Take the interaction estimate from the tightest design to the average tightening surprise.
+\lvs
 \begin{center}
-\begin{tikzpicture}[font=\small,>=Stealth]
-  \node[greybox, text width=3.4cm] (base) {Baseline bond\\[2pt]{\normalsize $0.757\times 6$}\\[2pt]{\large\textbf{$\approx 4.54$ bps}}};
-  \node[redbox, text width=3.4cm, right=6mm of base] (amp) {Hedge fund extra\\[2pt]{\normalsize $0.288\times 6$}\\[2pt]{\large\hird{\textbf{$\approx 1.73$ bps}}}};
-  \node[keybox, text width=3.6cm, right=6mm of amp] (tot) {Total on HF bonds\\[2pt]{\large\textbf{$\approx 6.27$ bps}}};
-  \draw[->,line width=0.9pt] (base) -- (amp);
-  \draw[->,line width=0.9pt] (amp) -- (tot);
+\begin{tikzpicture}[font=\small]
+  \node[greybox, text width=3.4cm] (surp) {Average tightening surprise\\[3pt]{\large\textbf{$\approx 6$ bps}}};
+  \node[right=4mm of surp] (times) {\large $\times$};
+  \node[keybox, text width=3.4cm, right=4mm of times] (coef) {Interaction estimate\\[3pt]{\large\textbf{0.29 bps per bp}}};
+  \node[right=4mm of coef] (eq) {\large $=$};
+  \node[redbox, text width=3.4cm, right=4mm of eq] (extra) {Additional move on hedge fund bonds\\[3pt]{\large\hird{\textbf{$\approx 1.7$ bps}}}};
 \end{tikzpicture}
 \end{center}
 \svs
+{\centering\scriptsize\color{softgrey} Relative to a total shock day move of about 6.3 bps on these bonds, from the unsaturated specification in the annex.\par}
+\lvs
 \takeaway{\textbf{\color{goetheblue}More than a quarter} of the yield move on shock days in these bonds\\
     is associated with the trading of hedge funds, not with the fundamental news}
-\navbtn{extval}{External validity}
+\navbtnTwo{scatterbin}{Binned scatter}{extval}{External validity}
 \end{frame}
 
 % Verbal cues: pre-shock flat (no pre-trends); impact-day divergence; significant
 % ~4 days then reverts; both legs converge to ~1bp/bp; HF bonds overshoot first.
-\begin{frame}{Yields diverge after a shock, reflecting temporary overshooting}
-\hypertarget{overshoot}{}
+% Two-step build as in the seminar: panel (a) alone first; a click adds panel (b),
+% the title suffix, the takeaway, and the annex button.
+\begin{frame}{Yields diverge after a shock\alt<2->{, reflecting temporary overshooting}{\hphantom{, reflecting temporary overshooting}}}
+\hypertarget<2>{overshoot}{}
 \begin{columns}[c]
 \begin{column}{0.5\textwidth}
 \centering
@@ -664,17 +658,18 @@ For an average tightening surprise of \hibl{6 bps}, coefficients from the unsatu
 \end{column}
 \begin{column}{0.5\textwidth}
 \centering
+\onslide<2->{%
 \panR{\includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{Figures/IR_baseline_decomposition_overshoot.png}}\\
-{\scriptsize (b) Level decomposition}
+{\scriptsize (b) Level decomposition}}
 \end{column}
 \end{columns}
 \twopanelnote{0.098}{0.979}{Local projections on the matched sample {\citep{jorda2005}}. Shaded areas are 90\% confidence intervals clustered by date and bond.}
 \begin{columns}[t]
 \begin{column}{0.5\textwidth}{\footnotesize Flat before the shock, immediate divergence on impact, significant for about \hibl{four days}, then reversion.}\end{column}
-\begin{column}{0.5\textwidth}{\footnotesize Both legs converge to a common level. Hedge fund bonds \hird{overshoot} first.}\end{column}
+\begin{column}{0.5\textwidth}\onslide<2->{{\footnotesize Both legs converge to a common level. Hedge fund bonds \hird{overshoot} first.}}\end{column}
 \end{columns}
-\takeaway{A temporary dislocation that other capital gradually absorbs, not price discovery}
-\navbtn{jkdecomp}{Not price discovery}
+\onslide<2->{\takeaway{A temporary dislocation that other capital gradually absorbs, consistent with slow moving capital}}
+\only<2->{\navbtn{jkdecomp}{Not price discovery}}
 \end{frame}
 
 
@@ -734,19 +729,31 @@ Dur.$\times$Date$\times$Ctry FE & Yes & Yes \\
 \measureplot{0.062}{0.991}{\includegraphics[width=0.72\textwidth,height=0.56\textheight,keepaspectratio]{Figures/motivation_chart.png}}
 \end{center}
 \fignote{Aggregate net repo positions of offshore hedge funds in German and Italian sovereign bonds, EUR outstanding. Positive values are net cash borrowing (a proxy for long), negative values net cash lending (a proxy for short). Sample period 2021 to 2025.}
-\takeaway{So the directionality of the book could matter, beyond how much hedge funds hold}
+\takeaway{So the directionality of the book matters, beyond how much hedge funds hold}
 \end{frame}
 
 % Verbal cues: hedged 0.098, directional 0.363, F=24.8; quartiles rise monotonically
 % 0.057 -> 0.367. Within-cell FE absorbs the common monetary environment.
 \begin{frame}{Amplification is concentrated in directional books}
 \hypertarget{finding4}{}
+\setlength\abovedisplayskip{4pt}\setlength\belowdisplayskip{4pt}
+\lvs
+\begin{columns}[c]
+\begin{column}{0.5\textwidth}
+\lead{Bond level holder directionality}
+\beq
+\text{Dir}_{f,t}=\frac{\left|\sum_i D_i\,q_{f,i,t}\right|}{\sum_i D_i\,|q_{f,i,t}|}
+\eeq
+\beq
+\text{HolderDir}_{i,t}=\frac{\sum_f |q_{f,i,t}|\,\text{Dir}_{f,t}}{\sum_f |q_{f,i,t}|}
+\eeq
 \svs
-The constraint binds at the level of the \hibl{whole book}. A book long Italy and short Germany of similar duration carries little net exposure, a one sided book absorbs the full loss. Each bond inherits the position weighted \hibl{directionality} of the funds holding it.
-\svs
-\begin{center}
+{\footnotesize Zero when long and short legs offset in duration, close to one when the book is one sided. Each bond inherits the position weighted directionality of the funds holding it.}
+\end{column}
+\begin{column}{0.46\textwidth}
+\centering
 \scriptsize
-\setlength{\tabcolsep}{12pt}
+\setlength{\tabcolsep}{8pt}
 \renewcommand{\arraystretch}{1.15}
 \measurebox{\begin{tabular}{lc}
 \toprule
@@ -764,10 +771,13 @@ Q3 $\times$ Shock                  & 0.361$^{***}$ \\
 Q4 most directional $\times$ Shock & 0.367$^{***}$ \\
 \bottomrule
 \end{tabular}}
-\end{center}
+\par\smallskip
 \fignote{Bond and duration $\times$ country $\times$ date fixed effects with controls. Wald tests reject equality of the hedged and directional groups ($F=24.8$) and of the extreme quartiles ($F=28.3$). Standard errors clustered by date and bond. $^{***}\,p<0.01$.}
+\end{column}
+\end{columns}
+\lvs
 \takeaway{The amplification rises monotonically with directionality and is not distinguishable from zero in the most hedged quartile}
-\navbtn{dirmeasure}{Measure and trends}
+\navbtnTwo{dirmeasure}{Whole book intuition}{dirtrend}{Time series}
 \end{frame}
 
 
@@ -1066,6 +1076,18 @@ Matched pair FE            & No & No & No & No & Yes \\
 \fignote{Dependent variable is the daily yield change. Column 5 is the matched sample. Standard errors clustered by date and bond, and by cell and twin in column 5. $^{***}\,p<0.01$, $^{**}\,p<0.05$.}
 The interaction is stable from \hibl{0.288} to \hibl{0.304} across progressively tighter designs, while the direct effect of presence stays at zero.
 \navbtnTwo{intensity}{Dose response}{baseline}{Back}
+\end{frame}
+
+% --- Binned scatter (linked from the magnitude slide) ---
+\begin{frame}{The reaction to the same surprise, with and without hedge funds}
+\hypertarget{scatterbin}{}
+\svs
+\begin{center}
+\measureplot{0.067}{0.972}{\includegraphics[width=0.72\textwidth,height=0.6\textheight,keepaspectratio]{Figures/shock_reaction_scatterplot.png}}
+\end{center}
+\fignote{Binned scatterplot of daily yield changes against monetary policy shocks, separately for bonds with and without active hedge fund positions. Yield changes are residualized for bond fixed effects. Lines are linear fits on the bond level data. Sample period 2021 to 2025.}
+\takeaway{The same surprise moves yields visibly more where hedge funds are positioned}
+\navbtn{magnitude}{Back}
 \end{frame}
 
 % --- Dealer evidence (linked from the baseline table slide) ---

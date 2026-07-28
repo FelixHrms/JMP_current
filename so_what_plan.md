@@ -26,7 +26,7 @@ The identification is not the target of the objection — the economic magnitude
 
 **Shock measurement.**
 - *Preferred:* intraday change in 2y OIS or Schatz-futures-implied yield in a tight window around the release timestamp — mirrors the EA-MPD design. Open item: intraday history back to 2021 (Bloomberg intraday history limits; check Refinitiv/ECB tick sources).
-- *Fallback (respectable, Swanson–Williams precedent):* standardized survey surprise (actual − median, scaled by release-type surprise volatility) as the shock, with a first-stage regression of the daily 2y OIS change on the surprise to convert into bp units comparable to the MP shocks.
+- *Fallback (respectable, Swanson–Williams precedent):* standardized survey surprise (actual − median, scaled by release-type surprise volatility) as the shock, with a first-stage regression of the daily 2y OIS change on the surprise to convert into bp units comparable to the MP shocks. References: Swanson & Williams (2014, AER 104(10), "Measuring the Effect of the Zero Lower Bound on Medium- and Long-Term Interest Rates") for the daily-frequency, standardized-survey-surprise design pooling many release types; their companion piece Swanson & Williams (2014, JIE 92, "...Yields and Exchange Rates in the United Kingdom and Germany") applies it to German yields. Euro-area counterpart for release selection/relevance: Altavilla, Giannone & Modugno (2017, JME, macro news and bond yields).
 
 **Designs.**
 - *Pooled, structured:* existing specification plus `HF × Shock × |Shock|`, or cleaner, shock-size terciles interacted with `HF × Shock`. With 300+ event dates the date-cluster count is no longer binding.

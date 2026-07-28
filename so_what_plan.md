@@ -37,6 +37,33 @@ The identification is not the target of the objection — the economic magnitude
 - Orthogonality test ports over: lagged aggregate HF positioning must not predict the release surprise.
 - Key clarification from discussion: "large events have stronger yield reactions" is not a problem — that is the x-axis. The question is whether the *amplification coefficient per bp of shock* varies with shock size.
 
+### Data notes — Bloomberg calendar files (added after first inspection, July 2026)
+
+Two ECO EZ exports in `BB_calender.zip`: `BB_00_23.xlsx` (2000-01→2023-12, English headers, 12.3k rows) and `BB_23_25.xlsx` (2023-01→2025-10, German headers, incl. relevance score `S`, survey high/low, n estimates, dispersion). Facts established:
+
+- **Consistency:** 100% match of actuals and medians on the 2023 overlap → splice old file (to end-2022) + new file (2023 on) is safe. Ticker universes match (~41 tickers, all mappable to relevance scores via the new file).
+- **Coverage:** euro-area *aggregates only* (flag EC). No German/Italian country releases (no ifo), **no US releases**. ECB rate decisions are in the calendar (EURR002W, EUORDEPO, EUORMARG) and must be dropped (already covered by EA-MPD).
+- **Frequency:** 2021–2025 window has ~1,466 surveyed release-obs on ~597 dates (~3 releases per release day; release days ≈ 70% of trading days).
+- **Bloomberg's surprise column** (`Surprise`/`Überraschung`) is scaled by *cross-forecaster dispersion*, not by the historical std of surprises → recompute per literature convention (see below).
+- **Flash vs. final share one ticker** (PMIs, CPI: `Period` suffix P/F) → treat as separate release types (AGM precedent: advance/second/third treated separately).
+
+### Proposed selection rule (to confirm)
+
+1. Surveyed releases only (consensus median exists — no survey, no surprise).
+2. Relevance `S` ≥ 50 (robustness: 60, 70). Yields 17 tickers, ~1,077 obs, ~500 release days in-window; days with max |s| ≥ 1σ: ~158, ≥ 2σ: ~62 (vs. 38 MP events). Note: with the two-step shock construction the threshold is near-cosmetic, since first-stage weights ≈ 0 for irrelevant releases.
+3. Drop ECB-decision rows; drop release days coinciding with ECB monetary events (contamination; mirrors the CDS-shock treatment).
+
+### Shock construction (daily, no intraday needed — SW/AGM precedent)
+
+1. Raw surprise = actual − median (both files carry the ingredients). Standardize by the **ticker-level time-series σ of raw surprises**, estimated on the long 2000+ history (this is what the old file is for). SW: "normalized by its historical standard deviation"; AGM fn. 4: "sample standard deviation". Do **not** use Bloomberg's dispersion-scaled surprise (disagreement is state-dependent — widens exactly in 2021–22, mechanically shrinking measured surprises when news was largest, and would contaminate the shock-size profile).
+2. First stage (AGM Eq. 1 structure): daily Δ2y OIS on all standardized surprises jointly, all days, news=0 on non-release days; non-synchronous releases → no collinearity (AGM fn. 3). γ_k = bp per 1σ of release k.
+3. Daily macro shock = Σ_k γ̂_k s_{k,t} (fitted news component, in bp of 2y risk-free news) → drop-in replacement for the MP shock in all specifications; single number per day aggregates simultaneous releases; exogenous by construction (function of surprises only).
+4. Robustness shock defs: single highest-relevance release per day in σ units; γ estimated on longer window.
+
+**Known limitation of the daily window + EA-only calendar:** US releases (CPI 14:30 CET) land inside the same euro trading-day close but are absent from the composite → attenuation/noise on those days, not bias (orthogonality of US news to pre-set HF positioning; test extendable). Preferred fix: request ECO US (and ECO GE for ifo) exports from colleague — same download procedure.
+
+**Data still needed:** daily 2y EUR OIS closes 2021–2025 (Bloomberg, one series; optionally 10y as duration-relevant alternative).
+
 **Unscheduled large events** (Mar-2025 German fiscal package ~30bp Bund day, Apr-2025 tariff turmoil, Sep-2022 LDI spillover, Jul-2022 Draghi resignation, Mar-2023 banking stress): once the systematic release-based analysis exists, these become *illustrations* (case-study box), not load-bearing evidence. Case studies are only vulnerable when they carry the result.
 
 **Either outcome is informative.**

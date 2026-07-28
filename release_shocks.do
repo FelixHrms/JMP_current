@@ -35,8 +35,12 @@ reg d_ois2y_bp                                                ///
     if ecb_day == 0, vce(robust)
 
 * Daily macro shock (bp) = fitted news component, net of the constant
-predict macro_shock, xb
+predict double macro_shock, xb
 replace macro_shock = macro_shock - _b[_cons]
+* exact zero for days whose releases all fall outside the regressor set:
+* float dust from the constant subtraction otherwise counts as a "nonzero"
+* shock and lands in tercile 1 (1e-9-sized regressor -> degenerate estimates)
+replace macro_shock = 0 if abs(macro_shock) < 1e-6
 replace macro_shock = 0 if n_releases == 0
 replace macro_shock = . if ecb_day == 1
 

@@ -62,7 +62,20 @@ Two ECO EZ exports in `BB_calender.zip`: `BB_00_23.xlsx` (2000-01→2023-12, Eng
 
 **Known limitation of the daily window + EA-only calendar:** US releases (CPI 14:30 CET) land inside the same euro trading-day close but are absent from the composite → attenuation/noise on those days, not bias (orthogonality of US news to pre-set HF positioning; test extendable). Preferred fix: request ECO US (and ECO GE for ifo) exports from colleague — same download procedure.
 
-**Data still needed:** daily 2y EUR OIS closes 2021–2025 (Bloomberg, one series; optionally 10y as duration-relevant alternative).
+**Data still needed:** ~~daily 2y EUR OIS closes~~ received (`ois_2y.csv`, ECB SDW, ESTR 2y OIS daily close 2021→2026). Outstanding requests to colleague: ECO US and ECO GE exports; ask whether ECO can deliver flash PMI actuals directly (see artifact below).
+
+### Implementation status (July 2026)
+
+`build_release_shocks.ipynb` (executed, committed) builds `Data/release_shocks.csv` (1,238 trading days × 46 cols: date, OIS level, ΔOIS in bp, `ecb_day`, `n_releases`, one standardised-surprise column per release type) and `Data/release_types_meta.csv` (41 types: σ, relevance, obs counts) for the Stata first stage. Findings during the build:
+
+- **Flash PMI artifact:** in both exports the flash PMI rows (variant P) have the survey median but a *blank actual* over the entire history — as exported, PMI "news" would only be the final-print revision. Fixed by reconstruction: flash actual := same-reference-month final-print consensus (the F-row median is anchored on the published flash; F-row forecaster ranges ±0.1). 658/660 P rows recovered; no look-ahead (flash value is public at the P date). Cross-check with colleague whether ECO can export flash actuals directly.
+- **Preview first stage looks economically sensible:** flash PMIs +1.3 to +1.8 bp/σ, flash core CPI +1.8, GDP advance +5.7, finals/minor releases ≈ 0. Validation: the 2022 PMI-crash days (−23bp OIS) now carry the corresponding surprise.
+- **Same-day bundles** (flash-CPI trio, GDP QoQ/YoY) are near-collinear (surprise corr. up to 0.96) → individual γs within a bundle not interpretable (signs flip), fitted value unaffected. For the paper's γ table: one print per bundle + joint F-tests. Restrict regressors to types with ≥10 in-window release days (GDP S/T variants have 1–2 obs).
+- **Attenuation caveat confirmed in data:** the largest OIS moves ex-ECB (March 2023 banking stress, June 2022) are mostly non-EA-release days → strengthens the case for the ECO US export.
+
+### Decision: monetary-policy events stay separate (and stay in the paper)
+
+ECB decision rows are dropped from the release set and ECB days flagged (`ecb_day`, 38 in-window — matches the paper's 38 EA-MPD events). The first stage and the release-module second stage exclude them. The MP analysis is **not** replaced by the release analysis: (i) the intraday EA-MPD surprises are the paper's cleanest identification and the JK information/monetary decomposition lives there; (ii) the calendar's ECB "surprise" (decision vs. survey median) misses guidance/QE news and is ≈ 0 whenever the decision was anticipated — a strictly worse MP shock; (iii) the paper is stronger with three separate laboratories (MP, macro releases, CDS) delivering comparable amplification coefficients. A pooled specification (both shocks, both interactions, on all days) is an optional robustness, not the main design.
 
 **Unscheduled large events** (Mar-2025 German fiscal package ~30bp Bund day, Apr-2025 tariff turmoil, Sep-2022 LDI spillover, Jul-2022 Draghi resignation, Mar-2023 banking stress): once the systematic release-based analysis exists, these become *illustrations* (case-study box), not load-bearing evidence. Case studies are only vulnerable when they carry the result.
 

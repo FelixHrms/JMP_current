@@ -46,8 +46,7 @@ summarize macro_shock if n_releases > 0 & ecb_day == 0, detail
 rename date business_date
 keep business_date macro_shock
 export delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\macro_shock.csv", replace
-tempfile shockfile
-save `shockfile'
+save "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\macro_shock.dta", replace
 
 ********************************************************************************
 * 2. Merge into the bond panel
@@ -58,7 +57,8 @@ import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\monetary_policy
 * keep(match): drops panel days outside the release-shock coverage
 * (before 2021-01-05 / after 2025-10-23). ECB days merge with macro_shock
 * missing and fall out of the regressions automatically.
-merge m:1 business_date using `shockfile', keep(match) nogen
+* Requires Section 1 to have been run once (creates macro_shock.dta).
+merge m:1 business_date using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\macro_shock.dta", keep(match) nogen
 
 encode collateral_country, gen(col_cntr)
 gen duration_bin = floor(duration / 2) * 2
@@ -96,7 +96,7 @@ reghdfe delta_y c.log_hf_intensity##c.macro_shock duration bid_ask_spread ctd_fl
 ********************************************************************************
 
 import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\monetary_policy_induced_position.csv", clear
-merge m:1 business_date using `shockfile', keep(match) nogen
+merge m:1 business_date using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\macro_shock.dta", keep(match) nogen
 
 * 2. Convert to Stata date
 gen date_num = date(business_date, "YMD")

@@ -95,31 +95,41 @@ reghdfe delta_y c.log_hf_intensity##c.macro_shock duration bid_ask_spread ctd_fl
     | (hf_intensity_pre == 0), ///
     absorb(duration_match isin) vce(cluster business_date isin)
 
-* 3.2 Shock-size terciles (non-linearity within the release laboratory)
-* Day-level tercile cutoffs of |macro_shock| across nonzero release days;
-* tercile 0 = zero-shock days. T1/T2 shocks are tiny by construction (the
-* shock distribution is quasi-sparse), so their slopes carry wide CIs; the
-* informative comparison is T3 vs T1/T2 and vs the pooled estimate.
+* 3.2 Shock-size buckets (non-linearity within the release laboratory)
+* Fixed bp thresholds instead of quantile cuts: the |shock| distribution is
+* quasi-sparse, so equal-count buckets (terciles/quartiles) place all but one
+* bucket inside the sub-1bp dead zone where adjustment costs predict no
+* rebalancing. Economically anchored grid:
+*   bucket 0 : no news              (baseline)
+*   bucket 1 : 0   < |shock| <= 1bp (dead zone -> mechanism predicts ~0)
+*   bucket 2 : 1bp < |shock| <= 2bp (trading zone)
+*   bucket 3 : 2bp < |shock| <= 4bp (trading zone)
+*   bucket 4 :       |shock| >  4bp (trading zone, few days but weight ~ shock^2)
+* The linearity test is b2 = b3 = b4 (within the trading zone); bucket 1 is
+* the placebo region. Robustness: shift the grid (0.5/1.5/3) or quartiles
+* within the trading zone. Guard "& macro_shock < ." everywhere: abs(.) > x
+* is true in Stata. Binary analogue: swap log_hf_intensity for hf_involved.
+gen shock_bucket = .
+replace shock_bucket = 0 if macro_shock == 0
+replace shock_bucket = 1 if abs(macro_shock) > 0 & abs(macro_shock) <= 1 & macro_shock < .
+replace shock_bucket = 2 if abs(macro_shock) > 1 & abs(macro_shock) <= 2 & macro_shock < .
+replace shock_bucket = 3 if abs(macro_shock) > 2 & abs(macro_shock) <= 4 & macro_shock < .
+replace shock_bucket = 4 if abs(macro_shock) > 4 & macro_shock < .
+
+* day counts per bucket (report alongside the table)
 egen day_tag = tag(business_date)
-xtile terc_day = abs(macro_shock) if day_tag == 1 & macro_shock != 0 & macro_shock < ., nq(3)
-egen shock_tercile = max(terc_day), by(business_date)
-replace shock_tercile = 0 if macro_shock == 0
-drop day_tag terc_day
+tab shock_bucket if day_tag, missing
+drop day_tag
 
-* explicit interaction variables (a triple factor interaction makes the
-* equality tests fragile to coefficient naming; this is equivalent).
-* Binary analogue: swap log_hf_intensity for hf_involved.
-gen hf_t1 = log_hf_intensity * (shock_tercile == 1)
-gen hf_t2 = log_hf_intensity * (shock_tercile == 2)
-gen hf_t3 = log_hf_intensity * (shock_tercile == 3)
-gen hfshock_t1 = log_hf_intensity * macro_shock * (shock_tercile == 1)
-gen hfshock_t2 = log_hf_intensity * macro_shock * (shock_tercile == 2)
-gen hfshock_t3 = log_hf_intensity * macro_shock * (shock_tercile == 3)
+forvalues b = 1/4 {
+    gen hf_b`b'      = log_hf_intensity * (shock_bucket == `b')
+    gen hfshock_b`b' = log_hf_intensity * macro_shock * (shock_bucket == `b')
+}
 
-reghdfe delta_y c.log_hf_intensity hf_t1 hf_t2 hf_t3 hfshock_t1 hfshock_t2 hfshock_t3 ///
+reghdfe delta_y c.log_hf_intensity hf_b1-hf_b4 hfshock_b1-hfshock_b4 ///
     duration bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
-test hfshock_t1 == hfshock_t3
-test (hfshock_t1 == hfshock_t2) (hfshock_t2 == hfshock_t3)
+test hfshock_b1 == 0                                  // dead zone: mechanism predicts zero
+test (hfshock_b2 == hfshock_b3) (hfshock_b3 == hfshock_b4)   // linearity within trading zone
 
 * continuous convexity check: does the amplification per bp rise with |shock|?
 * hfshock_size > 0 => convex; = 0 => the amplification share is size-invariant.

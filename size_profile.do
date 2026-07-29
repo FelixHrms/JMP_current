@@ -1,5 +1,13 @@
 ********************************************************************************
-* SIZE PROFILE  —  threshold existence (not location) + plateau
+* SIZE PROFILE  —  EXPLORATORY, SUPERSEDED (kept for the record)
+********************************************************************************
+* STATUS: the paper's profile section uses the RELEASE-ONLY design in
+* release_shocks.do (Sections 3.2/3.3): one homogeneous shock construction
+* for threshold existence + plateau; MP comparison handled in text via the
+* matched-size argument + the JK table; tail days standalone corroboration
+* (tail_shocks.do), never pooled. This file's pooled series, parallelness
+* and in-profile directionality specs are exploration; the one retained
+* finding is Section 6's null (the policy premium is not book composition).
 ********************************************************************************
 * Input : Data\release_shocks.csv, Data\macro_shock.dta, Data\tail_shock.dta,
 *         Data\monetary_policy_induced_position.csv

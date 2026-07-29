@@ -140,6 +140,25 @@ gen hfshock_size = log_hf_intensity * macro_shock * abs(macro_shock)
 reghdfe delta_y c.log_hf_intensity hf_size hfshock hfshock_size ///
     duration bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
 
+* 3.3 Threshold existence, robust to the small-shock cutoff (release lab only)
+* Heterogeneous margin buffers imply no estimable aggregate kink; test
+* existence, not location: at every cutoff c, the small-shock slope is
+* (a) zero and (b) below the plateau (rejecting pure proportionality).
+foreach c of numlist 0.5 0.75 1 1.5 2 {
+    gen double hfd_small = log_hf_intensity * (abs(macro_shock) <= `c' & macro_shock != 0)
+    gen double hfd_lrg   = log_hf_intensity * (abs(macro_shock) >  `c' & macro_shock < .)
+    gen double hfS_small = log_hf_intensity * macro_shock * (abs(macro_shock) <= `c')
+    gen double hfS_lrg   = log_hf_intensity * macro_shock * (abs(macro_shock) >  `c' & macro_shock < .)
+
+    di as text _n "================ cutoff c = `c' bp ================"
+    reghdfe delta_y c.log_hf_intensity hfd_small hfd_lrg hfS_small hfS_lrg ///
+        duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
+        vce(cluster business_date isin)
+    test hfS_small == 0                    // (a) dead zone
+    test hfS_small == hfS_lrg              // (b) existence
+    drop hfd_small hfd_lrg hfS_small hfS_lrg
+}
+
 ********************************************************************************
 * 4. Orthogonality of HF positioning to the release shock
 ********************************************************************************

@@ -76,8 +76,13 @@ gen tindex = _n
 replace tail_resid = . if tindex <= 30
 
 *--- Raw-threshold shock definition (2/98, as in make_cds_shocks.do) ---
+* Guard: the day's move must be predominantly unscheduled. Without it, a day
+* where the first stage badly overpredicts a release response (large
+* macro_shock, flat OIS) shows a large u despite no actual market move
+* (2021-03-24: predicted +11.5bp on a reopening-era PMI surprise, OIS -0.5bp).
 _pctile tail_resid, p(2 98)
-gen tail_day = (tail_resid < r(r1) | tail_resid > r(r2)) if !missing(tail_resid)
+gen tail_day = (tail_resid < r(r1) | tail_resid > r(r2)) ///
+    & abs(d_ois2y_bp) > abs(macro_shock) if !missing(tail_resid)
 
 *--- Purge monetary-event overlap (ECB day and adjacent days) ---
 gen byte ecb_window = ecb_day

@@ -6,7 +6,8 @@
 *         Data\monetary_policy_induced_position.csv   (bond panel)
 * Produces: first-stage gamma table, Data\macro_shock.csv,
 *           release-shock amplification table (binary, intensity,
-*           constraining regime, relaxing regime) + orthogonality test
+*           constraining regime, relaxing regime) + yield-denominated IV
+*           (unit-comparable to the MP laboratory) + orthogonality test
 ********************************************************************************
 
 clear all
@@ -170,6 +171,82 @@ reghdfe delta_y c.log_hf_intensity hfi_disc hfi_gro ///
     if macro_shock == 0 | (abs(macro_shock) > 1 & macro_shock < .), ///
     absorb(duration_match isin) vce(cluster business_date isin)
 test hfi_disc == hfi_gro
+
+********************************************************************************
+* 3.3 Yield-denominated IV: amplification per bp of realized market repricing
+********************************************************************************
+* Purpose: cross-laboratory unit comparability. The OLS interaction is "extra
+* bp per bp of OIS-measured shock", so its level inherits the shock's
+* pass-through into sovereign yields (~0.6 on release days vs ~0.8 on MP days)
+* and, for MP, the intraday-vs-daily frequency wedge. Fix by rescaling inside
+* the estimator: endogenous regressor = HF x realized cell repricing (cell
+* mean of NON-HF bond yield changes), instrument = HF x shock. The baseline
+* is then 1 by construction in every laboratory (the market move IS the
+* regressor) and the interaction reads "extra bp per bp of realized repricing
+* of comparable non-HF bonds". Exactly identified -> IV point estimate =
+* reduced-form interaction / first-stage pass-through, with correct SEs.
+* Two artifacts die in this ratio:
+*   (i)  shock-denomination (pass-through) differences across laboratories;
+*   (ii) measurement error in the instrument (daily vs intraday shock EIV
+*        attenuates numerator and denominator equally, so it cancels).
+* No mechanical endogeneity: the interaction is exactly zero for every bond
+* entering the cell mean (non-HF bonds have hf_involved = 0 and
+* log_hf_intensity = 0), and the cell-mean main effect is absorbed by the
+* duration_match FE. Cell-mean sampling noise sits in the endogenous
+* regressor, uncorrelated with the instrument -> handled by the IV itself.
+* First stage is strong here because of the ~600 shock-day clusters (report
+* the KP F); this is why the release laboratory carries the IV better than
+* the 38-event MP laboratory or the 41-day tail set.
+* Requires (once): ssc install ivreghdfe ivreg2 ranktest ftools
+
+* realized market repricing: cell mean over non-HF bonds with observed dy
+egen double sum_nhf = total(cond(hf_involved == 0 & !missing(delta_y), delta_y, 0)), by(duration_match)
+egen double n_nhf   = total(hf_involved == 0 & !missing(delta_y)), by(duration_match)
+gen double mkt_repr = sum_nhf / n_nhf if n_nhf >= 1
+count if missing(mkt_repr)   // bonds in cells with no non-HF benchmark (drop out)
+
+* endogenous interactions and instruments
+gen double hfb_M   = hf_involved      * mkt_repr
+gen double hfi_M   = log_hf_intensity * mkt_repr
+gen double hfb_s   = hf_involved      * macro_shock
+gen double hfi_s   = log_hf_intensity * macro_shock
+gen double hfb_ois = hf_involved      * ois_2y
+gen double hfi_ois = log_hf_intensity * ois_2y
+
+* (a) release laboratory (ECB days drop automatically: macro_shock missing)
+ivreghdfe delta_y hf_involved duration bid_ask_spread ctd_flag ///
+    (hfb_M = hfb_s), absorb(isin duration_match) cluster(business_date isin)
+ivreghdfe delta_y log_hf_intensity duration bid_ask_spread ctd_flag ///
+    (hfi_M = hfi_s), absorb(duration_match isin) cluster(business_date isin)
+
+* (b) MP laboratory through the IDENTICAL pipeline (instrument = intraday
+* EA-MPD surprise, zero on non-MP days -> identification from MP days with
+* all other days as shared baseline). THESE are the benchmark numbers the
+* release column is compared to - not the per-OIS-bp OLS coefficients.
+ivreghdfe delta_y hf_involved duration bid_ask_spread ctd_flag ///
+    (hfb_M = hfb_ois), absorb(isin duration_match) cluster(business_date isin)
+ivreghdfe delta_y log_hf_intensity duration bid_ask_spread ctd_flag ///
+    (hfi_M = hfi_ois), absorb(duration_match isin) cluster(business_date isin)
+
+* (c) pooled two-laboratory IV + Wald test of equality. Day-type split by
+* nonzero shock; release instrument zeroed (not missing) on ECB days so MP
+* days stay in the sample; days with neither shock enter both labs' baseline.
+gen byte rel_day = (macro_shock != 0 & !missing(macro_shock))
+gen byte mp_day  = (ois_2y != 0 & !missing(ois_2y))
+gen double hfb_s0 = hf_involved      * cond(missing(macro_shock), 0, macro_shock)
+gen double hfi_s0 = log_hf_intensity * cond(missing(macro_shock), 0, macro_shock)
+gen double hfb_M_rel = hfb_M * rel_day
+gen double hfb_M_mp  = hfb_M * mp_day
+gen double hfi_M_rel = hfi_M * rel_day
+gen double hfi_M_mp  = hfi_M * mp_day
+
+ivreghdfe delta_y hf_involved duration bid_ask_spread ctd_flag ///
+    (hfb_M_rel hfb_M_mp = hfb_s0 hfb_ois), absorb(isin duration_match) cluster(business_date isin)
+test hfb_M_rel = hfb_M_mp
+
+ivreghdfe delta_y log_hf_intensity duration bid_ask_spread ctd_flag ///
+    (hfi_M_rel hfi_M_mp = hfi_s0 hfi_ois), absorb(duration_match isin) cluster(business_date isin)
+test hfi_M_rel = hfi_M_mp
 
 ********************************************************************************
 * 4. Orthogonality of HF positioning to the release shock

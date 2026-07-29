@@ -95,69 +95,65 @@ reghdfe delta_y c.log_hf_intensity##c.macro_shock duration bid_ask_spread ctd_fl
     | (hf_intensity_pre == 0), ///
     absorb(duration_match isin) vce(cluster business_date isin)
 
-* 3.2 Shock-size buckets (non-linearity within the release laboratory)
-* Fixed bp thresholds instead of quantile cuts: the |shock| distribution is
-* quasi-sparse, so equal-count buckets (terciles/quartiles) place all but one
-* bucket inside the sub-1bp dead zone where adjustment costs predict no
-* rebalancing. Economically anchored grid:
-*   bucket 0 : no news              (baseline)
-*   bucket 1 : 0   < |shock| <= 1bp (dead zone -> mechanism predicts ~0)
-*   bucket 2 : 1bp < |shock| <= 2bp (trading zone)
-*   bucket 3 : 2bp < |shock| <= 4bp (trading zone)
-*   bucket 4 :       |shock| >  4bp (trading zone, few days but weight ~ shock^2)
-* The linearity test is b2 = b3 = b4 (within the trading zone); bucket 1 is
-* the placebo region. Robustness: shift the grid (0.5/1.5/3) or quartiles
-* within the trading zone. Guard "& macro_shock < ." everywhere: abs(.) > x
-* is true in Stata. Binary analogue: swap log_hf_intensity for hf_involved.
-gen shock_bucket = .
-replace shock_bucket = 0 if macro_shock == 0
-replace shock_bucket = 1 if abs(macro_shock) > 0 & abs(macro_shock) <= 1 & macro_shock < .
-replace shock_bucket = 2 if abs(macro_shock) > 1 & abs(macro_shock) <= 2 & macro_shock < .
-replace shock_bucket = 3 if abs(macro_shock) > 2 & abs(macro_shock) <= 4 & macro_shock < .
-replace shock_bucket = 4 if abs(macro_shock) > 4 & macro_shock < .
+* 3.2 Decomposing release days a la Jarocinski-Karadi (poor man's sign split)
+* Classify each release day by the comovement of the release shock and the
+* EuroStoxx 50 return: opposite signs -> discount-rate-type news (yields up,
+* stocks down); same sign -> growth-type news. Mirrors the paper's JK table
+* for ECB events, applied within the release laboratory. Both components in
+* one specification (they live on disjoint days) + Wald test of equality.
+* eurostoxx50.csv is the ECB SDW export (reverse-chronological, header rows).
 
-* day counts per bucket (report alongside the table)
+preserve
+import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\eurostoxx50.csv", clear varnames(nonames)
+keep v1 v2
+gen ddate = date(v1, "YMD")
+drop if missing(ddate)
+destring v2, replace force
+sort ddate
+gen double eq_ret = 100 * (v2 / v2[_n-1] - 1)
+gen business_date = string(ddate, "%tdCCYY-NN-DD")
+keep business_date eq_ret
+tempfile stoxx
+save `stoxx'
+restore
+
+foreach v in eq_ret disc_day growth_day shock_disc shock_growth comp_type ///
+    hfb_disc hfb_gro hfi_disc hfi_gro {
+    capture drop `v'
+}
+merge m:1 business_date using `stoxx', keep(master match) nogen
+
+* guards required: in Stata a missing product compares as +inf, so an
+* unmatched equity day would silently classify as growth-type without them
+gen byte disc_day   = (macro_shock * eq_ret < 0) if !missing(macro_shock, eq_ret)
+gen byte growth_day = (macro_shock * eq_ret > 0) if !missing(macro_shock, eq_ret)
+gen double shock_disc   = macro_shock * disc_day
+gen double shock_growth = macro_shock * growth_day
+
+* composition: day counts and |shock| by component (balance check)
+gen comp_type = .
+replace comp_type = 1 if disc_day == 1
+replace comp_type = 2 if growth_day == 1
+label define comp 1 "discount-type" 2 "growth-type", replace
+label values comp_type comp
 egen day_tag = tag(business_date)
-tab shock_bucket if day_tag, missing
-drop day_tag
+gen double abs_ms = abs(macro_shock)
+tabstat abs_ms if day_tag & comp_type < ., by(comp_type) stat(n mean p50 max)
+drop day_tag abs_ms
 
-forvalues b = 1/4 {
-    gen hf_b`b'      = log_hf_intensity * (shock_bucket == `b')
-    gen hfshock_b`b' = log_hf_intensity * macro_shock * (shock_bucket == `b')
-}
+* binary (mirrors the paper's JK table) and intensity variants
+gen double hfb_disc = hf_involved * shock_disc
+gen double hfb_gro  = hf_involved * shock_growth
+gen double hfi_disc = log_hf_intensity * shock_disc
+gen double hfi_gro  = log_hf_intensity * shock_growth
 
-reghdfe delta_y c.log_hf_intensity hf_b? hfshock_b? ///
+reghdfe delta_y i.hf_involved hfb_disc hfb_gro ///
+    duration bid_ask_spread ctd_flag, absorb(isin duration_match) vce(cluster business_date isin)
+test hfb_disc == hfb_gro
+
+reghdfe delta_y c.log_hf_intensity hfi_disc hfi_gro ///
     duration bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
-test hfshock_b1 == 0                                  // dead zone: mechanism predicts zero
-test (hfshock_b2 == hfshock_b3) (hfshock_b3 == hfshock_b4)   // linearity within trading zone
-
-* continuous convexity check: does the amplification per bp rise with |shock|?
-* hfshock_size > 0 => convex; = 0 => the amplification share is size-invariant.
-gen hfshock      = log_hf_intensity * macro_shock
-gen hf_size      = log_hf_intensity * abs(macro_shock)
-gen hfshock_size = log_hf_intensity * macro_shock * abs(macro_shock)
-
-reghdfe delta_y c.log_hf_intensity hf_size hfshock hfshock_size ///
-    duration bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
-
-* 3.3 Threshold existence, robust to the small-shock cutoff (release lab only)
-* Heterogeneous margin buffers imply no estimable aggregate kink; test
-* existence, not location: at every cutoff c, the small-shock slope is
-* (a) zero and (b) below the plateau (rejecting pure proportionality).
-foreach c of numlist 0.5 0.75 1 1.5 2 {
-    gen double hfd_small = log_hf_intensity * (abs(macro_shock) <= `c' & macro_shock != 0)
-    gen double hfd_lrg   = log_hf_intensity * (abs(macro_shock) >  `c' & macro_shock < .)
-    gen double hfS_small = log_hf_intensity * macro_shock * (abs(macro_shock) <= `c')
-    gen double hfS_lrg   = log_hf_intensity * macro_shock * (abs(macro_shock) >  `c' & macro_shock < .)
-
-    di as text _n "================ cutoff c = `c' bp ================"
-    reghdfe delta_y c.log_hf_intensity hfd_small hfd_lrg hfS_small hfS_lrg ///
-        duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
-        vce(cluster business_date isin)
-    test hfS_small == 0                    // (a) dead zone
-    test hfS_small == hfS_lrg              // (b) existence
-    drop hfd_small hfd_lrg hfS_small hfS_lrg
-}
+test hfi_disc == hfi_gro
 
 ********************************************************************************
 * 4. Orthogonality of HF positioning to the release shock

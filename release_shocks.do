@@ -155,6 +155,22 @@ reghdfe delta_y c.log_hf_intensity hfi_disc hfi_gro ///
     duration bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
 test hfi_disc == hfi_gro
 
+* the sign classification is only meaningful where the release dominates the
+* day's equity move (sub-1bp shocks are classified by noise, and random
+* misclassification pulls the two components together). Repeat on plateau
+* days only, zero-shock days retained as the baseline.
+reghdfe delta_y i.hf_involved hfb_disc hfb_gro ///
+    duration bid_ask_spread ctd_flag ///
+    if macro_shock == 0 | (abs(macro_shock) > 1 & macro_shock < .), ///
+    absorb(isin duration_match) vce(cluster business_date isin)
+test hfb_disc == hfb_gro
+
+reghdfe delta_y c.log_hf_intensity hfi_disc hfi_gro ///
+    duration bid_ask_spread ctd_flag ///
+    if macro_shock == 0 | (abs(macro_shock) > 1 & macro_shock < .), ///
+    absorb(duration_match isin) vce(cluster business_date isin)
+test hfi_disc == hfi_gro
+
 ********************************************************************************
 * 4. Orthogonality of HF positioning to the release shock
 ********************************************************************************

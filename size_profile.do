@@ -127,7 +127,9 @@ test hfS_small_i == hfS_large_i
 * trailing mean over prior active days; 0 for no-HF bonds = baseline).
 * Runnable directly after Section 2 (regenerates what it needs).
 
-capture drop isin_id hd_sum hd_cnt hd_pre hd day_type
+foreach v in isin_id hd_sum hd_cnt hd_pre hd day_type {
+    capture drop `v'
+}
 encode isin, gen(isin_id)
 sort isin_id business_date
 by isin_id: gen double hd_sum = 0
@@ -151,7 +153,9 @@ label values day_type daytype
 tabstat hd if hf_involved == 1 [aw=hf_intensity_pre], by(day_type) stat(mean p50 n)
 
 * 6.2 type premium with the book held constant
-capture drop hfd_large hfS_large hfd_policy hfS_policy hfd_dir hfS_dir
+foreach v in hfd_large hfS_large hfd_policy hfS_policy hfd_dir hfS_dir {
+    capture drop `v'
+}
 gen double hfd_large  = log_hf_intensity * (abs(S) > 1)
 gen double hfS_large  = log_hf_intensity * S * (abs(S) > 1)
 gen double hfd_policy = log_hf_intensity * policy_day

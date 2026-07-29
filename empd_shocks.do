@@ -5,8 +5,11 @@
 *         EA-EMPD, Altavilla-Gurkaynak-Kind-Laeven 2025: GC_ME monetary-event
 *         windows POOLED with EB + President speeches; 2y OIS window surprise
 *         in bp summed per trading day; evening/non-trading-day events
-*         assigned to the next trading day. 532 event days = 38 GC days
-*         [validated 1:1 against the paper's EA-MPD events] + 494 speech days)
+*         assigned to the next trading day. Self-contained build: calendar
+*         from ois_2y.csv, no release-pipeline inputs. The csv runs to
+*         mid-2026; keep(match) trims to the panel window -> 532 in-panel
+*         event days = 38 GC days [validated 1:1 against the paper's EA-MPD
+*         events] + 494 speech days)
 *         Data\monetary_policy_induced_position.csv   (bond panel)
 * Output: the four amplification regressions (binary, intensity,
 *         constraining, relaxing) on the pooled communication-shock series.

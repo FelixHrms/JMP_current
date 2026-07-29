@@ -72,6 +72,12 @@ reghdfe delta_y c.log_hf_intensity##c.empd_shock duration bid_ask_spread ctd_fla
 * (a) beta_small = 0 (dead zone) and (b) beta_small = beta_large (existence,
 * rejecting pure proportionality) for every c - existence without location.
 * The speech events supply the small-shock support (median |shock| 0.67bp).
+* READING: similar slopes with (b) not rejected = the share is proportional
+* down to sub-bp shocks (scale-invariance - the constant-leverage prediction).
+* An insignificant beta_small on its own is NOT evidence of a dead zone: the
+* small side has little identifying variance against the ~3bp daily yield
+* noise, so its CI covers zero AND the plateau. Only rejection of (b) with
+* beta_small ~ 0 would establish a threshold.
 
 foreach c of numlist 0.5 0.75 1 1.5 2 {
     gen double hfd_small = log_hf_intensity * (abs(empd_shock) <= `c' & empd_shock != 0)
@@ -95,12 +101,25 @@ foreach c of numlist 0.5 0.75 1 1.5 2 {
 * Conditional on |shock| > 1bp (representative cutoff; Section 5 shows results
 * do not hinge on it): convexity term tests whether the per-bp amplification
 * rises with size within the plateau. hfS_size = 0 -> flat share.
+* The size term is CENTERED at the mean |shock| of large-shock days: without
+* centering, hfS_size = hfS_large x |shock| is ~0.95 correlated with
+* hfS_large and every individual t collapses mechanically. Centered,
+* hfS_large is the per-bp slope at the average large shock and hfS_size the
+* convexity around it; read the individual convexity test AND the joint test.
 
-gen double hfd_large = log_hf_intensity * (abs(empd_shock) > 1)
-gen double hfS_large = log_hf_intensity * empd_shock * (abs(empd_shock) > 1)
-gen double hfS_size  = log_hf_intensity * empd_shock * abs(empd_shock) * (abs(empd_shock) > 1)
+egen day_tag = tag(business_date)
+gen double abs_empd = abs(empd_shock)
+quietly summarize abs_empd if day_tag & abs_empd > 1
+scalar mean_large = r(mean)
+di as text "mean |shock| on large-shock days: " mean_large
+
+gen double hfd_large = log_hf_intensity * (abs_empd > 1)
+gen double hfS_large = log_hf_intensity * empd_shock * (abs_empd > 1)
+gen double hfS_size  = log_hf_intensity * empd_shock * (abs_empd - mean_large) * (abs_empd > 1)
 
 reghdfe delta_y c.log_hf_intensity hfd_large hfS_large hfS_size ///
     duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
     vce(cluster business_date isin)
-test hfS_size == 0
+test hfS_size == 0                 // convexity: 0 -> flat share on the plateau
+test hfS_large == 0                // slope at the mean large shock
+test (hfS_large == 0) (hfS_size == 0)   // joint

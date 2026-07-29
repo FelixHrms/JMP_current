@@ -139,6 +139,68 @@ reghdfe delta_y c.log_hf_intensity##c.tail_shock duration bid_ask_spread ctd_fla
     absorb(duration_match isin) vce(cluster business_date isin)
 
 ********************************************************************************
+* 2.2 Measurement decomposition of the tail-vs-MP coefficient gap
+********************************************************************************
+* Three mechanical explanations for tail (0.08-0.12) < MP (0.16-0.29), each
+* with a test. Whatever gap survives all three is the genuine shock-type
+* (JK information vs pure-monetary) gradient.
+
+* (a) Frequency: MP baseline re-estimated with the DAILY OIS change on ECB
+*     days in place of the intraday EA-MPD surprise. If the coefficient drops
+*     from 0.29 toward the tail estimates, the gap is daily-vs-intraday
+*     measurement noise, not economics.
+preserve
+import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\release_shocks.csv", clear
+keep date d_ois2y_bp ecb_day
+rename date business_date
+tempfile daily
+save `daily'
+restore
+
+merge m:1 business_date using `daily', keep(match) nogen
+gen mp_daily = 0
+replace mp_daily = d_ois2y_bp if ecb_day == 1
+
+reghdfe delta_y i.hf_involved##c.mp_daily duration bid_ask_spread ctd_flag, absorb(isin duration_match) vce(cluster business_date isin)
+reghdfe delta_y c.log_hf_intensity##c.mp_daily duration bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
+
+* (b) Episode clustering: amplification reverts within ~4 trading days
+*     (persistence result), so day 2+ of a multi-day tail episode has the
+*     prior overshoot unwinding against the new shock -> attenuation.
+*     Keep only episode-START tail days (no tail day in the prior 4 rows
+*     of the daily frame); continuation days set to missing (excluded).
+preserve
+import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\release_shocks.csv", clear
+keep date
+rename date business_date
+merge 1:1 business_date using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\tail_shock.dta", keep(match) nogen
+sort business_date
+gen is_tail = (tail_shock != 0 & !missing(tail_shock))
+gen episode_start = is_tail
+forvalues k = 1/4 {
+    replace episode_start = 0 if is_tail[_n-`k'] == 1
+}
+gen tail_shock_es = tail_shock
+replace tail_shock_es = . if is_tail == 1 & episode_start == 0
+keep business_date tail_shock_es
+tempfile es
+save `es'
+restore
+
+merge m:1 business_date using `es', keep(match) nogen
+reghdfe delta_y c.log_hf_intensity##c.tail_shock_es duration bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
+
+* (c) Factor composition: on risk-off tail days the OIS move understates the
+*     bond-relevant shock for Italy (spread component); it is the right shock
+*     for Germany. Amplification should be better-measured (larger) for DE.
+levelsof collateral_country, local(countries)
+foreach c of local countries {
+    di as text _n "--- tail amplification, `c' only ---"
+    reghdfe delta_y c.log_hf_intensity##c.tail_shock duration bid_ask_spread ctd_flag ///
+        if collateral_country == "`c'", absorb(duration_match isin) vce(cluster business_date isin)
+}
+
+********************************************************************************
 * 3. Orthogonality of HF positioning to the tail shock
 ********************************************************************************
 

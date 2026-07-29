@@ -248,6 +248,55 @@ ivreghdfe delta_y log_hf_intensity duration bid_ask_spread ctd_flag ///
     (hfi_M_rel hfi_M_mp = hfi_s0 hfi_ois), absorb(duration_match isin) cluster(business_date isin)
 test hfi_M_rel = hfi_M_mp
 
+* (d) like-for-like: releases vs the MP INFORMATION component (JK), all in
+* realized-repricing units. Releases are information-type news, so the valid
+* same-type benchmark inside the MP lab is cbi_pm, not the pooled surprise.
+* Three-way pooled IV: release days / pure-monetary MP days / information MP
+* days, each with its own instrument. The three Wald tests read:
+*   rel = inf : the comparability claim (same type -> same magnitude)
+*   rel = mon : the type gradient seen from the release side
+*   mon = inf : the paper's JK gradient replicated in clean units
+* Power caveat: the information events are a subset of the 38 MP days ->
+* few clusters behind the inf instrument; check the KP F before reading the
+* tests (reduced-form Table-jk SEs suggest it is feasible: 0.113, se 0.042).
+count if mp_pm != 0 & cbi_pm != 0 & !missing(mp_pm, cbi_pm)
+* ^ must be 0: poor-man's JK assigns each event wholly to one component, so
+*   the components live on disjoint days. If nonzero, the day-split below is
+*   invalid -> use the sample-split fallback at the end of this block.
+gen byte mon_day = (mp_pm  != 0 & !missing(mp_pm))
+gen byte inf_day = (cbi_pm != 0 & !missing(cbi_pm))
+gen double hfb_mpp = hf_involved      * mp_pm
+gen double hfb_cbi = hf_involved      * cbi_pm
+gen double hfi_mpp = log_hf_intensity * mp_pm
+gen double hfi_cbi = log_hf_intensity * cbi_pm
+gen double hfb_M_mon = hfb_M * mon_day
+gen double hfb_M_inf = hfb_M * inf_day
+gen double hfi_M_mon = hfi_M * mon_day
+gen double hfi_M_inf = hfi_M * inf_day
+
+ivreghdfe delta_y hf_involved duration bid_ask_spread ctd_flag ///
+    (hfb_M_rel hfb_M_mon hfb_M_inf = hfb_s0 hfb_mpp hfb_cbi), ///
+    absorb(isin duration_match) cluster(business_date isin)
+test hfb_M_rel = hfb_M_inf
+test hfb_M_rel = hfb_M_mon
+test hfb_M_mon = hfb_M_inf
+
+ivreghdfe delta_y log_hf_intensity duration bid_ask_spread ctd_flag ///
+    (hfi_M_rel hfi_M_mon hfi_M_inf = hfi_s0 hfi_mpp hfi_cbi), ///
+    absorb(duration_match isin) cluster(business_date isin)
+test hfi_M_rel = hfi_M_inf
+test hfi_M_rel = hfi_M_mon
+test hfi_M_mon = hfi_M_inf
+
+* fallback (also the robustness if the disjointness count above is nonzero):
+* information-benchmark IV with pure-monetary event days DROPPED from the
+* sample, so no mp_pm variation needs instrumenting. Compare the coefficient
+* on hfb_M / hfi_M here directly with the release column in block (a).
+ivreghdfe delta_y hf_involved duration bid_ask_spread ctd_flag ///
+    (hfb_M = hfb_cbi) if mon_day == 0, absorb(isin duration_match) cluster(business_date isin)
+ivreghdfe delta_y log_hf_intensity duration bid_ask_spread ctd_flag ///
+    (hfi_M = hfi_cbi) if mon_day == 0, absorb(duration_match isin) cluster(business_date isin)
+
 ********************************************************************************
 * 4. Orthogonality of HF positioning to the release shock
 ********************************************************************************

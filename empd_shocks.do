@@ -12,7 +12,8 @@
 *         events] + 494 speech days)
 *         Data\monetary_policy_induced_position.csv   (bond panel)
 * Output: the four amplification regressions (binary, intensity,
-*         constraining, relaxing) on the pooled communication-shock series.
+*         constraining, relaxing) on the pooled communication-shock series,
+*         plus threshold-existence and plateau tests (size_profile template).
 * Benchmarks (MP-only lab, same specs, intraday shock — directly comparable
 * units): binary 0.291, intensity 0.164, constraining 0.140, relaxing
 * (Table VIII).
@@ -34,6 +35,11 @@ gen log_hf_intensity = log(1 + hf_intensity_pre)
 
 * sanity: 532 event days expected (38 GC + 494 speech)
 summarize empd_shock if n_empd_events > 0, detail
+
+* 0. Baseline pass-through check (no FE, mirrors Table IV col 1): the shock
+* main effect is absorbed by duration_match in everything below, so THIS is
+* the column where the empd baseline is visible (MP benchmark ~0.8-1).
+reghdfe delta_y i.hf_involved##c.empd_shock, vce(cluster business_date isin)
 
 * 1. Binary
 reghdfe delta_y i.hf_involved##c.empd_shock duration bid_ask_spread ctd_flag, ///
@@ -58,3 +64,43 @@ reghdfe delta_y c.log_hf_intensity##c.empd_shock duration bid_ask_spread ctd_fla
      | (empd_shock == 0) ///
      | (hf_intensity_pre == 0), ///
     absorb(duration_match isin) vce(cluster business_date isin)
+
+********************************************************************************
+* 5. Threshold existence, robust to the small-shock cutoff
+********************************************************************************
+* Two-slope specification per cutoff c (size_profile template): report
+* (a) beta_small = 0 (dead zone) and (b) beta_small = beta_large (existence,
+* rejecting pure proportionality) for every c - existence without location.
+* The speech events supply the small-shock support (median |shock| 0.67bp).
+
+foreach c of numlist 0.5 0.75 1 1.5 2 {
+    gen double hfd_small = log_hf_intensity * (abs(empd_shock) <= `c' & empd_shock != 0)
+    gen double hfd_large = log_hf_intensity * (abs(empd_shock) >  `c')
+    gen double hfS_small = log_hf_intensity * empd_shock * (abs(empd_shock) <= `c')
+    gen double hfS_large = log_hf_intensity * empd_shock * (abs(empd_shock) >  `c')
+
+    di as text _n "================ cutoff c = `c' bp ================"
+    reghdfe delta_y c.log_hf_intensity hfd_small hfd_large hfS_small hfS_large ///
+        duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
+        vce(cluster business_date isin)
+    test hfS_small == 0                    // (a) dead zone: zero amplification
+    test hfS_small == hfS_large            // (b) below the plateau (existence)
+
+    drop hfd_small hfd_large hfS_small hfS_large
+}
+
+********************************************************************************
+* 6. Plateau: flatness above the (unpinned) threshold region
+********************************************************************************
+* Conditional on |shock| > 1bp (representative cutoff; Section 5 shows results
+* do not hinge on it): convexity term tests whether the per-bp amplification
+* rises with size within the plateau. hfS_size = 0 -> flat share.
+
+gen double hfd_large = log_hf_intensity * (abs(empd_shock) > 1)
+gen double hfS_large = log_hf_intensity * empd_shock * (abs(empd_shock) > 1)
+gen double hfS_size  = log_hf_intensity * empd_shock * abs(empd_shock) * (abs(empd_shock) > 1)
+
+reghdfe delta_y c.log_hf_intensity hfd_large hfS_large hfS_size ///
+    duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
+    vce(cluster business_date isin)
+test hfS_size == 0

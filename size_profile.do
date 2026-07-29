@@ -173,3 +173,50 @@ reghdfe delta_y c.log_hf_intensity hfd_large hfd_policy hfd_dir ///
     vce(cluster business_date isin)
 test hfS_policy == 0     // premium surviving the book control = content
 test hfS_dir == 0        // book channel inside the pooled profile
+
+********************************************************************************
+* 7. Parallelness: replacing the type labels with the shock's factor content
+********************************************************************************
+* The economic content of the policy/news/risk labels: net-DV01 books are
+* exposed to PARALLEL curve shifts, less so to slope/spread moves. Measure the
+* day's curve shape from NON-HF bonds only (the control curve - unaffected by
+* the amplification mechanism, avoids mechanical outcome contamination):
+* cell = duration_bin x country mean of non-HF delta_y; level = mean across
+* cells, dispersion = sd across cells; par = |level|/(|level|+dispersion).
+* Predictions: (7.1) policy days most parallel, tail days least - falsifiable
+* premise; (7.2) HF x S x par absorbs the policy premium if the label was a
+* proxy for factor content; (7.3) the directionality gradient lives on
+* parallel days only. Runnable after Section 6.
+
+foreach v in cell_dy ctag lvl disp par hfd_par hfS_par hfS_dirpar {
+    capture drop `v'
+}
+egen double cell_dy = mean(cond(hf_involved == 0, delta_y, .)), ///
+    by(business_date duration_bin col_cntr)
+egen ctag = tag(business_date duration_bin col_cntr)
+egen double lvl  = mean(cond(ctag, cell_dy, .)), by(business_date)
+egen double disp = sd(cond(ctag, cell_dy, .)),  by(business_date)
+gen double par = abs(lvl) / (abs(lvl) + disp)
+
+* 7.1 premise check: are policy days actually the most parallel?
+egen day_tag = tag(business_date)
+tabstat par if day_tag, by(day_type) stat(mean p50 n)
+drop day_tag
+
+* 7.2 horse race: institutional label vs factor content
+gen double hfd_par = log_hf_intensity * par
+gen double hfS_par = log_hf_intensity * S * (abs(S) > 1) * par
+reghdfe delta_y c.log_hf_intensity hfd_large hfd_policy hfd_par ///
+    hfS_large hfS_policy hfS_par ///
+    duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
+    vce(cluster business_date isin)
+test hfS_policy == 0        // premium after conditioning on factor content
+test hfS_par == 0           // factor-content channel
+
+* 7.3 cross-prediction: directionality gradient concentrated on parallel days
+gen double hfS_dirpar = log_hf_intensity * S * (abs(S) > 1) * hd * par
+reghdfe delta_y c.log_hf_intensity hfd_large hfd_dir hfd_par ///
+    hfS_large hfS_dir hfS_par hfS_dirpar ///
+    duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
+    vce(cluster business_date isin)
+test hfS_dirpar == 0        // book exposure x shock factor loading

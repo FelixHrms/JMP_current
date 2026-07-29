@@ -126,7 +126,7 @@ forvalues b = 1/4 {
     gen hfshock_b`b' = log_hf_intensity * macro_shock * (shock_bucket == `b')
 }
 
-reghdfe delta_y c.log_hf_intensity hf_b1-hf_b4 hfshock_b1-hfshock_b4 ///
+reghdfe delta_y c.log_hf_intensity hf_b? hfshock_b? ///
     duration bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
 test hfshock_b1 == 0                                  // dead zone: mechanism predicts zero
 test (hfshock_b2 == hfshock_b3) (hfshock_b3 == hfshock_b4)   // linearity within trading zone

@@ -39,7 +39,9 @@ replace S = S + tail_shock  if !missing(tail_shock)      // unscheduled tail new
 replace S = d_ois2y_bp      if ecb_day == 1              // MP events, daily basis
 
 gen byte policy_day = (ecb_day == 1)
-keep business_date S policy_day
+gen double rel_shock = cond(missing(macro_shock), 0, macro_shock)   // day-type tags
+gen double tl_shock  = cond(missing(tail_shock),  0, tail_shock)    // for Section 6
+keep business_date S policy_day rel_shock tl_shock
 save "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\pooled_shock.dta", replace
 
 ********************************************************************************
@@ -115,3 +117,55 @@ reghdfe delta_y c.log_hf_intensity hfd_small_i hfd_large_i hfS_small_i hfS_large
     duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
     vce(cluster business_date isin)
 test hfS_small_i == hfS_large_i
+
+********************************************************************************
+* 6. Is the policy premium a directionality-composition effect?
+********************************************************************************
+* Hypothesis: funds run directional duration books INTO ECB meetings, so the
+* type premium in Section 4 could reflect the book on the field rather than
+* the shock's content. holder_dir_pre replicates directionality.do (5-day
+* trailing mean over prior active days; 0 for no-HF bonds = baseline).
+* Runnable directly after Section 2 (regenerates what it needs).
+
+capture drop isin_id hd_sum hd_cnt hd_pre hd day_type
+encode isin, gen(isin_id)
+sort isin_id business_date
+by isin_id: gen double hd_sum = 0
+by isin_id: gen double hd_cnt = 0
+forvalues k = 1/5 {
+    by isin_id: replace hd_sum = hd_sum + holder_dir[_n-`k'] ///
+        if _n > `k' & !missing(holder_dir[_n-`k'])
+    by isin_id: replace hd_cnt = hd_cnt + 1 ///
+        if _n > `k' & !missing(holder_dir[_n-`k'])
+}
+gen double hd_pre = hd_sum / hd_cnt if hd_cnt > 0
+gen double hd = cond(missing(hd_pre), 0, hd_pre)
+
+* 6.1 descriptive: is pre-event directionality higher on policy days?
+gen day_type = 0
+replace day_type = 1 if rel_shock != 0
+replace day_type = 2 if tl_shock != 0 & abs(tl_shock) > abs(rel_shock)
+replace day_type = 3 if policy_day == 1
+label define daytype 0 "quiet" 1 "release" 2 "tail" 3 "policy", replace
+label values day_type daytype
+tabstat hd if hf_involved == 1 [aw=hf_intensity_pre], by(day_type) stat(mean p50 n)
+
+* 6.2 type premium with the book held constant
+capture drop hfd_large hfS_large hfd_policy hfS_policy hfd_dir hfS_dir
+gen double hfd_large  = log_hf_intensity * (abs(S) > 1)
+gen double hfS_large  = log_hf_intensity * S * (abs(S) > 1)
+gen double hfd_policy = log_hf_intensity * policy_day
+gen double hfS_policy = log_hf_intensity * S * policy_day
+gen double hfd_dir    = log_hf_intensity * hd
+gen double hfS_dir    = log_hf_intensity * S * (abs(S) > 1) * hd
+
+* benchmark without directionality (Section 4 spec), then with it:
+reghdfe delta_y c.log_hf_intensity hfd_large hfd_policy hfS_large hfS_policy ///
+    duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
+    vce(cluster business_date isin)
+reghdfe delta_y c.log_hf_intensity hfd_large hfd_policy hfd_dir ///
+    hfS_large hfS_policy hfS_dir ///
+    duration bid_ask_spread ctd_flag, absorb(duration_match isin) ///
+    vce(cluster business_date isin)
+test hfS_policy == 0     // premium surviving the book control = content
+test hfS_dir == 0        // book channel inside the pooled profile

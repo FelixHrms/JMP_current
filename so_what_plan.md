@@ -200,6 +200,16 @@ Author pushback accepted on two points.
 
 **Resulting so-what package (writing only, no new estimation, no new attack surface).** (a) Intro and conclusion reframe. Crisis end by citation, calm end by this paper, contribution is the always on proportional channel and its peacetime elasticity. (b) One policy paragraph. Central banks read market reactions in real time and transmission gauges are built from specific bonds, so the estimated coefficients quantify the positioning driven wedge in the observed reaction of HF crowded and directional books (connects to the TPI disorderly dynamics language and the existing degauwe2013 cite). (c) Directionality index as the concrete deliverable, computable daily from SFTDS which the ECB has. Contagion remains the second paper.
 
+### Second follow-up, same day. Debt brake event study reinstated
+
+Author objection to the citation move accepted. The March 2020 literature establishes presence of the mechanism at crisis scale, not proportionality to this paper's coefficient, so the share at scale needs an own measurement. Decision. The March 2025 German debt brake event returns as the vehicle, reversing the earlier drop.
+
+**Design.** Single event cross section on the existing panel. Statistic is extra bp per bp of realized cell repricing with the non HF cell mean as denominator (the §3.3 IV construction), which sidesteps shock measurement and makes daily frequency acceptable at 20 to 30x daily noise. ECB adjacency shrinks to a robustness line since the March 6 cut was fully priced and the impact window can end before it. Framing is prediction then validation. Pre state the predicted differential from in sample estimates (share times realized repricing, adjusted for the low directionality regime of 2025), show the realized cross section, then show the differential reverts over the following days while the level stays, permanent fiscal news versus transient positioning wedge. Exogeneity narrative clean, positions predate a coalition breakthrough with political timing. The case validates rather than carries, so n=1 is defensible under the paper's own case study principle.
+
+**Intraday upgrade, optional.** Tick or minute data buys attribution (Merz press conference ~19:30 CET March 4 inside the Eurex evening session to 22:00, disjoint from the ECB window) and the correct maturity scalar (supply shock steepened the curve, so maturity matched futures Schatz, Bobl, Bund, Buxl, FBTP rather than 2y OIS). Source is futures bar data (Eurex data shop, LSEG Tick History, retail bar vendors). Bloomberg terminal intraday no longer reaches March 2025 (240 day limit). OIS ticks not pursued.
+
+**Resulting size claim.** Proportionality measured systematically from 0.1 to 18bp (EMPD), validated at 30bp on the largest German repricing day since 1990 (debt brake cross section), presence beyond that by citation plus the floor argument. April 2025 tariff week stays out, risk off type would reimport the type problem.
+
 ## Open items
 
 - [ ] Intraday shock measurement around release timestamps: check Bloomberg intraday history limits back to 2021; Refinitiv/ECB tick alternatives; else daily fallback with first-stage conversion.

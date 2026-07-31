@@ -105,5 +105,28 @@ reghdfe delta_y c.log_hf_intensity##c.event_shock duration bid_ask_spread ctd_fl
      | (hf_intensity_pre == 0), ///
     absorb(duration_match isin) vce(cluster isin)
 
+********************************************************************************
+* 3. By country — the shock is German, so the matched cross-section is DE
+********************************************************************************
+* The debt brake is a German fiscal event: the +15bp OIS scalar measures the
+* German riskfree repricing, while for Italian bonds the same day is a
+* different, partly spread/risk-on event mislabeled by the common scalar, so
+* pooling dilutes the coefficient (first run: pooled intensity 0.07, DE-only
+* 0.11 vs the 0.132 daily-frequency benchmark). Precedent inside the paper:
+* the CDS lab pairs the Italian credit shock with the Italy cross-section
+* only — same logic here, DE is primary and IT is the (absent) spillover
+* margin. Once the DE label is confirmed from levelsof, the constraining and
+* relaxing lines of Section 2 port over with the country condition appended.
+
+levelsof collateral_country, local(countries)
+foreach c of local countries {
+    di as text _n "=== `c' only ==="
+    reghdfe delta_y i.hf_involved##c.event_shock duration bid_ask_spread ctd_flag ///
+        if collateral_country == "`c'", absorb(isin duration_match) vce(cluster isin)
+    reghdfe delta_y c.log_hf_intensity##c.event_shock duration bid_ask_spread ctd_flag ///
+        if collateral_country == "`c'", absorb(duration_match isin) vce(cluster isin)
+}
+
 * Optional later: same four with the own-cell non-HF repricing as the shock
-* (handles the curve steepening), and the +/-10-day LP of the differential.
+* (handles the curve steepening), the directionality split on the window,
+* and the +/-10-day LP of the differential.

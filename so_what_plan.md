@@ -176,6 +176,20 @@ Regress auction outcomes on the continuous dislocation measure using **all** auc
 - Lean harder on the existing directionality index (Fig. holder_dir_ts) as a real-time fragility-monitoring tool computable daily from SFTDS — a concrete policy deliverable that already exists.
 - Money-chart candidate: event-level amplification vs. shock size, with the Mar-2025 cross-section highlighted as validation.
 
+## Round of 31 July 2026. The so-what claim, settled framing
+
+Question raised again. Can the same amplification share be shown for large shocks in a systematic way, and if not, is contagion the fallback so-what.
+
+**Assessment on large shocks.** The systematic route is exhausted and it succeeded within its feasible range. The EMPD lab is a rule based event universe measured with the paper's own intraday methodology. It spans 0.1 to 18bp inside one policy type shock class, the share is proportional on the small side and shows no detectable convexity at the top. Single day policy repricings above roughly 20bp do not exist in 2021 to 2025. The 30bp plus days that do exist are risk type shocks where the type gradient turns any comparison into a liability, which is why the tail lab was archived. The sample cannot be extended backward since SFTR reporting starts mid 2020, so March 2020 is unreachable. The constraint is support, not identification. Reinforcing point. The dislocation reverses within four days, so the mechanism operates on daily increments, and even a 100bp cycle repricing arrives in sub 20bp daily steps. The in sample range therefore covers everything short of a true crisis day.
+
+**The claim.** Reframe the headline from level to share. The 1.7bp average is small because the average in sample shock is small. The estimand is the amplification share and the EMPD result shows it is constant across two orders of magnitude of shock size. That licenses stress arithmetic. A 30bp repricing implies roughly 5 to 9bp of positioning driven overshoot for HF held bonds and about double for directional books. The March 2025 Bund day serves as out of sample illustration, safe because it illustrates rather than carries the result. Theory supplies the extrapolation direction. Every nonlinearity beyond the sample, margin resets and liquidity spirals, points upward, so the in sample share is a floor. The so-what sentence is that the estimates are a lower bound for crisis scale.
+
+**Paper implication.** Upgrade the EMPD treatment from defensive robustness column to the affirmative scaling paragraph, one paragraph plus the existing column plus a short March 2025 illustration box. The dropped size profile section stays dropped, dead zone and threshold location remain out. Cost is writing only.
+
+**On spillovers.** Instinct confirmed with one nuance. Contagion serves the so-what logically, the constraint behind the dislocation is portfolio wide and transmits stress, and the directionality section already establishes the portfolio level constraint. But as evidence it is a full new identification exercise. If it works it deserves more than a so-what paragraph and if it half works it weakens the close. Treat it as the second paper. The JMP so-what rests on the scaling claim, the stress arithmetic and the directionality index as monitoring tool.
+
+**Optional incidence add on.** Volume transacted inside overshoot windows times the overshoot gives a euro transfer number, the who pays answer by arithmetic rather than identification. Contingent on MTS or Bloomberg volume access. Auctions stay out.
+
 ## Open items
 
 - [ ] Intraday shock measurement around release timestamps: check Bloomberg intraday history limits back to 2021; Refinitiv/ECB tick alternatives; else daily fallback with first-stage conversion.

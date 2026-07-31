@@ -1,6 +1,18 @@
 ********************************************************************************
 * ITALY EVENT STUDY  —  country-matched twin of the debt-brake event study
 ********************************************************************************
+* STATUS after first runs (31 Jul 2026): Draghi 2022-07-14 shows nothing —
+* the offer came AFTER the close (reaction day Jul 15 is dropped by the
+* continuation guard) and mid-Jul-2022 BTP pricing was TPI-dominated; NADEF
+* 2023-09-28 shows a STRONG NEGATIVE interaction — the anticipated-event
+* signature (scheduled, trailed in the press; positions set because of the
+* coming news; realization catches underreaction/unwind), i.e. the event
+* fails the surprise requirement, the mechanism is not indicted. DECISION:
+* no Italian narrative event enters the paper; the systematic Italian
+* evidence is the residualized CDS lab. File kept as the audit trail of the
+* screen. Moody's 2023-11-20 remains the only admissible candidate if ever
+* wanted (content surprise, clean after-close timestamp, no ECB in window).
+********************************************************************************
 * Input : Data\monetary_policy_induced_position.csv  (bond panel; nothing else)
 * Output: the four amplification regressions on an Italy-specific large shock,
 *         estimation window +/-15 trading days, Italian bonds only.

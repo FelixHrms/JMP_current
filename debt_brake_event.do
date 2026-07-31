@@ -43,9 +43,12 @@ local half_window 15
 import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\ois_2y.csv", varnames(nonames) clear
 gen ddate = date(v1, "YMD")
 drop if missing(ddate)                       // SDW metadata rows
-keep v1 v2 ddate
-rename (v1 v2) (business_date ois_2y)
-destring ois_2y, replace
+keep v2 ddate
+destring v2, replace
+rename v2 ois_2y
+* rebuild the key as plain str10: the long SDW metadata line types v1 as strL,
+* and a strL cannot be a merge key
+gen business_date = string(ddate, "%tdCCYY-NN-DD")
 sort ddate
 gen d_ois_bp = (ois_2y - ois_2y[_n-1]) * 100
 

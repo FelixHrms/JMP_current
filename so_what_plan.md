@@ -210,6 +210,8 @@ Author objection to the citation move accepted. The March 2020 literature establ
 
 **Resulting size claim.** Proportionality measured systematically from 0.1 to 18bp (EMPD), validated at 30bp on the largest German repricing day since 1990 (debt brake cross section), presence beyond that by citation plus the floor argument. April 2025 tariff week stays out, risk off type would reimport the type problem.
 
+**Implementation.** `debt_brake_event.do` (committed, to be run on the Stata machine). Exactly the four amplification regressions with the 2025-03-05 repricing as the only nonzero shock, single event version of the tail and EMPD labs on the full panel. Section 2 in daily 2y OIS units. The day is +15.0bp in 2y OIS (about 2x the largest MP surprise, verified in `release_shocks.csv`), benchmark is MP at daily frequency (binary 0.228, intensity 0.132), stated prediction is an HF differential of about 3.4bp. Section 3 per bp of the own cell non HF repricing (steepener robust, ledger benchmark about 0.36 binary and 0.20 intensity), with a diagnostic table of the event's curve and country profile. ECB days carry shock missing so the March 6 cut drops out. Inference clusters by isin only, single date caveat documented in the header. Positions predate the evening announcement of March 4 by construction.
+
 ## Open items
 
 - [ ] Intraday shock measurement around release timestamps: check Bloomberg intraday history limits back to 2021; Refinitiv/ECB tick alternatives; else daily fallback with first-stage conversion.

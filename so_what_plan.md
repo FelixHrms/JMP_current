@@ -190,6 +190,16 @@ Question raised again. Can the same amplification share be shown for large shock
 
 **Optional incidence add on.** Volume transacted inside overshoot windows times the overshoot gives a euro transfer number, the who pays answer by arithmetic rather than identification. Contingent on MTS or Bloomberg volume access. Auctions stay out.
 
+### Follow-up, same day. Extrapolation concern and the euro transfer verdict
+
+Author pushback accepted on two points.
+
+**Scaling claim scoped down.** 18bp of in sample support does not license a claim that the effect scales to crisis size, and no curve to 50bp plus is buildable from EA 2021 to 2025. Resolution is to stop trying to own the crisis end and complete the curve by citation instead. The crisis scale data point for this exact mechanism exists in the March 2020 UST literature already cited in the paper (kruttli2025, barth2025, kashyap2025, barone2023, cross sectionally HF held Treasuries dislocated more) and in the 2022 gilt episode. The paper owns the calm end. The channel documented at crisis scale is not dormant between crises, it operates continuously and proportionally (EMPD flatness 0.1 to 18bp as within sample evidence, no extrapolation claimed), and the paper delivers the first repo based peacetime elasticity for EA sovereigns plus a real time monitor. The intro already poses exactly this question (whether the channel operates outside crises), so the reframe sharpens existing positioning rather than adding claims.
+
+**Euro transfer number rejected.** The multiplication is robust but the interpretation is not, on three counts. (1) No cash turnover data in house and MTS is interdealer only with a varying and instrument skewed share of total turnover, so the euro figure carries a contestable 2 to 5x multiplier. (2) No identified loser. Secondary market transfers are zero sum between unobserved counterparties, and the natural rebuttal (redistribution among professionals, no welfare cost) restates the so-what objection instead of answering it. The auction module was the version with an identified loser and it is out. (3) Selection. Window volume plausibly contains the deleveraging flow itself, so the transfer partly runs from the HFs to liquidity providers, a different claim and unverifiable without counterparty level cash data. Decision. Out of the paper, not even as garnish.
+
+**Resulting so-what package (writing only, no new estimation, no new attack surface).** (a) Intro and conclusion reframe. Crisis end by citation, calm end by this paper, contribution is the always on proportional channel and its peacetime elasticity. (b) One policy paragraph. Central banks read market reactions in real time and transmission gauges are built from specific bonds, so the estimated coefficients quantify the positioning driven wedge in the observed reaction of HF crowded and directional books (connects to the TPI disorderly dynamics language and the existing degauwe2013 cite). (c) Directionality index as the concrete deliverable, computable daily from SFTDS which the ECB has. Contagion remains the second paper.
+
 ## Open items
 
 - [ ] Intraday shock measurement around release timestamps: check Bloomberg intraday history limits back to 2021; Refinitiv/ECB tick alternatives; else daily fallback with first-stage conversion.

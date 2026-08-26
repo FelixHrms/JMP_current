@@ -489,7 +489,7 @@ My identification strategy addresses this selection bias by exploiting the unpre
 The first feature of the research design supporting this assumption is timing. Because monetary policy shocks are measured over a narrow intraday window around the ECB press conference, they are effectively random relative to positions established at $t{-}1$. Hedge funds cannot predict the precise surprise component of the announcement, ensuring that pre-existing positions are not endogenous to the shock itself. This rules out reverse causality, where hedge funds would adjust their positioning in anticipation of the realized surprise.
 
 However, even without reverse causality, bonds traded by hedge funds may be inherently more volatile and therefore more sensitive to any market-moving event, including monetary policy surprises. Duration is the primary determinant of how strongly a bond's yield reacts to a given rate shock, so comparing a hedge fund bond to a non-hedge fund bond of materially different duration would conflate the amplification effect with mechanical differences in rate sensitivity. A meaningful comparison therefore requires matching bonds on duration within the same market environment.
-For that reason, the preferred specification for the analyses throughout the paper includes duration-by-country-by-date fixed effects. The cells underlying these fixed effects are constructed by sorting bonds into two-year duration bins ($[0,2)$, $[2,4)$, and so on), so that a cell contains all bonds from the same issuer country whose durations fall within the same two-year interval on a given day. This structure absorbs the aggregate shock and any differential volatility across duration-country-date cells, so identification comes exclusively from within-cell variation in hedge fund positioning. Section \ref{subsec:volatility} examines the volatility differential of hedge fund bonds directly as the first empirical result and confirms that this structure absorbs it.
+For that reason, the preferred specification for the analyses throughout the paper includes duration-by-country-by-date fixed effects. The cells underlying these fixed effects are constructed by sorting bonds into two-year duration bins ($[0,2)$, $[2,4)$, and so on), so that a cell contains all bonds from the same issuer country whose durations fall within the same two-year interval on a given day. Appendix \ref{subsec:bin_width} reports the within-cell duration dispersion and shows that the estimates are unchanged under one-year and three-year bins. This structure absorbs the aggregate shock and any differential volatility across duration-country-date cells, so identification comes exclusively from within-cell variation in hedge fund positioning. Section \ref{subsec:volatility} examines the volatility differential of hedge fund bonds directly as the first empirical result and confirms that this structure absorbs it.
 
 While the duration-by-country-by-date fixed effects absorb within-cell differences in average bond characteristics, and thereby address the concern about increased volatility, there could still be concerns that it does not eliminate residual heterogeneity among bonds within the same cell, particularly along the liquidity dimension that most strongly predicts hedge fund selection as shown in Table \ref{tab:hf_selection}. For that reason, I use a matched approach in the binary case, which pairs each hedge fund bond on a given day with the single non-hedge fund bond in the same duration-country-date cell that is closest in terms of bid-ask spread. The baseline regression is then run on this matched sample with pair fixed effects, so that identification comes from comparing each hedge fund bond only to its most similar non-hedge fund counterpart. This design makes the comparison group transparent and eliminates residual differences in observable characteristics without imposing a functional form on how these characteristics relate to yield sensitivity. Appendix \ref{subsec:pair_balance} describes the matched pairs and shows that the estimate is unchanged among tightly matched pairs and when the shock response is allowed to vary with the characteristics on which the pairs differ.
 
@@ -1323,6 +1323,60 @@ R-squared & 0.844 & 0.775 & 0.756 & 0.712 & 0.844 & 0.844 \\
 \end{tabular}
 \label{tab:pair_quality}
 \caption*{\textit{Notes:} This table re-estimates the matched-sample specification of Column (5) in Table \ref{tab:baseline}. The dependent variable is the daily change in bond yield (bps). \textit{HF Involved} indicates the hedge fund side of each matched pair. \textit{Gap} refers to the absolute within-pair difference in bid-ask spread (\euro) at the time of matching; the thresholds in Columns (3) and (4) correspond to the median and the 25th percentile of the gap distribution. Columns (5) and (6) use the full matched sample and allow the yield response to the shock to vary with the bid-ask spread, and additionally with residual maturity and amount issued; the main effects of the interacted characteristics are included. The Shock main effect is absorbed by the matched-pair fixed effects. Standard errors are clustered by Duration $\times$ Date $\times$ Country and non-HF bond. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\end{table}
+
+\clearpage
+\subsection{Alternative duration bin widths}
+\label{subsec:bin_width}
+
+The duration-by-country-by-date cells used throughout the paper are built from two-year duration bins. Within these cells, duration still varies: the average within-cell standard deviation of duration is 0.53 years under the baseline two-year bins, 0.26 years under one-year bins, and 0.83 years under three-year bins. Table \ref{tab:bin_width} shows that the estimates do not depend on this choice. It re-estimates the four main specifications, corresponding to Column (4) of Table \ref{tab:baseline}, Column (4) of Table \ref{tab:intensity}, and Columns (1) and (2) of Table \ref{tab:asymmetry}, with the two-year bins replaced by one-year bins in Panel A and three-year bins in Panel B. The binary interaction is 0.282 with one-year bins and 0.294 with three-year bins, compared to 0.291 in the baseline, and the intensity, constraining, and relaxing coefficients move equally little. Finer bins mechanically produce more single-bond cells, which drop out of the estimation, so the sample is somewhat smaller in Panel A. The stability of the coefficients while the within-cell dispersion varies threefold across bin widths shows that neither the width of the bins nor the residual duration heterogeneity within cells drives the amplification. \\
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Alternative Duration Bin Widths}}
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l c c c c}
+\toprule
+\textbf{Dependent Variable:} & \multicolumn{4}{c}{\textbf{$\Delta$ Bond Yield (bps)}} \\
+\cmidrule(lr){2-5}
+ & (1) & (2) & (3) & (4) \\
+ & & & Constraining & Relaxing \\
+\midrule
+\multicolumn{5}{l}{\textit{Panel A: One-year duration bins}} \\
+\addlinespace
+HF Involved $\times$ Shock & 0.282*** & & & \\
+ & (0.062) & & & \\
+Log HF Intensity $\times$ Shock & & 0.155*** & 0.120*** & 0.218*** \\
+ & & (0.032) & (0.036) & (0.049) \\
+HF Involved & $-$0.024 & & & \\
+ & (0.039) & & & \\
+Log HF Intensity & & $-$0.014 & $-$0.018 & $-$0.013 \\
+ & & (0.015) & (0.015) & (0.015) \\
+Observations & 466,815 & 466,815 & 462,923 & 462,913 \\
+R-squared & 0.760 & 0.760 & 0.757 & 0.758 \\
+\midrule
+\multicolumn{5}{l}{\textit{Panel B: Three-year duration bins}} \\
+\addlinespace
+HF Involved $\times$ Shock & 0.294*** & & & \\
+ & (0.064) & & & \\
+Log HF Intensity $\times$ Shock & & 0.168*** & 0.145*** & 0.221*** \\
+ & & (0.032) & (0.039) & (0.051) \\
+HF Involved & $-$0.023 & & & \\
+ & (0.039) & & & \\
+Log HF Intensity & & $-$0.019 & $-$0.024 & $-$0.015 \\
+ & & (0.016) & (0.016) & (0.016) \\
+Observations & 474,658 & 474,658 & 470,786 & 470,773 \\
+R-squared & 0.721 & 0.721 & 0.717 & 0.718 \\
+\midrule
+Bond FE & Yes & Yes & Yes & Yes \\
+Duration Bin $\times$ Date $\times$ Country FE & Yes & Yes & Yes & Yes \\
+Bid-Ask Spread and CTD Controls & Yes & Yes & Yes & Yes \\
+\bottomrule
+\end{tabular}
+\label{tab:bin_width}
+\caption*{\textit{Notes:} This table re-estimates the main specifications with the two-year duration bins underlying the duration-by-country-by-date fixed effects replaced by one-year bins (Panel A) and three-year bins (Panel B). Column (1) corresponds to Column (4) in Table \ref{tab:baseline}, Column (2) to Column (4) in Table \ref{tab:intensity}, and Columns (3) and (4) to Columns (1) and (2) in Table \ref{tab:asymmetry}. \textit{HF Involved} indicates the presence of offshore hedge fund repo activity. \textit{Log HF Intensity} is the natural log of one plus the average absolute hedge fund net position over the prior five trading days, scaled by the bond's total amount outstanding. All specifications include bond fixed effects, duration-bin-by-date-by-country fixed effects, and controls for bid-ask spread and CTD status; the Shock main effect is absorbed by the fixed effects. Cells containing a single bond drop out of the estimation, so the sample is smaller under finer bins. Standard errors are clustered by business date and bond. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
 \end{table}
 
 \clearpage

@@ -144,48 +144,54 @@ keep if ois_2y != 0
 reg ois_2y lag_net_pos, robust
 
 ********************************************************************************
-* APPENDIX TABLE A8 — Positioning measured from FI/rates-RV and macro funds only
+* APPENDIX TABLES A8-A10 — Positioning measured from classified fund types only
 ********************************************************************************
-* Input : Data\monetary_policy_induced_position_fimacro.csv
-*         (built by build\build_strategy_panel.ipynb: HF variables recomputed
-*         using only funds classified Fixed income / rates RV or Global macro;
-*         hf_involved_all / hf_intensity_all carry the baseline all-fund flags;
-*         bond-side variables identical to the baseline panel)
-* Bond-days positioned ONLY by other fund types (multi-strategy, credit, ...)
-* are excluded, so the control group is bonds with no hedge fund at all.
-* Keeping them as controls instead (drop the exclusion) is the conservative
-* variant: it can only attenuate the interaction.
+* Inputs: Data\monetary_policy_induced_position_fimacro.csv  (FI/rates-RV + macro)
+*         Data\monetary_policy_induced_position_fi.csv       (FI/rates-RV only)
+*         Data\monetary_policy_induced_position_macro.csv    (global macro only)
+*         (built by build\build_strategy_panel.ipynb; hf_involved_all /
+*         hf_intensity_all carry the baseline all-fund flags; bond-side
+*         variables identical to the baseline panel)
+* Bond-days positioned ONLY by hedge funds outside the respective set are
+* excluded, so the control group is bonds with no hedge fund at all. Keeping
+* them as controls instead (drop the exclusion) is the conservative variant:
+* it can only attenuate the interaction.
+* Directionality prediction: macro books are directional, FI/RV books hedged,
+* so the macro-only interaction should exceed the FI-only one (cf. Table IX).
 
-clear all
+foreach seg in fimacro fi macro {
 
-* 1. Import the data
-import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\monetary_policy_induced_position_fimacro.csv", clear
+    di as text _n "================ positioning set: `seg' ================"
 
-encode collateral_country, gen(col_cntr)
-gen duration_bin = floor(duration / 2) * 2
-gen duration_match = string(duration_bin) + "_" + business_date + "_" + collateral_country
+    clear
+    import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\monetary_policy_induced_position_`seg'.csv", clear
 
-gen log_hf_intensity = log(1 + hf_intensity_pre)
+    encode collateral_country, gen(col_cntr)
+    gen duration_bin = floor(duration / 2) * 2
+    gen duration_match = string(duration_bin) + "_" + business_date + "_" + collateral_country
 
-* exclude bond-days held only by non-FI/macro hedge funds
-drop if hf_involved == 0 & hf_involved_all == 1
+    gen log_hf_intensity = log(1 + hf_intensity_pre)
 
-* 2. Baseline regression
-reghdfe delta_y i.hf_involved##c.ois_2y bid_ask_spread ctd_flag, absorb(isin duration_match) vce(cluster business_date isin)
-reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
+    * exclude bond-days held only by hedge funds outside this set
+    drop if hf_involved == 0 & hf_involved_all == 1
 
-* Constraining regime
-reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag ///
-    if (ois_2y > 0 & hf_intensity_long > 0) ///
- | (ois_2y < 0 & hf_intensity_short > 0) ///
- | (ois_2y == 0) ///
- | (hf_intensity_pre == 0), ///
-    absorb(duration_match isin) vce(cluster business_date isin)
+    * Baseline regression
+    reghdfe delta_y i.hf_involved##c.ois_2y bid_ask_spread ctd_flag, absorb(isin duration_match) vce(cluster business_date isin)
+    reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
 
-* Relaxing regime
-reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag ///
-    if (ois_2y > 0 & hf_intensity_short > 0) ///
-    | (ois_2y < 0 & hf_intensity_long > 0) ///
-	| (ois_2y == 0) ///
-    | (hf_intensity_pre == 0), ///
-    absorb(duration_match isin) vce(cluster business_date isin)
+    * Constraining regime
+    reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag ///
+        if (ois_2y > 0 & hf_intensity_long > 0) ///
+     | (ois_2y < 0 & hf_intensity_short > 0) ///
+     | (ois_2y == 0) ///
+     | (hf_intensity_pre == 0), ///
+        absorb(duration_match isin) vce(cluster business_date isin)
+
+    * Relaxing regime
+    reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag ///
+        if (ois_2y > 0 & hf_intensity_short > 0) ///
+        | (ois_2y < 0 & hf_intensity_long > 0) ///
+        | (ois_2y == 0) ///
+        | (hf_intensity_pre == 0), ///
+        absorb(duration_match isin) vce(cluster business_date isin)
+}

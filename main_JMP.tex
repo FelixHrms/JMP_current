@@ -491,7 +491,7 @@ The first feature of the research design supporting this assumption is timing. B
 However, even without reverse causality, bonds traded by hedge funds may be inherently more volatile and therefore more sensitive to any market-moving event, including monetary policy surprises. Duration is the primary determinant of how strongly a bond's yield reacts to a given rate shock, so comparing a hedge fund bond to a non-hedge fund bond of materially different duration would conflate the amplification effect with mechanical differences in rate sensitivity. A meaningful comparison therefore requires matching bonds on duration within the same market environment.
 For that reason, the preferred specification for the analyses throughout the paper includes duration-by-country-by-date fixed effects. The cells underlying these fixed effects are constructed by sorting bonds into two-year duration bins ($[0,2)$, $[2,4)$, and so on), so that a cell contains all bonds from the same issuer country whose durations fall within the same two-year interval on a given day. Appendix \ref{subsec:bin_width} reports the within-cell duration dispersion and shows that the estimates are unchanged under one-year and three-year bins. This structure absorbs the aggregate shock and any differential volatility across duration-country-date cells, so identification comes exclusively from within-cell variation in hedge fund positioning. Section \ref{subsec:volatility} examines the volatility differential of hedge fund bonds directly as the first empirical result and confirms that this structure absorbs it.
 
-While the duration-by-country-by-date fixed effects absorb within-cell differences in average bond characteristics, and thereby address the concern about increased volatility, there could still be concerns that it does not eliminate residual heterogeneity among bonds within the same cell, particularly along the liquidity dimension that most strongly predicts hedge fund selection as shown in Table \ref{tab:hf_selection}. For that reason, I use a matched approach in the binary case, which pairs each hedge fund bond on a given day with the single non-hedge fund bond in the same duration-country-date cell that is closest in terms of bid-ask spread. The baseline regression is then run on this matched sample with pair fixed effects, so that identification comes from comparing each hedge fund bond only to its most similar non-hedge fund counterpart. This design makes the comparison group transparent and eliminates residual differences in observable characteristics without imposing a functional form on how these characteristics relate to yield sensitivity. Appendix \ref{subsec:pair_balance} describes the matched pairs and shows that the estimate is unchanged among tightly matched pairs and when the shock response is allowed to vary with the characteristics on which the pairs differ.
+While the duration-by-country-by-date fixed effects absorb within-cell differences in average bond characteristics, and thereby address the concern about increased volatility, there could still be concerns that it does not eliminate residual heterogeneity among bonds within the same cell, particularly along the liquidity dimension that most strongly predicts hedge fund selection as shown in Table \ref{tab:hf_selection}. For that reason, I use a matched approach in the binary case, which pairs each hedge fund bond on a given day with the single non-hedge fund bond in the same duration-country-date cell that is closest in terms of bid-ask spread. The baseline regression is then run on this matched sample with pair fixed effects, so that identification comes from comparing each hedge fund bond only to its most similar non-hedge fund counterpart. This design makes the comparison group transparent and eliminates residual differences in observable characteristics without imposing a functional form on how these characteristics relate to yield sensitivity. Appendix \ref{subsec:pair_balance} describes the matched pairs and shows that the estimate is unchanged among tightly matched pairs, when the shock response is allowed to vary with the characteristics on which the pairs differ, and when each hedge fund bond keeps a single fixed comparison bond throughout the sample.
 
 The intensity analysis provides an additional identification argument beyond the binary case. If the amplification were driven solely by unobserved bond characteristics, within-bond variation in the size of the position should not predict the yield reaction, since bond fixed effects absorb any time-invariant sensitivity. However, the leveraged-position mechanism implies that larger positions trigger larger forced sales, so the amplification should scale with the size of the exposure within the same bond over time. Testing the continuous intensity measure in addition to the binary indicator therefore provides a test of the mechanism that is difficult to reconcile with a selection story.
 
@@ -1323,6 +1323,38 @@ R-squared & 0.844 & 0.775 & 0.756 & 0.712 & 0.844 & 0.844 \\
 \end{tabular}
 \label{tab:pair_quality}
 \caption*{\textit{Notes:} This table re-estimates the matched-sample specification of Column (5) in Table \ref{tab:baseline}. The dependent variable is the daily change in bond yield (bps). \textit{HF Involved} indicates the hedge fund side of each matched pair. \textit{Gap} refers to the absolute within-pair difference in bid-ask spread (\euro) at the time of matching; the thresholds in Columns (3) and (4) correspond to the median and the 25th percentile of the gap distribution. Columns (5) and (6) use the full matched sample and allow the yield response to the shock to vary with the bid-ask spread, and additionally with residual maturity and amount issued; the main effects of the interacted characteristics are included. The Shock main effect is absorbed by the matched-pair fixed effects. Standard errors are clustered by Duration $\times$ Date $\times$ Country and non-HF bond. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\end{table}
+
+A final feature of the matched design is that pairs are re-formed every day, so the comparison bond attached to a given hedge fund bond changes over time. Partner turnover is indeed substantial: the partner changes on 41\% of consecutive matched days, between consecutive announcement days the typical hedge fund bond keeps the same partner only 29\% of the time, and the median hedge fund bond is matched on 373 days to 22 distinct partners, with its most frequent partner accounting for 23\% of its matched days. Table \ref{tab:match_stability} shows that this re-matching does not drive the estimate. Each hedge fund bond is instead assigned a single fixed comparison bond for the entire sample, either the control it is matched to most often under the baseline procedure (Column 1) or the control from its first matched day (Column 2). Pair-days on which the fixed partner has no data or carries hedge fund positions itself are dropped, which costs about a quarter of the pair-days, and the fixed pair no longer needs to occupy the same duration cell on every day. The interaction coefficient is 0.252 with modal partners and 0.288 with first partners, both significant at the 1\% level and within one standard error of the baseline estimate of 0.302. The slightly lower point estimates are consistent with fixed partners being coarser comparisons than the daily nearest match, and confirm that the amplification does not depend on how or when the comparison bond is re-selected. \\
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Matched-Sample Robustness: Fixed Partners}}
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l c c}
+\toprule
+\textbf{Dependent Variable:} & \multicolumn{2}{c}{\textbf{$\Delta$ Bond Yield (bps)}} \\
+\cmidrule(lr){2-3}
+ & (1) & (2) \\
+Fixed partner & Modal & First \\
+\midrule
+HF Involved $\times$ Shock & 0.252*** & 0.288*** \\
+ & (0.092) & (0.069) \\
+HF Involved & 0.002 & 0.003 \\
+ & (0.020) & (0.012) \\
+\midrule
+Pair-Day FE & Yes & Yes \\
+CTD Flag Control & Yes & Yes \\
+\midrule
+Pair-days & 185,622 & 171,902 \\
+Observations & 371,244 & 343,804 \\
+R-squared & 0.873 & 0.869 \\
+\bottomrule
+\end{tabular}
+\label{tab:match_stability}
+\caption*{\textit{Notes:} This table re-estimates the matched-sample specification of Column (5) in Table \ref{tab:baseline} with each hedge fund bond assigned a single fixed comparison bond over the whole sample instead of the day-specific nearest match. In Column (1) the fixed partner is the control bond that the hedge fund bond is matched to on the most days under the baseline procedure; in Column (2) it is the control bond from the hedge fund bond's first matched day. Pair-days on which the fixed partner has no data or carries hedge fund repo positions itself are excluded. \textit{HF Involved} indicates the hedge fund side of each pair. Pair-day fixed effects absorb the Shock main effect. Standard errors are clustered by Duration $\times$ Date $\times$ Country and partner bond. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
 \end{table}
 
 \clearpage

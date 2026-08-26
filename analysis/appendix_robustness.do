@@ -149,7 +149,12 @@ reg ois_2y lag_net_pos, robust
 * Input : Data\monetary_policy_induced_position_fimacro.csv
 *         (built by build\build_strategy_panel.ipynb: HF variables recomputed
 *         using only funds classified Fixed income / rates RV or Global macro;
+*         hf_involved_all / hf_intensity_all carry the baseline all-fund flags;
 *         bond-side variables identical to the baseline panel)
+* Bond-days positioned ONLY by other fund types (multi-strategy, credit, ...)
+* are excluded, so the control group is bonds with no hedge fund at all.
+* Keeping them as controls instead (drop the exclusion) is the conservative
+* variant: it can only attenuate the interaction.
 
 clear all
 
@@ -161,6 +166,9 @@ gen duration_bin = floor(duration / 2) * 2
 gen duration_match = string(duration_bin) + "_" + business_date + "_" + collateral_country
 
 gen log_hf_intensity = log(1 + hf_intensity_pre)
+
+* exclude bond-days held only by non-FI/macro hedge funds
+drop if hf_involved == 0 & hf_involved_all == 1
 
 * 2. Baseline regression
 reghdfe delta_y i.hf_involved##c.ois_2y bid_ask_spread ctd_flag, absorb(isin duration_match) vce(cluster business_date isin)

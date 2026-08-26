@@ -601,13 +601,13 @@ The variables are those of the volatility regression in Section \ref{subsec:vola
  & (1) & (2) & (3) & (4) & (5) \\
 \midrule
 \textit{Main Interaction} & & & & & \\
-\textbf{HF Involved $\times$ Shock} & \textbf{0.288***} & \textbf{0.288***} & \textbf{0.287***} & \textbf{0.291***} & \textbf{0.304***} \\
- & (0.072) & (0.072) & (0.073) & (0.062) & (0.055) \\
+\textbf{HF Involved $\times$ Shock} & \textbf{0.288***} & \textbf{0.288***} & \textbf{0.287***} & \textbf{0.291***} & \textbf{0.302***} \\
+ & (0.072) & (0.072) & (0.073) & (0.062) & (0.054) \\
 \addlinespace
 \textit{Direct Effects} & & & & & \\
 Shock & 0.757*** & 0.757*** &  &  &  \\
  & (0.123) & (0.123) &  &  &  \\
-HF Involved & 0.083** & 0.062 & $-$0.000 & $-$0.022 & $-$0.002 \\
+HF Involved & 0.083** & 0.062 & $-$0.000 & $-$0.022 & $-$0.008 \\
  & (0.037) & (0.059) & (0.043) & (0.038) & (0.025) \\
 \addlinespace
 \textit{Controls} & & & & & \\
@@ -615,16 +615,16 @@ Duration & & 0.003 & 0.037 &  &  \\
  & & (0.005) & (0.042) &  &  \\
 Bid-Ask Spread & & $-$0.034 & $-$0.239*** & $-$0.257*** &  \\
  & & (0.086) & (0.085) & (0.075) &  \\
-CTD Flag & & 0.157* & 0.033 & 0.010 & 0.003 \\
- & & (0.094) & (0.041) & (0.028) & (0.047) \\
+CTD Flag & & 0.157* & 0.033 & 0.010 & 0.007 \\
+ & & (0.094) & (0.041) & (0.028) & (0.045) \\
 \midrule
 Bond FE & No & No & Yes & Yes & No \\
 Date FE & No & No & Yes & No & No \\
 Duration $\times$ Date $\times$ Country FE & No & No & No & Yes & No \\
 Matched Pair FE & No & No & No & No & Yes \\
 \midrule
-Observations & 477,001 & 477,001 & 477,001 & 470,852 & 481,746 \\
-R-squared & 0.033 & 0.033 & 0.569 & 0.737 & 0.842 \\
+Observations & 477,001 & 477,001 & 477,001 & 470,852 & 481,824 \\
+R-squared & 0.033 & 0.033 & 0.569 & 0.737 & 0.844 \\
 \bottomrule
 \end{tabular}
 \label{tab:baseline}
@@ -634,13 +634,13 @@ R-squared & 0.033 & 0.033 & 0.569 & 0.737 & 0.842 \\
 \textit{Notes:} The dependent variable is the daily change in bond yield (bps). \textit{HF Involved} is a dummy indicating presence of offshore hedge fund repo activity. \textit{Shock} is the 2-year OIS rate change during the ECB monetary event window. In Columns (3) and (4), the Shock main effect is absorbed by the fixed effects. Column (4) adds bond and Duration $\times$ Date $\times$ Country fixed effects. Column (5) presents the matched-sample estimation. Standard errors are clustered by business date and bond in Columns (1)–(4), and by Duration $\times$ Date $\times$ Country and non-HF bond in Column (5). *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01
 \end{table}
 
-Table \ref{tab:baseline} presents the estimation results. Across all five specifications, the interaction coefficient of interest ($\beta$) is positive, statistically significant at the 1\% level, and remarkably stable, ranging from 0.288 to 0.304.
+Table \ref{tab:baseline} presents the estimation results. Across all five specifications, the interaction coefficient of interest ($\beta$) is positive, statistically significant at the 1\% level, and remarkably stable, ranging from 0.287 to 0.302.
 
 Column (1) reports the unconditional correlation. The interaction coefficient of 0.288 implies that for every 1 basis point increase in the benchmark yield shock, bonds with hedge fund presence experience an additional yield increase of approximately 0.3 basis points. Column (2) introduces bond-specific controls which barely impacts the magnitude of the coefficient. This suggests that the excess sensitivity is not merely a proxy for a liquidity premium or the special status of the assets. Column (3) absorbs time-invariant bond characteristics (Bond FE) and aggregate daily shocks (Time FE). Even within this set-up, the interaction coefficient remains robust at 0.287. Because the bond fixed effects absorb all time-invariant characteristics, identification here comes from comparing the same bond during periods when hedge funds are active to periods when they are not, rather than from comparing different bonds to each other.
 
 Column (4) tightens the identification further by replacing the Date fixed effects with Duration $\times$ Country $\times$ Date fixed effects. This structure compares bonds with similar duration from the same issuer country on the same day, absorbing both the aggregate shock and any differential rate sensitivity that mechanically arises from differences in duration. Identification therefore relies exclusively on within-cell variation in hedge fund positioning among bonds that are otherwise comparable in their exposure to the shock. As shown in Section \ref{subsec:volatility}, hedge fund bonds are not more volatile than their peers within these cells on average, making this the appropriate comparison group for isolating the shock-conditional amplification. Under this tighter specification, the interaction coefficient increases slightly to 0.291 and remains significant at the 1\% level, while the direct effect of HF Involved remains insignificant. Together, these results indicate that hedge fund bonds are not significantly different from comparable non-hedge fund bonds in normal times, but become significantly more sensitive precisely when a shock interacts with the leveraged positioning.
 
-Column (5) presents the matched-sample estimation. While the duration-country-date fixed effects in Column (4) ensure that hedge fund bonds are compared to peers with similar rate sensitivity, they do not eliminate residual heterogeneity within cells, particularly along the liquidity dimension that most strongly predicts hedge fund selection (Table \ref{tab:hf_selection}). A matched-sample design addresses this concern by making the comparison group fully transparent and by eliminating residual differences in observable characteristics non-parametrically, without imposing a functional form on how these characteristics relate to yield sensitivity. Specifically, I pair each hedge fund bond on a given day with the single non-hedge fund bond in the same duration-country-date cell that is closest in terms of bid-ask spread, and estimate the regression on this matched sample with pair fixed effects. Each hedge fund bond is therefore benchmarked only against its most similar non-hedge fund counterpart. Under this design, the interaction coefficient rises slightly to 0.304 and remains significant at the 1\% level. The stability of the estimate across the progressively tighter specifications indicates that the amplification is not driven by selection on observable bond characteristics, but reflects the impact of leveraged positioning itself. Appendix \ref{subsec:pair_balance} characterizes the matched pairs and shows that the estimate is robust to restricting the sample to tightly matched pairs and to letting the shock response vary with the characteristics on which the pairs differ.
+Column (5) presents the matched-sample estimation. While the duration-country-date fixed effects in Column (4) ensure that hedge fund bonds are compared to peers with similar rate sensitivity, they do not eliminate residual heterogeneity within cells, particularly along the liquidity dimension that most strongly predicts hedge fund selection (Table \ref{tab:hf_selection}). A matched-sample design addresses this concern by making the comparison group fully transparent and by eliminating residual differences in observable characteristics non-parametrically, without imposing a functional form on how these characteristics relate to yield sensitivity. Specifically, I pair each hedge fund bond on a given day with the single non-hedge fund bond in the same duration-country-date cell that is closest in terms of bid-ask spread, and estimate the regression on this matched sample with pair fixed effects. Each hedge fund bond is therefore benchmarked only against its most similar non-hedge fund counterpart. Under this design, the interaction coefficient rises slightly to 0.302 and remains significant at the 1\% level. The stability of the estimate across the progressively tighter specifications indicates that the amplification is not driven by selection on observable bond characteristics, but reflects the impact of leveraged positioning itself. Appendix \ref{subsec:pair_balance} characterizes the matched pairs and shows that the estimate is robust to restricting the sample to tightly matched pairs and to letting the shock response vary with the characteristics on which the pairs differ.
 
 The estimated amplification is economically substantial. To put the coefficients into perspective, consider the impact of an average six basis point monetary policy tightening surprise. The baseline reaction of a typical bond (captured by the direct Shock coefficient in Column 1 or 2) implies a yield change of approximately $0.757 \times 6 \text{ bps} \approx 4.54 \text{ bps}$.
 

@@ -141,3 +141,31 @@ reghdfe delta_y c.treated##c.ois_2y ctd_flag if bas_distance <= `gap_p25', ///
 *     effect is absorbed by the pair FE, as in the baseline.
 reghdfe delta_y c.treated##c.ois_2y c.bid_ask_spread##c.ois_2y ctd_flag, ///
     absorb(pair_id) vce(cluster duration_match nohf_isin)
+
+********************************************************************************
+* 9. ROBUSTNESS: SHOCK RESPONSE VARYING WITH ALL IMBALANCED CHARACTERISTICS
+*    The balance table shows within-pair imbalances in bid-ask spread,
+*    residual maturity, and amount issued. This section lets the shock
+*    response vary with all three at once in the matched regression, so the
+*    treated x shock coefficient is identified only from HF status, not from
+*    any of these characteristics. Residual maturity and amount issued are
+*    not carried in matched_panel.dta, so merge them in first via obs_id.
+********************************************************************************
+
+use "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\matched_panel.dta", clear
+
+* Each row's obs_id: the HF side kept hf_obs_id, the non-HF side nohf_obs_id
+gen obs_id = cond(treated == 1, hf_obs_id, nohf_obs_id)
+merge m:1 obs_id using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\matched_sample_full.dta", ///
+    keepusing(residual_bond_maturity amt_issued) ///
+    keep(match) nogenerate
+
+* (6) Kitchen sink: bid-ask, residual maturity, and amount issued all
+*     interacted with the shock (main effects included; ois_2y main effect
+*     absorbed by the pair FE)
+reghdfe delta_y c.treated##c.ois_2y ///
+    c.bid_ask_spread##c.ois_2y ///
+    c.residual_bond_maturity##c.ois_2y ///
+    c.amt_issued##c.ois_2y ///
+    ctd_flag, ///
+    absorb(pair_id) vce(cluster duration_match nohf_isin)

@@ -102,3 +102,42 @@ foreach v in duration bas {
     di as text "median |gap| `v'   : " as result %9.3f r(p50) ///
        as text "   (p75: " as result %9.3f r(p75) as text ")"
 }
+
+********************************************************************************
+* 8. ROBUSTNESS: WELL-MATCHED PAIRS ONLY
+*    The balance table shows the bid-ask gap within pairs is one-sided: the
+*    control is almost always the (somewhat) less liquid bond of the cell.
+*    Re-estimate the matched regression (Table IV, Column 5) on pairs that
+*    are tightly matched on liquidity. bas_distance is carried into
+*    matched_panel.dta from the match map, so no re-matching is needed.
+********************************************************************************
+
+use "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\matched_panel.dta", clear
+
+summarize bas_distance, detail
+local gap_p25 = r(p25)
+local gap_p50 = r(p50)
+di as text "bid-ask gap p25: " as result %9.4f `gap_p25' ///
+   as text "   p50: " as result %9.4f `gap_p50'
+
+* (1) Replication of Table IV, Column 5 (full matched sample)
+reghdfe delta_y c.treated##c.ois_2y ctd_flag, ///
+    absorb(pair_id) vce(cluster duration_match nohf_isin)
+
+* (2) Pairs with bid-ask gap <= 0.10 euro
+reghdfe delta_y c.treated##c.ois_2y ctd_flag if bas_distance <= 0.10, ///
+    absorb(pair_id) vce(cluster duration_match nohf_isin)
+
+* (3) Pairs with bid-ask gap below the median gap
+reghdfe delta_y c.treated##c.ois_2y ctd_flag if bas_distance <= `gap_p50', ///
+    absorb(pair_id) vce(cluster duration_match nohf_isin)
+
+* (4) Pairs with bid-ask gap below the 25th-percentile gap (near-exact matches)
+reghdfe delta_y c.treated##c.ois_2y ctd_flag if bas_distance <= `gap_p25', ///
+    absorb(pair_id) vce(cluster duration_match nohf_isin)
+
+* (5) Full matched sample, letting the shock response vary with liquidity
+*     (discussant slide 12: bid-ask x shock interaction). The ois_2y main
+*     effect is absorbed by the pair FE, as in the baseline.
+reghdfe delta_y c.treated##c.ois_2y c.bid_ask_spread##c.ois_2y ctd_flag, ///
+    absorb(pair_id) vce(cluster duration_match nohf_isin)

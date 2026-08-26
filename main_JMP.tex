@@ -305,7 +305,7 @@ I use the European Central Bank’s Securities Financing Transactions Data Store
 
 My sample covers repo and reverse repo transactions between January 2021 and November 2025. The main analysis in Section \ref{sec:empirical_results} focuses on euro-denominated transactions collateralized by Italian and German sovereign bonds.\footnote{Italian and German sovereign bonds account for approximately 70\% of absolute net daily hedge fund activity in euro area sovereigns. Appendix \ref{subsec:ext_val} re-estimates the main specifications on the expanded sample including French and Spanish sovereigns and finds consistent results.} I isolate offshore hedge fund activity by restricting the sample to counterparties domiciled in the Cayman Islands \citep[see][for a discussion on the relevance of Cayman Island domiciled hedge funds]{barth2025cross} and further refine this classification using the sector-identification algorithm of \citet{lenoci2021}, resulting in 152 identified hedge funds. I adopt the Cayman restriction as a conservative criterion for identifying hedge fund activity. Other common fund domiciles such as Ireland and Luxembourg host a broader mix of fund types, and restricting to Cayman therefore provides a cleaner sample for the purposes of this analysis. Any bias from this restriction should be downward, as including additional hedge funds domiciled elsewhere would increase the measured footprint of hedge funds in a given bond and thus amplify the estimated effects.
 
-To interpret trading patterns, I first map repo market activity to the underlying directional exposure of hedge funds. Since hedge funds use the repo market primarily to finance leveraged positions or source securities for short selling, the direction of the repo transaction serves as a proxy for their trading position. Specifically, I classify net cash borrowing (repo) as a proxy for leveraged long positions, where the fund posts the bond as collateral to finance its purchase. Conversely, I classify net cash lending (reverse repo) as a proxy for short positions, where the fund borrows the specific bond to sell it in the cash market. Other instruments such as futures, total return swaps, or options might also provide leveraged sovereign bond exposure, but are not directly observable in the SFTDS.
+To interpret trading patterns, I first map repo market activity to the underlying directional exposure of hedge funds. Since hedge funds use the repo market primarily to finance leveraged positions or source securities for short selling, the direction of the repo transaction serves as a proxy for their trading position. Specifically, I classify net cash borrowing (repo) as a proxy for leveraged long positions, where the fund posts the bond as collateral to finance its purchase. Conversely, I classify net cash lending (reverse repo) as a proxy for short positions, where the fund borrows the specific bond to sell it in the cash market. This mapping is supported by the composition of the sector: classifying each of the 152 funds by investment strategy shows that fixed income relative value and global macro funds, strategies for which the repo transaction is an integral part of the sovereign bond trade itself rather than a source of funding for unrelated positions, account for 63\% of funds and 85\% of repo volume (Appendix \ref{subsec:classification} details the classification and shows that the results are unchanged when positioning is measured from these funds only). Other instruments such as futures, total return swaps, or options might also provide leveraged sovereign bond exposure, but are not directly observable in the SFTDS.
 
 Second, I obtain daily bond-level characteristics from Bloomberg. Most importantly, I source daily yields for each individual bond to compute the dependent variable. The dataset also includes the issue size, duration, and the bid-ask spread as a proxy for market liquidity. To capture the specific demand dynamics of the futures market, I construct a \textit{Cheapest-to-Deliver} (CTD) indicator. Following \citet{pelizzon2025}, who document that the cheapest-to-deliver bond rarely switches over the life of a contract, I identify the CTD bond for each futures contract by observing the actual delivery outcomes on Eurex, assuming the delivered bond acted as the CTD throughout the life of the corresponding contract. I merge these characteristics with the repo transaction data at the bond-day level.
 
@@ -1189,7 +1189,7 @@ These findings relate to the broader question of how leveraged non-bank investor
 
 
 \subsection{Exceedance probability of Monetary Policy Shocks}
-\label{subsec:ext_val}
+\label{subsec:exceedance_mp}
 \begin{figure}[t]
 \centering
 \caption{Probability of the Yield Change exceeding a Threshold by Day Type}
@@ -1246,6 +1246,87 @@ R-squared & 0.753 & 0.753 & 0.750 & 0.751 \\
 \caption*{\textit{Notes:} This table re-estimates the main specifications on the expanded sample of German, Italian, French, and Spanish sovereign bonds. The dependent variable is the daily change in bond yield (bps). \textit{HF Involved} indicates the presence of offshore hedge fund repo activity. \textit{Log HF Intensity} is the natural log of one plus the average absolute hedge fund net position over the prior five trading days, scaled by the bond's total amount outstanding. Column (1) corresponds to Column (4) in Table \ref{tab:baseline}, Column (2) to Column (4) in Table \ref{tab:intensity}, and Columns (3) and (4) to Columns (1) and (2) in Table \ref{tab:asymmetry}. The Shock main effect is absorbed by the fixed effects. Standard errors are clustered by date and bond and reported in parentheses. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
 \end{table}
 
+
+
+\clearpage
+\subsection{Hedge fund strategy classification}
+\label{subsec:classification}
+
+Table \ref{tab:fund_classification} reports the strategy composition of the 152 Cayman-domiciled hedge funds in the sample. Each fund is classified at the level of the transacting legal entity rather than the manager, since managers may operate several vehicles with different mandates. The classification proceeds in three steps. First, funds whose legal names contain an unambiguous strategy identifier are classified directly. Second, I link the remaining funds to their investment advisers through SEC Form ADV, on which advisers report each private fund they manage (Schedule D, Section 7.B.(1)), and classify a fund from the adviser's Form ADV Part 2A brochure whenever the brochure names the fund and describes its strategy. Third, funds whose advisers file no brochure or whose brochures do not identify the specific vehicle are classified from documented public sources, primarily regulatory filings and the managers' own published strategy descriptions, with the source recorded for each fund; funds without sufficient evidence remain unclassified. Fixed income relative value and global macro funds, the strategies for which sovereign bond repo transactions form part of the position itself rather than a source of funding for unrelated trades, account for 63\% of funds and 85\% of repo volume, while unclassified funds account for a negligible share of volume. Appendix \ref{subsec:fimacro} shows that the main results are unchanged when positioning is measured exclusively from fixed income relative value and global macro funds. \\
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Hedge Fund Strategy Composition}}
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l c c c}
+\toprule
+Strategy & Number of Funds & Share of Funds (\%) & Share of Volume (\%) \\
+\midrule
+Fixed income / rates relative value & 54 & 35.5 & 72.4 \\
+Multi-strategy & 29 & 19.1 & 14.6 \\
+Global macro & 42 & 27.6 & 12.8 \\
+Credit & 13 & 8.6 & 0.1 \\
+Commodity & 1 & 0.7 & 0.0 \\
+Equity & 2 & 1.3 & 0.0 \\
+Unclassified & 11 & 7.2 & 0.0 \\
+\midrule
+Total & 152 & 100.0 & 100.0 \\
+\bottomrule
+\end{tabular}
+\label{tab:fund_classification}
+\caption*{\textit{Notes:} This table reports the strategy composition of the 152 Cayman-domiciled hedge funds in the sample, classified as described above. \textit{Share of Volume} is each strategy's share of the total gross repo volume of the 152 funds, computed as the sum of nominal transaction amounts across repo and reverse repo transactions collateralized by German and Italian sovereign bonds. Shares may not sum to 100 due to rounding. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\end{table}
+
+
+\clearpage
+\subsection{Positioning from fixed income and macro funds only}
+\label{subsec:fimacro}
+
+Table \ref{tab:fimacro} re-estimates the main specifications with hedge fund positioning measured exclusively from funds classified as fixed income relative value or global macro in Appendix \ref{subsec:classification}. This addresses the concern that repo positions of other fund types need not reflect sovereign bond trades: a multi-strategy fund, for example, may post a bond it already holds in repo and use the cash to finance positions in other asset classes, in which case its repo activity proxies for funding demand rather than directional bond exposure. All positioning variables are recomputed from the transactions of fixed income and macro funds only, and bond-days on which only hedge funds of other strategy types are active are excluded from the sample rather than treated as controls. The estimated coefficients are nearly identical to the main specifications across the binary, continuous intensity, constraining, and relaxing regime tests. The amplification is therefore driven by funds that use the repo market to run leveraged sovereign bond positions. \\
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Positioning from Fixed Income and Macro Funds Only}}
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l c c c c}
+\toprule
+\textbf{Dependent Variable:} & \multicolumn{4}{c}{\textbf{$\Delta$ Bond Yield (bps)}} \\
+\cmidrule(lr){2-5}
+ & (1) & (2) & (3) & (4) \\
+ & & & Constraining & Relaxing \\
+\midrule
+\textit{Main Interaction} & & & & \\
+HF Involved $\times$ Shock & 0.292*** & & & \\
+ & (0.062) & & & \\
+Log HF Intensity $\times$ Shock & & 0.173*** & 0.147*** & 0.235*** \\
+ & & (0.032) & (0.036) & (0.050) \\
+\addlinespace
+\textit{Direct Effects} & & & & \\
+HF Involved & $-$0.029 & & & \\
+ & (0.037) & & & \\
+Log HF Intensity & & $-$0.003 & $-$0.010 & $-$0.002 \\
+ & & (0.017) & (0.017) & (0.017) \\
+\addlinespace
+\textit{Controls} & & & & \\
+Bid-Ask Spread & $-$0.256*** & $-$0.259*** & $-$0.257*** & $-$0.256*** \\
+ & (0.074) & (0.074) & (0.074) & (0.074) \\
+CTD Flag & 0.010 & 0.008 & 0.007 & 0.003 \\
+ & (0.028) & (0.028) & (0.027) & (0.028) \\
+\midrule
+Bond FE & Yes & Yes & Yes & Yes \\
+Duration $\times$ Date $\times$ Country FE & Yes & Yes & Yes & Yes \\
+\midrule
+Observations & 476,922 & 476,922 & 472,960 & 472,961 \\
+R-squared & 0.737 & 0.737 & 0.733 & 0.734 \\
+\bottomrule
+\end{tabular}
+\label{tab:fimacro}
+\caption*{\textit{Notes:} This table re-estimates the main specifications with hedge fund positioning measured exclusively from funds classified as fixed income relative value or global macro (Appendix \ref{subsec:classification}). The dependent variable is the daily change in bond yield (bps). \textit{HF Involved} indicates the presence of repo activity by these funds. \textit{Log HF Intensity} is the natural log of one plus their average absolute net position over the prior five trading days, scaled by the bond's total amount outstanding. Bond-days on which only hedge funds of other strategy types are active are excluded from the sample. Column (1) corresponds to Column (4) in Table \ref{tab:baseline}, Column (2) to Column (4) in Table \ref{tab:intensity}, and Columns (3) and (4) to Columns (1) and (2) in Table \ref{tab:asymmetry}. The Shock main effect is absorbed by the fixed effects. Standard errors are clustered by date and bond and reported in parentheses. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\end{table}
 
 
 \clearpage

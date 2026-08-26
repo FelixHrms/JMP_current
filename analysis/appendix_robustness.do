@@ -142,3 +142,42 @@ gen lag_net_pos = L.net_pos
 * 7. Restrict to ECB meeting days and test orthogonality
 keep if ois_2y != 0
 reg ois_2y lag_net_pos, robust
+
+********************************************************************************
+* APPENDIX TABLE A8 — Positioning measured from FI/rates-RV and macro funds only
+********************************************************************************
+* Input : Data\monetary_policy_induced_position_fimacro.csv
+*         (built by build\build_strategy_panel.ipynb: HF variables recomputed
+*         using only funds classified Fixed income / rates RV or Global macro;
+*         bond-side variables identical to the baseline panel)
+
+clear all
+
+* 1. Import the data
+import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\monetary_policy_induced_position_fimacro.csv", clear
+
+encode collateral_country, gen(col_cntr)
+gen duration_bin = floor(duration / 2) * 2
+gen duration_match = string(duration_bin) + "_" + business_date + "_" + collateral_country
+
+gen log_hf_intensity = log(1 + hf_intensity_pre)
+
+* 2. Baseline regression
+reghdfe delta_y i.hf_involved##c.ois_2y bid_ask_spread ctd_flag, absorb(isin duration_match) vce(cluster business_date isin)
+reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag, absorb(duration_match isin) vce(cluster business_date isin)
+
+* Constraining regime
+reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag ///
+    if (ois_2y > 0 & hf_intensity_long > 0) ///
+ | (ois_2y < 0 & hf_intensity_short > 0) ///
+ | (ois_2y == 0) ///
+ | (hf_intensity_pre == 0), ///
+    absorb(duration_match isin) vce(cluster business_date isin)
+
+* Relaxing regime
+reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag ///
+    if (ois_2y > 0 & hf_intensity_short > 0) ///
+    | (ois_2y < 0 & hf_intensity_long > 0) ///
+	| (ois_2y == 0) ///
+    | (hf_intensity_pre == 0), ///
+    absorb(duration_match isin) vce(cluster business_date isin)

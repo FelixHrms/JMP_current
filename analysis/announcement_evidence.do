@@ -62,6 +62,13 @@ di as text "day-level slope         : " as result %9.4f `b_actual'
 * Pair-weighted slope, for reference
 reg D ois_2y [aweight = n_pairs], robust
 
+* Slope excluding the two largest absolute surprises (top-right/bottom-left
+* points): shows the line is not drawn by the extreme meetings
+gen abs_s = abs(ois_2y)
+gsort -abs_s
+gen extreme = (_n <= 2)
+reg D ois_2y if extreme == 0, robust
+
 twoway (scatter D ois_2y [aweight = n_pairs], ///
             msymbol(circle_hollow) mcolor(cranberry) mlwidth(medthick)) ///
        (lfit D ois_2y, lcolor(navy) lwidth(medthick)), ///
@@ -122,8 +129,12 @@ local p_ri = r(N) / `RIREPS'
 di as text "actual day-level slope   : " as result %9.4f `b_actual'
 di as text "randomization p-value    : " as result %9.4f `p_ri'
 
+* Extend the x-axis so the actual slope is visible even though it lies
+* outside the placebo distribution (otherwise Stata clips the xline)
+local xmax = max(0.2, 1.15 * abs(`b_actual'))
 histogram b, bin(50) color(navy%50) ///
     xline(`b_actual', lcolor(cranberry) lwidth(thick)) ///
+    xscale(range(-`xmax' `xmax')) xlabel(-0.3(0.1)0.3) ///
     xtitle("Placebo day-level slope") ytitle("Density") ///
     graphregion(color(white)) legend(off)
 graph export "C:\\Users\\hermesf\\Projects\\JobMarket\\Figures\\RI_distribution.png", replace width(2000)

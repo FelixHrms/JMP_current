@@ -195,3 +195,37 @@ foreach seg in fimacro fi macro {
         | (hf_intensity_pre == 0), ///
         absorb(duration_match isin) vce(cluster business_date isin)
 }
+
+********************************************************************************
+* APPENDIX TABLE A11 — FI vs macro positioning jointly, same bonds, same cells
+********************************************************************************
+* Input : Data\monetary_policy_induced_position_fimacro.csv (carries per-type
+*         intensities hf_intensity_fi / hf_intensity_macro)
+* Both interactions enter one regression, so each type's amplification is
+* identified holding the other type's position in the same bond constant.
+* This addresses (i) macro and FI funds co-locating in the same bonds and
+* (ii) the size difference (macro positions are much smaller): the raw-pp
+* variant compares amplification per percentage point of outstanding held.
+
+clear all
+import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\monetary_policy_induced_position_fimacro.csv", clear
+
+encode collateral_country, gen(col_cntr)
+gen duration_bin = floor(duration / 2) * 2
+gen duration_match = string(duration_bin) + "_" + business_date + "_" + collateral_country
+
+gen log_int_fi    = log(1 + hf_intensity_fi)
+gen log_int_macro = log(1 + hf_intensity_macro)
+
+* exclude bond-days held only by hedge funds outside FI/macro
+drop if hf_involved == 0 & hf_involved_all == 1
+
+* log intensities
+reghdfe delta_y c.log_int_fi##c.ois_2y c.log_int_macro##c.ois_2y bid_ask_spread ctd_flag, ///
+    absorb(duration_match isin) vce(cluster business_date isin)
+test c.log_int_fi#c.ois_2y = c.log_int_macro#c.ois_2y
+
+* raw intensities (pp of outstanding): amplification per pp held
+reghdfe delta_y c.hf_intensity_fi##c.ois_2y c.hf_intensity_macro##c.ois_2y bid_ask_spread ctd_flag, ///
+    absorb(duration_match isin) vce(cluster business_date isin)
+test c.hf_intensity_fi#c.ois_2y = c.hf_intensity_macro#c.ois_2y

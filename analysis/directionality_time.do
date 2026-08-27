@@ -182,3 +182,55 @@ reg D ois_2y s_x_dir agg_dir_c, robust
 * not about one calendar year.
 gen s_x_2022 = ois_2y * (year == 2022)
 reg D ois_2y s_x_dir agg_dir_c s_x_2022, robust
+
+********************************************************************************
+* (e) NESTING SPECIFICATION: same-date contrast scaled by the sector's
+*     exposure. Self-contained (re-imports and rebuilds everything), so it
+*     can be run alone. The object is the triple interaction
+*     dir_pooled x shock x agg_dir: the directional-vs-hedged contrast
+*     among HF bonds on the SAME date, as a function of the sector's
+*     aggregate directionality. Prediction: positive - the bond-level
+*     contrast exists when exposure makes the constraint bind, and is
+*     absent in calm regimes. Nests the year-subsample explorations.
+*     Set BINW to 1 for the finer duration-bin variant (report both).
+********************************************************************************
+
+local BINW = 2
+
+clear
+import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\monetary_policy_induced_position.csv", clear
+
+gen duration_bin   = floor(duration / `BINW') * `BINW'
+gen duration_match = string(duration_bin) + "_" + business_date + "_" + collateral_country
+
+egen isin_id  = group(isin)
+gen date_num  = date(business_date, "YMD")
+format date_num %td
+sort isin_id date_num
+by isin_id: gen bday_time = _n
+xtset isin_id bday_time
+
+gen hd_sum = 0
+gen hd_cnt = 0
+forvalues k = 1/5 {
+    replace hd_sum = hd_sum + L`k'.holder_dir if !missing(L`k'.holder_dir)
+    replace hd_cnt = hd_cnt + 1              if !missing(L`k'.holder_dir)
+}
+gen holder_dir_pre = hd_sum / hd_cnt if hd_cnt > 0
+drop hd_sum hd_cnt
+
+gen present = (hf_intensity_pre > 0)
+quietly sum holder_dir_pre if present, detail
+scalar hd_med = r(p50)
+gen dir_pooled = (present & holder_dir_pre > hd_med & !missing(holder_dir_pre))
+drop if present & missing(holder_dir_pre)
+
+egen hf_date = group(present business_date)
+
+merge m:1 business_date using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\agg_dir.dta", ///
+    keep(match master) nogenerate
+quietly summarize agg_dir
+gen agg_dir_c = agg_dir - r(mean)
+
+reghdfe delta_y c.dir_pooled##c.ois_2y##c.agg_dir_c bid_ask_spread ctd_flag, ///
+    absorb(duration_match isin hf_date) vce(cluster business_date isin)

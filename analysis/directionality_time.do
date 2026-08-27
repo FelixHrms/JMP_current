@@ -129,6 +129,41 @@ preserve
     save "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\agg_dir.dta", replace
 restore
 
+********************************************************************************
+* (d) Bond-level contrast WITHIN regimes (runs on the panel in memory,
+*     before switching to the announcement-level data).
+*     Question: in the hedged regime, do the few bonds still held by
+*     directional books amplify more than their same-date HF peers?
+*     Threshold = the pooled median already used in Table IX (no new
+*     cutoff), regimes split at the median of aggregate directionality
+*     across days. Note: thin directional cells in the hedged regime
+*     (~277 announcement-day obs), so expect wide standard errors.
+********************************************************************************
+
+merge m:1 business_date using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\agg_dir.dta", ///
+    keep(match master) nogenerate
+
+preserve
+    duplicates drop business_date, force
+    summarize agg_dir, detail
+    scalar agg_med = r(p50)
+restore
+gen hedged_regime = (agg_dir <= agg_med) if !missing(agg_dir)
+
+* Hedged regime: directional-held vs hedged-held bonds, same date
+reghdfe delta_y c.dir_pooled##c.ois_2y bid_ask_spread ctd_flag ///
+    if hedged_regime == 1, ///
+    absorb(duration_match isin hf_date) vce(cluster business_date isin)
+
+* Directional regime: the symmetric contrast
+reghdfe delta_y c.dir_pooled##c.ois_2y bid_ask_spread ctd_flag ///
+    if hedged_regime == 0, ///
+    absorb(duration_match isin hf_date) vce(cluster business_date isin)
+
+********************************************************************************
+* (c, continued) Announcement-level regressions
+********************************************************************************
+
 use "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\daily_differential.dta", clear
 merge 1:1 business_date using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\agg_dir.dta", ///
     keep(match master) nogenerate

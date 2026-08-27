@@ -11,13 +11,9 @@
 *       (2) horse race against a 2022 indicator
 * Inputs:
 *   Data\monetary_policy_induced_position.csv
-*   Data\fund_day_directionality.csv  (exported by the notebook cell in the
-*       header of fund_directionality_stats.do)
+*   Data\fund_day_directionality.csv  (exported by build\build_main_panel.ipynb)
 *   Data\daily_differential.dta       (built by announcement_evidence.do)
-* BINW: duration bin width for the cell FE (2 = baseline; also run at 1 and
-*       report both for the same-date contrast).
-* Supersedes directionality_time.do and fund_directionality_stats.do for the
-* paper exhibits; those files remain as the exploration record.
+* BINW: duration bin width for the duration-country-date cell FE.
 ********************************************************************************
 
 clear all

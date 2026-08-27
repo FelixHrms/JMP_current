@@ -941,15 +941,30 @@ To take this to the data I construct a measure of book directionality at the bon
 
 Two points of interpretation matter. First, every fund in the data is a hedge fund, so the distinction is not between hedged and unhedged institutions but between bonds held within a hedged bond book and bonds held within a directional bond book, set against a baseline of bonds without hedge fund activity. Second, I observe only the cash leg of these positions. A book that looks directional in the cash market could in fact be hedged with derivatives that I do not observe, as in the cash-futures basis trade. This does not bias the comparison. If the hedge insulates the fund, the book carries little net exposure to the shock, so its presence in the directional group only pulls the measured difference toward zero and the estimate is conservative. If instead the bonds and the futures are financed and cleared with different counterparties, the two legs are margined separately, so the bond leg faces its own margin call and trades like the directional position the measure already treats it as.
 
-\begin{figure}[t]
+\begin{table}[t]
 \centering
-\caption{Aggregate hedge fund holder directionality over time}
-\includegraphics[width=\textwidth]{Figures/holder_dir_timeseries.png}
-\caption*{\scriptsize \textit{Notes}: The figure plots the position weighted average across bonds of holder directionality on each date. Holder directionality is high when a bond is held mainly within directional books and low when it is held within hedged relative value books. The series shows pronounced low-frequency variation in how directional the sector is. Directionality is elevated through the first half of the sample and declines to its lowest levels in 2024 and 2025, when the relative value structure of Figure \ref{fig:HF_net} re-emerges. \\ Sample period: 2021-01-01 -- 2025-11-01}
-\label{fig:holder_dir_ts}
-\end{figure}
+\caption{\textbf{The Hedge Fund Sector's Book by Year}}
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l c c c c c c}
+\toprule
+ & \multicolumn{4}{c}{Fund-level directionality} & & \\
+\cmidrule(lr){2-5}
+ & Mean & Median & Gross-w.\ Mean & Share $>$ 0.8 & Net Short Share & Coordination \\
+\midrule
+2021 & 0.66 & 0.77 & 0.46 & 0.48 & 0.41 & 0.68 \\
+2022 & 0.66 & 0.76 & 0.53 & 0.49 & 0.69 & 0.92 \\
+2023 & 0.55 & 0.49 & 0.35 & 0.37 & 0.79 & 0.92 \\
+2024 & 0.51 & 0.36 & 0.20 & 0.38 & 0.65 & 0.48 \\
+2025 & 0.47 & 0.33 & 0.13 & 0.33 & 0.52 & 0.28 \\
+\bottomrule
+\end{tabular}
+\label{tab:fund_dir}
+\caption*{\textit{Notes:} This table describes the configuration of the hedge fund sector's bond book by year, computed from 95,952 fund-day observations of between 102 and 116 funds active per year. \textit{Mean} and \textit{Median} summarize fund-level directionality, the fund's absolute net DV01 exposure over its gross DV01 exposure as defined in Section \ref{sec:directionality}, across fund-days. \textit{Gross-w.\ Mean} weights fund-days by gross DV01 exposure, so that large books count more. \textit{Share $>$ 0.8} is the share of fund-days with directionality above 0.8. \textit{Net Short Share} is the share of one-sided fund-days (directionality above 0.5) with negative net DV01, i.e.\ positioned for rising yields. \textit{Coordination} is the daily ratio of the absolute sum of fund net DV01 exposures to the sum of absolute fund net DV01 exposures, averaged within the year; it equals one when all net exposures point in the same direction and zero when they fully offset. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\end{table}
 
-Figure \ref{fig:holder_dir_ts} plots the position weighted average of this measure across bonds over time. Directionality is elevated through the first half of the sample, which covers the run up to and the early part of the hiking cycle, and then declines steadily to its lowest levels in 2024 and 2025, when the sector returns to the relative value structure of Figure \ref{fig:HF_net}. The measure also varies in the cross section. Within the duration, country and date cells used throughout the paper, the average within-cell standard deviation of holder directionality is about 0.11, so bonds facing the same shock on the same day in the same duration and country segment still differ in the directionality of the books holding them. This within-cell variation is the source of identification for the results that follow.
+Table \ref{tab:fund_dir} describes how the sector's configuration evolves at the level where capital is committed, the fund. Three facts stand out. First, the sector unwinds its net exposure over the sample: weighting books by their gross exposure, average directionality falls from 0.53 in 2022 to 0.13 in 2025, and the decline is concentrated among the large books, since the equal-weighted mean falls far less. Second, during the hiking cycle the one-sided books point overwhelmingly in the same direction. Coordination reaches 0.92 in 2022 and 2023, and around three quarters of the one-sided books are net short duration: the sector's exposure in these years is effectively a single crowded trade positioned for rising yields. Third, by 2025 both margins have unwound. The large books are internally hedged, and the remaining one-sided books, mostly small ones, offset each other, with coordination at 0.28. Appendix Figure \ref{fig:holder_dir_ts} plots the corresponding bond-level aggregate over time. The bond-level measure also varies in the cross section, with an average within-cell standard deviation of about 0.11, but this dispersion is compressed precisely because the configuration moves largely as one: on a given date, most books sit on the same side. The identification of the results that follow therefore draws on both cross-sectional and time-series variation, and Appendix \ref{subsec:dir_calendar} separates the two.
 
 I first add holder directionality to the intensity specification reported in Table \ref{tab:intensity}. Since holder directionality is defined only for bonds that hedge funds hold, I let it enter through the intensity term rather than as a separate regressor. I estimate
 
@@ -1009,10 +1024,10 @@ Observations & 472,320 & 472,320 & 472,320 \\
 
 \vspace{1ex}
 \raggedright\scriptsize
-\textit{Notes:} The table reports the amplification of bond yields to monetary policy shocks as a function of the directionality of the hedge funds holding each bond. The dependent variable is the daily yield change in basis points. Holder directionality is the position weighted average across a bond's hedge fund holders of each fund's absolute net duration exposure over its gross duration exposure, measured over the five trading days before the shock and scaled to lie between zero and one. Column (1) interacts Log HF Intensity and the shock with holder directionality, with holder directionality entering only through the intensity term. Columns (2) and (3) compare bonds held by hedge funds, split at the median and into quartiles of holder directionality, against the baseline of bonds without hedge fund activity. Log HF Intensity is the natural log of one plus the average absolute net position over the prior five trading days scaled by amount outstanding. Shock is the change in the two year OIS rate during the ECB event window. All columns include the bid-ask spread and a CTD indicator as controls, bond fixed effects, and duration by country by date fixed effects, with the latter absorbing the shock main effect. A Wald test rejects equality of the hedged and directional coefficients in Column (2) with $F=24.8$ and equality of the extreme quartiles in Column (3) with $F=28.3$. Standard errors clustered by business date and bond in parentheses. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01
+\textit{Notes:} The table reports the amplification of bond yields to monetary policy shocks as a function of the directionality of the hedge funds holding each bond. The dependent variable is the daily yield change in basis points. Holder directionality is the position weighted average across a bond's hedge fund holders of each fund's absolute net duration exposure over its gross duration exposure, measured over the five trading days before the shock and scaled to lie between zero and one. Column (1) interacts Log HF Intensity and the shock with holder directionality, with holder directionality entering only through the intensity term. Columns (2) and (3) compare bonds held by hedge funds, split at the median and into quartiles of holder directionality, against the baseline of bonds without hedge fund activity. The median and quartile cutoffs are computed over the pooled sample of hedge fund bond-days. Log HF Intensity is the natural log of one plus the average absolute net position over the prior five trading days scaled by amount outstanding. Shock is the change in the two year OIS rate during the ECB event window. All columns include the bid-ask spread and a CTD indicator as controls, bond fixed effects, and duration by country by date fixed effects, with the latter absorbing the shock main effect. A Wald test rejects equality of the hedged and directional coefficients in Column (2) with $F=24.8$ and equality of the extreme quartiles in Column (3) with $F=28.3$. Standard errors clustered by business date and bond in parentheses. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01
 \end{table}
 
-Because the directional configuration coincides with the hiking cycle, one might worry that the result reflects the monetary environment rather than the positioning. The within-cell identification addresses this concern directly. The fixed effects compare bonds facing the same shock on the same day in the same maturity and country segment, so the common monetary environment is absorbed and the estimate comes from cross-sectional differences in which funds hold each bond.
+Because the directional configuration coincides with the hiking cycle, one might worry that holder directionality partly proxies for calendar time, with the hedged and directional groups drawing on different periods. Table \ref{tab:fund_dir} shows why this concern cannot be resolved by simply comparing bonds within a date: the sector's configuration moves largely as one, so in the crowded years there are few bonds held within hedged books to compare against, and in the calm years the remaining one-sided books are small and the surprises smaller. Appendix \ref{subsec:dir_calendar} separates the margins formally by giving every date its own hedge fund baseline. Three results emerge. The directional-hedged contrast among hedge fund bonds on the same date is close to zero on average, as the common configuration predicts, but increases significantly with the sector's exposure, reaching about 0.16 at hiking-cycle levels; the amplification per unit of intensity remains significant under the same fixed effects; and at the announcement level, the amplification slope rises steeply with the sector's directionality while a 2022 indicator adds nothing. The amplification thus tracks the sector's book rather than the calendar: it is strong when exposed capital is large and aligned, and absent when books are hedged.
 
 These results carry two implications. First, they sharpen the interpretation of the amplification. The effect appears only for bonds held within directional books, which is exactly where the leverage mechanism predicts a dislocation. This concentration is hard to reconcile with a price-discovery account, in which hedge fund trading would push yields toward fundamentals regardless of how the position sits within the book. Second, the result speaks to how the sector should be monitored. The destabilizing potential of leveraged positioning is not captured by its size alone. The same amount of positioning amplifies a shock when it sits within a directional book and is close to neutral when it sits within a hedged book. Supervisors gauging the systemic footprint of hedge funds therefore need to account for the directionality of the book, and not only the gross size of the positions.
 
@@ -1436,6 +1451,92 @@ Second, randomization inference addresses the concern that conventional standard
 \caption*{\scriptsize \textit{Notes}: The histogram shows the distribution of announcement-level slopes across 1,000 permutations in which the actual monetary policy surprises are assigned to randomly drawn non-announcement days from the same calendar year. The vertical line marks the actual announcement-level slope of 0.308. No placebo slope reaches the actual estimate in absolute value, corresponding to an exact permutation p-value below 0.001. \\ Sample period: 2021-01-01 -- 2025-11-01}
 \label{fig:ri_distribution}
 \end{figure}
+
+\clearpage
+\subsection{Directionality and calendar time}
+\label{subsec:dir_calendar}
+
+The directionality results in Section \ref{sec:directionality} split hedge fund bonds at cutoffs computed over the pooled sample. Because the sector's configuration trends over the sample, the groups draw unevenly on different periods: 40\% of the directional group's bond-days fall in 2022 and 91\% in 2021--2023, while 69\% of the hedged group's bond-days fall in 2024--2025. This raises the concern that the directionality contrast partly reflects calendar time rather than the configuration of the books. This appendix separates the two. Figure \ref{fig:holder_dir_ts} plots the aggregate path of the bond-level measure that generates the composition tilt. \\
+
+\begin{figure}[h!]
+\centering
+\caption{Aggregate hedge fund holder directionality over time}
+\includegraphics[width=\textwidth]{Figures/holder_dir_timeseries.png}
+\caption*{\scriptsize \textit{Notes}: The figure plots the position weighted average across bonds of holder directionality on each date. Holder directionality is high when a bond is held mainly within directional books and low when it is held within hedged relative value books. The series shows pronounced low-frequency variation in how directional the sector is. Directionality is elevated through the first half of the sample and declines to its lowest levels in 2024 and 2025, when the relative value structure of Figure \ref{fig:HF_net} re-emerges. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\label{fig:holder_dir_ts}
+\end{figure}
+
+Table \ref{tab:same_date} augments the fixed effects of the baseline specification with hedge-fund-presence-by-date fixed effects. Because the shock is constant within a date, these absorb, date by date, both the level and the shock response of hedge fund bonds relative to non-hedge fund bonds, so that identification comes exclusively from differences among hedge fund bonds on the same date. Column (1) shows that the unconditional same-date contrast between directional-held and hedged-held bonds is small and statistically insignificant. This is what the common configuration implies: on most dates, the books holding different bonds are similarly exposed, so there is little to compare. Column (2) lets the contrast vary with the sector's exposure, measured as the position-weighted average of holder directionality across bonds on each date, the pre-shock counterpart of the series in Figure \ref{fig:holder_dir_ts}. The triple interaction is 0.700 and significant: the same-date contrast is absent when the sector is hedged and reaches approximately 0.16 at hiking-cycle levels of exposure, exactly when the mechanism predicts that directional books face binding constraints. Column (3) shows that the amplification per unit of hedge fund intensity survives the same fixed effects at 0.067, significant at the 1\% level: on the same date, among hedge fund bonds, those with larger positions react more strongly, a comparison in which calendar time plays no role. \\
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Same-Date Identification of the Directionality Contrast}}
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l c c c}
+\toprule
+\textbf{Dependent Variable:} & \multicolumn{3}{c}{\textbf{$\Delta$ Bond Yield (bps)}} \\
+\cmidrule(lr){2-4}
+ & (1) & (2) & (3) \\
+\midrule
+Directional-held $\times$ Shock & 0.054 & 0.031 & \\
+ & (0.042) & (0.031) & \\
+Directional-held $\times$ Shock $\times$ Sector Dir.\ & & 0.700** & \\
+ & & (0.287) & \\
+Directional-held $\times$ Sector Dir.\ & & $-$0.035 & \\
+ & & (0.197) & \\
+Directional-held & 0.007 & 0.005 & \\
+ & (0.021) & (0.021) & \\
+Log HF Intensity $\times$ Shock & & & 0.067*** \\
+ & & & (0.024) \\
+Log HF Intensity & & & $-$0.010 \\
+ & & & (0.016) \\
+\midrule
+Bond FE & Yes & Yes & Yes \\
+Duration $\times$ Date $\times$ Country FE & Yes & Yes & Yes \\
+HF $\times$ Date FE & Yes & Yes & Yes \\
+\midrule
+Observations & 472,318 & 459,196 & 472,318 \\
+R-squared & 0.748 & 0.749 & 0.748 \\
+\bottomrule
+\end{tabular}
+\label{tab:same_date}
+\caption*{\textit{Notes:} The dependent variable is the daily change in bond yield (bps). \textit{Directional-held} indicates hedge fund bonds with holder directionality above the pooled median, as in Table \ref{tab:directionality}. \textit{Sector Dir.}\ is the position-weighted average of holder directionality across bonds on each date, demeaned; its main effect and its interaction with the shock are constant within a date and absorbed by the fixed effects, as is the Shock main effect. \textit{HF $\times$ Date FE} interact an indicator for hedge fund presence with the date, absorbing each date's level and shock response of hedge fund bonds relative to non-hedge fund bonds. All columns include the bid-ask spread and a CTD indicator as controls. Column (2) is restricted to dates with a defined sector directionality. Standard errors are clustered by business date and bond. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\end{table}
+
+Table \ref{tab:regime} tests the time-series margin directly at the announcement level, using the per-announcement matched differential of Appendix \ref{subsec:announcement}. Column (1) regresses the differential on the surprise, the surprise interacted with sector directionality, and the level of sector directionality. The amplification slope at the average configuration is 0.214, and the interaction of 0.797 implies a slope of effectively zero in the most hedged regime and approximately 0.43 in the most directional one. Column (2) adds the surprise interacted with a 2022 indicator. The directionality interaction is essentially unchanged at 0.765, while the 2022 interaction enters at 0.012 and is indistinguishable from zero. The variation in amplification across announcements is explained by the configuration of the sector's books, not by the calendar year in which the largest surprises happened to occur. \\
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Announcement-Level Amplification and the Sector's Book}}
+\footnotesize
+\setlength{\tabcolsep}{10pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l c c}
+\toprule
+\textbf{Dependent Variable:} & \multicolumn{2}{c}{\textbf{Matched HF Differential (bps)}} \\
+\cmidrule(lr){2-3}
+ & (1) & (2) \\
+\midrule
+Surprise & 0.214*** & 0.209*** \\
+ & (0.045) & (0.064) \\
+Surprise $\times$ Sector Dir.\ & 0.797*** & 0.765*** \\
+ & (0.248) & (0.269) \\
+Surprise $\times$ 2022 & & 0.012 \\
+ & & (0.137) \\
+Sector Dir.\ & 5.564*** & 5.546*** \\
+ & (1.457) & (1.579) \\
+Constant & 0.588** & 0.584** \\
+ & (0.255) & (0.286) \\
+\midrule
+Observations & 37 & 37 \\
+R-squared & 0.743 & 0.743 \\
+\bottomrule
+\end{tabular}
+\label{tab:regime}
+\caption*{\textit{Notes:} The dependent variable is the average matched difference in daily yield changes between hedge fund bonds and their paired controls on each announcement day (bps), as in Appendix \ref{subsec:announcement}. \textit{Surprise} is the change in the 2-year OIS rate during the ECB event window (bps). \textit{Sector Dir.}\ is the position-weighted average of holder directionality across bonds on the announcement day, demeaned (sample mean 0.35). \textit{2022} is an indicator for announcements in 2022. One announcement precedes the first available directionality measurement, leaving 37 of the 38 announcements. Robust standard errors in parentheses. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\end{table}
 
 \clearpage
 \subsection{Hedge fund strategy classification}

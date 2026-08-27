@@ -141,3 +141,9 @@ gen agg_dir_c = agg_dir - r(mean)
 gen s_x_dir = ois_2y * agg_dir_c
 
 reg D ois_2y s_x_dir agg_dir_c, robust
+
+* Horse race: is it the sector's book, or just 2022? If s_x_dir survives
+* next to the 2022 interaction, the regime claim is about directionality,
+* not about one calendar year.
+gen s_x_2022 = ois_2y * (year == 2022)
+reg D ois_2y s_x_dir agg_dir_c s_x_2022, robust

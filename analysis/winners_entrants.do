@@ -14,19 +14,18 @@
 * the P&L object the collateral channel runs on; total fund P&L is neither
 * observed nor needed.
 *
-* Inputs: Data\monetary_policy_induced_position.csv (daily surprise) and
-*         Data\fund_day_directionality.csv, which must additionally carry
-*         overnight-only columns net_dv01_on and gross_dv01_on. Extend the
-*         export cell in build\build_main_panel.ipynb along the lines of
-*         (apply the SAME overnight filter used for the position LPs):
+* Inputs: Data\monetary_policy_induced_position.csv (daily surprise);
+*         Data\fund_day_directionality.csv (full book, from
+*         build\build_main_panel.ipynb); and
+*         Data\fund_day_directionality_overnight.csv, exported from
+*         build\build_maturity_panels.ipynb run with SEG = "overnight":
 *
-*   fb_on = fb[<overnight condition as in the position LP input>]
-*   on = fb_on.groupby(['business_date','fund_id']).agg(
-*       net_dv01_on=('dv01','sum'),
-*       gross_dv01_on=('absdv01','sum')).reset_index()
-*   fund_day = fund_day.merge(on, on=['business_date','fund_id'], how='left')
-*   fund_day[['net_dv01_on','gross_dv01_on']] = \
-*       fund_day[['net_dv01_on','gross_dv01_on']].fillna(0)
+*   fund_day = fb.groupby(['business_date','fund_id']).agg(
+*       net_dv01=('dv01','sum'),
+*       gross_dv01=('absdv01','sum'),
+*   ).reset_index()
+*   fund_day.to_csv(rf'C:\Users\hermesf\Projects\JobMarket\Data\fund_day_directionality_{SEG}.csv',
+*                   index=False)
 ********************************************************************************
 
 clear all
@@ -37,10 +36,20 @@ keep business_date ois_2y
 duplicates drop business_date, force
 save "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\shock_daily.dta", replace
 
-* 2. Fund-day panel, filled with zero rows for inactive fund-days so that
-*    exits, re-entries, and entries are visible
+* 2. Fund-day panel: full book merged with the overnight book, filled with
+*    zero rows for inactive fund-days so that exits, re-entries, and
+*    entries are visible
+import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\fund_day_directionality_overnight.csv", clear
+keep business_date fund_id net_dv01 gross_dv01
+rename (net_dv01 gross_dv01) (net_dv01_on gross_dv01_on)
+save "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\fund_day_overnight.dta", replace
+
 import delimited "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\fund_day_directionality.csv", clear
-keep business_date fund_id net_dv01 gross_dv01 net_dv01_on gross_dv01_on
+keep business_date fund_id net_dv01 gross_dv01
+merge 1:1 business_date fund_id using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\fund_day_overnight.dta", ///
+    keep(master match) nogenerate
+replace net_dv01_on   = 0 if missing(net_dv01_on)
+replace gross_dv01_on = 0 if missing(gross_dv01_on)
 gen date_num = date(business_date, "YMD")
 format date_num %td
 

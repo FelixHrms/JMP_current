@@ -110,3 +110,34 @@ reghdfe delta_y c.log_hf_intensity##c.ois_2y ///
     c.log_hf_intensity#c.hd c.log_hf_intensity#c.ois_2y#c.hd ///
     bid_ask_spread ctd_flag, ///
     absorb(duration_match isin hf_date) vce(cluster business_date isin)
+
+********************************************************************************
+* (c) Announcement-level regime test: does the amplification slope rise with
+*     the sector's aggregate directionality?
+*     Uses the daily matched differential built by announcement_evidence.do
+*     (Data\daily_differential.dta must exist). The time-series margin is
+*     where the directionality variation lives; this is the honest home of
+*     the regime claim. 38 observations.
+********************************************************************************
+
+* Aggregate pre-shock directionality per date, position-weighted (mirrors the
+* construction of Figure 6, but with the predetermined trailing measure)
+gen gross_w = gross_long + gross_short
+preserve
+    keep if present & !missing(holder_dir_pre) & gross_w > 0
+    collapse (mean) agg_dir = holder_dir_pre [aw = gross_w], by(business_date)
+    save "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\agg_dir.dta", replace
+restore
+
+use "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\daily_differential.dta", clear
+merge 1:1 business_date using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\agg_dir.dta", ///
+    keep(match master) nogenerate
+keep if is_ann
+
+* Center aggregate directionality so the ois_2y coefficient is the
+* amplification slope at the average announcement-day directionality
+summarize agg_dir
+gen agg_dir_c = agg_dir - r(mean)
+gen s_x_dir = ois_2y * agg_dir_c
+
+reg D ois_2y s_x_dir agg_dir_c, robust

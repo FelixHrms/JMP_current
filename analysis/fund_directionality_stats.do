@@ -84,3 +84,39 @@ restore
 gen net_short = (net_dv01 < 0)
 di as text _n "==== share net short duration among fund-days with fund_dir > 0.5 ===="
 tabstat net_short if dir_50, by(year) stat(mean n)
+
+********************************************************************************
+* 3. EXPLORATORY: coordination vs directionality at the announcement level
+*    One 37-observation horse race, clearly labeled exploratory: is the
+*    amplification slope driven by how EXPOSED the books are (agg_dir) or
+*    how ALIGNED they are (coord)? 2023 (dir already low, coord still 0.92)
+*    is the only separating year, so treat the result as suggestive.
+*    Requires Data\daily_differential.dta and Data\agg_dir.dta.
+********************************************************************************
+
+preserve
+    gen abs_net = abs(net_dv01)
+    collapse (sum) sum_net = net_dv01 (sum) sum_absnet = abs_net, by(business_date)
+    gen coord = abs(sum_net) / sum_absnet if sum_absnet > 0
+    keep business_date coord
+    save "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\coord_daily.dta", replace
+restore
+
+use "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\daily_differential.dta", clear
+merge 1:1 business_date using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\agg_dir.dta", ///
+    keep(match master) nogenerate
+merge 1:1 business_date using "C:\\Users\\hermesf\\Projects\\JobMarket\\Data\\coord_daily.dta", ///
+    keep(match master) nogenerate
+keep if is_ann
+
+quietly summarize agg_dir
+gen agg_dir_c = agg_dir - r(mean)
+quietly summarize coord
+gen coord_c = coord - r(mean)
+gen s_x_dir   = ois_2y * agg_dir_c
+gen s_x_coord = ois_2y * coord_c
+
+* Each alone, then together
+reg D ois_2y s_x_dir agg_dir_c, robust
+reg D ois_2y s_x_coord coord_c, robust
+reg D ois_2y s_x_dir s_x_coord agg_dir_c coord_c, robust

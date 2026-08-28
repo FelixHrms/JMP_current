@@ -236,8 +236,9 @@
 
 \begin{minipage}[c]{226mm}
   \includegraphics[width=226mm]{Figures/intensity_volatility_bars.png}
-  \FigNote{Average $|\Delta$yield$|$ (bp) on non-shock days by quartile of hedge fund intensity, next to bonds without hedge funds.}
+  \FigNote{Average $|\Delta$yield$|$ (bp) on non-shock days by quartile of hedge fund intensity.}
 \end{minipage}\hfill
+\vspace{5mm}
 \begin{minipage}[c]{310mm}
   \fTab\centering
   \begin{tabular}{l c c}
@@ -289,6 +290,7 @@
   \includegraphics[width=262mm]{Figures/IR_baseline_decomposition_overshoot.png}
   \FigNote{Cumulative yield response per bp of shock, relative to the common level where both groups settle (local projections, matched sample, Jord\`a 2005). Shaded areas are 90\% confidence intervals.}
 \end{minipage}
+\vspace{5mm}
 
 \Message{More than a quarter of the shock-day yield move reflects positioning, and the temporary overshooting points to amplification rather than price discovery.}
 \end{Panel}
@@ -318,6 +320,7 @@
   \includegraphics[width=262mm]{Figures/IR_on_momentum.png}
   \FigNote{Cumulative change in hedge fund intensity after the shock for overnight repo positions (local projections, Jord\`a 2005). Shaded areas are 90\% confidence intervals.}
 \end{minipage}
+\vspace{5mm}
 
 \Message{The amplification is symmetric. It operates whenever shocks meet positions and not only in crises.}
 \end{Panel}
@@ -332,12 +335,10 @@
   \FigNote{Aggregate net repo positions of hedge funds in German (DE) and Italian (IT) sovereigns. Negative values indicate short positions and positive values long positions.}
 \end{minipage}\hfill
 \begin{minipage}[c]{300mm}
-  {\fBody A fund manages one pool of capital against its whole book. A duration-hedged book barely loses capital on a level move while a directional book absorbs the full hit.\par}
-  \vspace{4.5mm}
   \centering
   {\fTab $\mathrm{Dir}_{f} \;=\; \left|\textstyle\sum_{i} D_{i}\, q_{f,i}\right| \Big/ \textstyle\sum_{i} D_{i}\, \left|q_{f,i}\right|$\par}
   \vspace{2mm}
-  {\fTiny\color{midgrey}Zero when long and short legs offset in duration terms and one when the book is one-sided, with $D_{i}$ the duration and $q_{f,i}$ the net position in bond $i$. Each bond inherits the position-weighted average directionality of its holders.\par}
+  {\fTiny\color{midgrey}Zero when long and short legs offset in duration terms and one when the book is one-sided, with $D_{i}$ the duration and $q_{f,i}$ the net position in bond $i$. \par}
   \vspace{4.5mm}
   \fTab
   \begin{tabular}{l c}
@@ -355,6 +356,8 @@
   \end{tabular}
   \FigNote{\centering Hedged and directional books split at the median of holder directionality, quartiles Q1 to Q4 sort by the same measure. Standard errors clustered by date and bond. $^{***}$ $p<0.01$.\par}
 \end{minipage}
+
+\vspace{5mm}
 
 \Message{The amplification rises monotonically with directionality and vanishes when the book is hedged.}
 \end{Panel}

@@ -1,1 +1,6 @@
 fund_classification/
+poster/figs/
+poster/*.aux
+poster/*.log
+poster/*.out
+poster/poster_EFA.pdf

@@ -78,13 +78,13 @@
 \newtcolorbox{PanelBox}{enhanced,colback=white,colframe=white,boxrule=0pt,arc=5mm,
   width=644mm,left=12mm,right=12mm,top=8mm,bottom=10mm,nobeforeafter}
 \newenvironment{Panel}
-  {\par\vspace{8mm plus 4mm}\noindent\hspace*{-12mm}\begin{PanelBox}}
+  {\par\vspace{9mm plus 4mm}\noindent\hspace*{-12mm}\begin{PanelBox}}
   {\end{PanelBox}\par}
 
 \newcommand{\Section}[1]{%
   {\fSect\bfseries\color{navy}#1\par}
   \vspace{2.5mm}{\color{navy}\rule{\textwidth}{1.5pt}}\par
-  \vspace{4mm}}
+  \vspace{4.5mm}}
 
 \newcommand{\Message}[1]{%
   \vspace{3.5mm}
@@ -283,9 +283,6 @@
     \bottomrule
   \end{tabular}
   \FigNote{\centering Dependent variable is the daily yield change in basis points. HF intensity is the log of one plus the five-day net position scaled by amount outstanding. Column (2) pairs each hedge fund bond with the twin closest in liquidity within its duration, country and date cell. Standard errors clustered by date and bond, in column (2) by cell and twin. $^{***}$ $p<0.01$.\par}
-  \par\vspace{3.5mm}
-  {\fontsize{40}{44}\selectfont\bfseries\color{rust}$>$\,25\%\par}\vspace{1.5mm}
-  {\fSmall of the shock-day yield movement in bonds traded by hedge funds reflects \textbf{positioning} rather than the news itself.\par}
 \end{minipage}\hfill
 \begin{minipage}[c]{270mm}
   \centering

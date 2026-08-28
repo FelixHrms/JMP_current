@@ -166,7 +166,7 @@
 \begin{minipage}[t]{195mm}
   {\fHead\bfseries\color{navy}Bond characteristics\par}\vspace{1.5mm}
   {\fSmall\color{midgrey}Bloomberg\par}\vspace{2.5mm}
-  {\fBody Daily yields, duration, bid-ask spread, amount issued, and cheapest-to-deliver status per bond.\par}
+  {\fBody Daily yields, duration, bid-ask spread, amount issued, and cheapest-to-deliver (CTD) status per bond.\par}
 \end{minipage}\hfill
 \begin{minipage}[t]{200mm}
   {\fHead\bfseries\color{navy}Exogenous shocks\par}\vspace{1.5mm}
@@ -177,7 +177,7 @@
 \vspace{9mm}
 \begin{tcolorbox}[colback=pale,colframe=pale,arc=3mm,left=9mm,right=9mm,top=6.5mm,bottom=6.5mm]
   \centering\fBody
-  $\Delta y_{i,t} \;=\; {\color{rust}\beta_1\,(\mathrm{HF}_{i,t-1} \times \mathrm{Shock}_{t})} \;+\; \beta_2\, \mathrm{HF}_{i,t-1} \;+\; \beta_3\, \mathrm{Shock}_{t} \;+\; \gamma\, \mathbf{X}_{i,t-1} \;+\; \theta_{k} \;+\; \varepsilon_{i,t}$
+  $\Delta \mathrm{yield}_{i,t} \;=\; {\color{rust}\beta_1\,(\mathrm{HF}_{i,t-1} \times \mathrm{Shock}_{t})} \;+\; \beta_2\, \mathrm{HF}_{i,t-1} \;+\; \beta_3\, \mathrm{Shock}_{t} \;+\; \gamma\, \mathbf{X}_{i,t-1} \;+\; \theta_{k} \;+\; \varepsilon_{i,t}$
   \par\vspace{3.5mm}
   {\fSmall ${\color{rust}\beta_1}$ measures the additional yield sensitivity to shocks when hedge funds are active in a given bond.\par}
 \end{tcolorbox}
@@ -186,7 +186,7 @@
 \begin{minipage}[c]{330mm}\fBody
   {\fHead\bfseries\color{navy}Identification\par}\vspace{2mm}
 \begin{itemize}
-\item Hedge fund positions measured either as binary activity indicator, or continuous intensity measure (five-day net position scaled by the amount outstanding).
+\item Hedge fund positions measured either as a binary activity indicator or as a continuous intensity measure (five-day net position scaled by the amount outstanding).
   \item Selection problem: HFs select liquid, large, long-duration, CTD bonds.
   \item Duration $\times$ country $\times$ date fixed effects compare similar bonds of the same issuer on the same day.
   \item A matched design pairs each hedge fund bond with its closest twin.
@@ -253,10 +253,10 @@
     Duration $\times$ Date $\times$ Country FE & No & Yes\\
     \bottomrule
   \end{tabular}
-  \FigNote{\centering Comparable bonds are bonds of similar duration from the same issuer on the same day.\par}
+  \FigNote{\centering Dependent variable is the absolute daily yield change in basis points. Column (2) identifies the effect within cells of bonds of similar duration from the same issuer on the same day. Standard errors clustered by date and bond. $^{***}$ $p<0.01$.\par}
 \end{minipage}
 
-\Message{The excess volatility is shock conditional, so what changes is how yields react to shocks.}
+\Message{Volatility rises with hedge fund involvement unconditionally, but among comparable bonds the excess volatility is confined to shock days.}
 \end{Panel}
 
 % ============================ FINDING 2 ============================

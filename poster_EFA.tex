@@ -203,14 +203,14 @@
 
 \begin{center}
 \begin{tikzpicture}[box/.style={draw=navy,line width=1.3pt,rounded corners=3mm,align=center,
-    inner xsep=10mm,inner ysep=6mm,text=ink,font=\fHead}]
+    inner xsep=9mm,inner ysep=5mm,text=ink,font=\fBody}]
   \node[box,draw=rust,fill=paler] (con)
-    {{\fHead\bfseries\color{rust}Constraining}\\[2mm]
+    {{\fBody\bfseries\color{rust}Constraining}\\[1.5mm]
      fund \textbf{reduces} exposure};
-  \node[box,fill=pale,text=navy,font=\fHead\bfseries,right=16mm of con] (top)
+  \node[box,fill=pale,text=navy,font=\fBody\bfseries,right=16mm of con] (top)
     {Shock meets a predetermined\\[1mm] leveraged position};
   \node[box,draw=grn,fill=paleg,right=16mm of top] (rel)
-    {{\fHead\bfseries\color{grn}Relaxing}\\[2mm]
+    {{\fBody\bfseries\color{grn}Relaxing}\\[1.5mm]
      fund \textbf{expands} exposure};
   \draw[-{Latex[length=5mm]},line width=1.5pt,navy] (top.west) -- (con.east);
   \draw[-{Latex[length=5mm]},line width=1.5pt,navy] (top.east) -- (rel.west);

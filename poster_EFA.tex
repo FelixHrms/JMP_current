@@ -24,6 +24,7 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta}
 \usepackage[most]{tcolorbox}
+\usepackage{eso-pic}
 \usepackage{iftex}
 \ifPDFTeX
   \errmessage{Compile this poster with XeLaTeX or LuaLaTeX, not pdfLaTeX. On Overleaf: Menu -> Compiler -> XeLaTeX}
@@ -68,7 +69,8 @@
 
 \setlist[itemize]{label={\textcolor{navy}{\rule[0.18em]{0.5em}{0.5em}}},leftmargin=1.4em,itemsep=0.35\baselineskip,parsep=0pt,topsep=0.25\baselineskip}
 
-\pagecolor{pagebg}
+\AddToShipoutPictureBG{\AtPageLowerLeft{\kern-3mm\raisebox{-3mm}{\color{pagebg}\rule{716mm}{2016mm}}}}
+\setlength{\maxdepth}{30mm}
 
 \newcommand{\fullbleed}[1]{\noindent\makebox[\textwidth][c]{#1}}
 
@@ -95,9 +97,10 @@
 \begin{document}
 
 % ============================= HEADER =============================
+\vspace*{-3mm}
 \fullbleed{%
 \begin{tcolorbox}[colback=navy,colframe=navy,sharp corners,boxrule=0pt,
-    width=710mm,left=50mm,right=50mm,top=24mm,bottom=16mm]
+    width=716mm,left=53mm,right=53mm,top=27mm,bottom=16mm]
   \color{white}
   \centering
   {\fTitle\LatoBlack Hedge Fund Trading and\\[3mm] Sovereign Bond Yield Sensitivity\par}
@@ -362,13 +365,14 @@
 \vfill
 
 % ============================= FOOTER =============================
-\fullbleed{%
+\enlargethispage{6mm}
+\fullbleed{\raisebox{-4mm}{%
 \begin{tcolorbox}[colback=navy,colframe=navy,sharp corners,boxrule=0pt,
-    width=710mm,left=50mm,right=50mm,top=10mm,bottom=24mm]
+    width=716mm,left=53mm,right=53mm,top=10mm,bottom=28mm]
   \color{white}\centering
   {\fSub\bfseries Felix Hermes\par}
   \vspace{2mm}
   {\fBody Goethe University Frankfurt \& European Central Bank \hspace{1.5em}$\cdot$\hspace{1.5em} hermes@finance.uni-frankfurt.de\par}
-\end{tcolorbox}}
+\end{tcolorbox}}}
 
 \end{document}

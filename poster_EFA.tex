@@ -78,16 +78,16 @@
 \newtcolorbox{PanelBox}{enhanced,colback=white,colframe=white,boxrule=0pt,arc=5mm,
   width=644mm,left=12mm,right=12mm,top=8mm,bottom=10mm,nobeforeafter}
 \newenvironment{Panel}
-  {\par\vspace{9mm plus 4mm}\noindent\hspace*{-12mm}\begin{PanelBox}}
+  {\par\vspace{8mm plus 4mm}\noindent\hspace*{-12mm}\begin{PanelBox}}
   {\end{PanelBox}\par}
 
 \newcommand{\Section}[1]{%
   {\fSect\bfseries\color{navy}#1\par}
   \vspace{2.5mm}{\color{navy}\rule{\textwidth}{1.5pt}}\par
-  \vspace{4.5mm}}
+  \vspace{4mm}}
 
 \newcommand{\Message}[1]{%
-  \vspace{4mm}
+  \vspace{3.5mm}
   {\fHead\color{navy}\raisebox{1pt}{$\blacktriangleright$}\hspace{0.5em}\textbf{#1}\par}}
 
 \newcommand{\FigNote}[1]{\par\vspace{1.5mm}{\fTiny\color{midgrey}#1\par}}
@@ -195,7 +195,7 @@
 \end{minipage}\hfill
 \begin{minipage}[c]{270mm}
 \centering
-\begin{tabular}{c c}
+\begin{tabular}{c @{\hspace{24mm}} c}
   {\fStat\bfseries\color{navy}152} & {\fStat\bfseries\color{navy}477{,}001}\\[1mm]
   {\fSmall hedge funds} & {\fSmall bond-days}\\[6mm]
   {\fStat\bfseries\color{navy}38} & {\fStat\bfseries\color{navy}3\%}\\[1mm]
@@ -234,8 +234,8 @@
 \begin{Panel}
 \Section{Finding 1: Hedge funds increase the volatility of bond yields on shock days}
 
-\begin{minipage}[c]{240mm}
-  \includegraphics[width=240mm]{Figures/intensity_volatility_bars.png}
+\begin{minipage}[c]{226mm}
+  \includegraphics[width=226mm]{Figures/intensity_volatility_bars.png}
   \FigNote{Average $|\Delta$yield$|$ (bp) on non-shock days by quartile of hedge fund intensity, next to bonds without hedge funds.}
 \end{minipage}\hfill
 \begin{minipage}[c]{310mm}
@@ -282,8 +282,9 @@
     Matched pair FE & No & Yes & No\\
     \bottomrule
   \end{tabular}
-  \par\vspace{6mm}
-  {\fStat\bfseries\color{rust}$>$\,25\%\par}\vspace{2mm}
+  \FigNote{\centering Dependent variable is the daily yield change in basis points. HF intensity is the log of one plus the five-day net position scaled by amount outstanding. Column (2) pairs each hedge fund bond with the twin closest in liquidity within its duration, country and date cell. Standard errors clustered by date and bond, in column (2) by cell and twin. $^{***}$ $p<0.01$.\par}
+  \par\vspace{3.5mm}
+  {\fontsize{40}{44}\selectfont\bfseries\color{rust}$>$\,25\%\par}\vspace{1.5mm}
   {\fSmall of the shock-day yield movement in bonds traded by hedge funds reflects \textbf{positioning} rather than the news itself.\par}
 \end{minipage}\hfill
 \begin{minipage}[c]{270mm}
@@ -292,7 +293,7 @@
   \FigNote{Cumulative yield response per bp of shock, relative to the common level where both groups settle (local projections, matched sample, Jord\`a 2005). Hedge fund bonds overshoot for $\approx$\,4 days, then revert.}
 \end{minipage}
 
-\Message{Temporary overshooting that other capital gradually absorbs, pointing to amplification rather than price discovery.}
+\Message{More than a quarter of the shock-day yield move reflects positioning, and the temporary overshooting points to amplification rather than price discovery.}
 \end{Panel}
 
 % ============================ FINDING 3 ============================
@@ -317,7 +318,7 @@
 \end{minipage}\hfill
 \begin{minipage}[c]{270mm}
   \centering
-  \includegraphics[width=268mm]{Figures/IR_on_momentum.png}
+  \includegraphics[width=262mm]{Figures/IR_on_momentum.png}
   \FigNote{Overnight repo positions after the shock. Funds contract in the constraining regime and expand in the relaxing regime, as the mechanism predicts.}
 \end{minipage}
 
@@ -330,7 +331,7 @@
 
 \begin{minipage}[c]{272mm}
   \centering
-  \includegraphics[width=264mm]{Figures/motivation_chart.png}
+  \includegraphics[width=258mm]{Figures/motivation_chart.png}
   \FigNote{Aggregate net repo positions in German (DE) and Italian (IT) sovereigns. Around the hiking cycle the sector runs a hedged book that is long IT and short DE. During the hiking cycle it runs a one-sided directional book.}
 \end{minipage}\hfill
 \begin{minipage}[c]{300mm}

@@ -129,7 +129,7 @@
 
 \vspace{5mm}
 
-\Message{Research question: Does the leveraged positioning of hedge funds amplify sovereign bond yield sensitivity to shocks? Two potential priors:}
+\Message{Research question: Does the leveraged positioning of hedge funds amplify sovereign bond yield sensitivity to shocks? Two competing priors:}
 
 \vspace{9mm}
 \begin{minipage}[t]{302mm}
@@ -161,7 +161,7 @@
 \begin{minipage}[t]{200mm}
   {\fHead\bfseries\color{navy}Hedge fund repo positions\par}\vspace{1.5mm}
   {\fSmall\color{midgrey}ECB SFTDS\par}\vspace{2.5mm}
-  {\fBody Transaction-level data on euro area repo activity in German and Italian sovereigns from Jan 2021 to Nov 2025. 152 offshore hedge funds. Repo proxies long positions and reverse repo proxies short positions.\par}
+  {\fBody Transaction-level data on euro area repo activity in German and Italian sovereigns from Jan 2021 to Nov 2025. Repo proxies long positions and reverse repo proxies short positions.\par}
 \end{minipage}\hfill
 \begin{minipage}[t]{195mm}
   {\fHead\bfseries\color{navy}Bond characteristics\par}\vspace{1.5mm}
@@ -171,7 +171,7 @@
 \begin{minipage}[t]{200mm}
   {\fHead\bfseries\color{navy}Exogenous shocks\par}\vspace{1.5mm}
   {\fSmall\color{midgrey}EA-MPD (Altavilla et al.\ 2019)\par}\vspace{2.5mm}
-  {\fBody Intraday 2-year OIS changes in the ECB event window. The same shock hits every bond.\par}
+  {\fBody Intraday 2-year OIS changes in the ECB monetary event window. The same shock hits every bond.\par}
 \end{minipage}
 
 \vspace{9mm}
@@ -179,14 +179,15 @@
   \centering\fBody
   $\Delta y_{i,t} \;=\; {\color{rust}\beta_1\,(\mathrm{HF}_{i,t-1} \times \mathrm{Shock}_{t})} \;+\; \beta_2\, \mathrm{HF}_{i,t-1} \;+\; \beta_3\, \mathrm{Shock}_{t} \;+\; \gamma\, \mathbf{X}_{i,t-1} \;+\; \theta_{k} \;+\; \varepsilon_{i,t}$
   \par\vspace{3.5mm}
-  {\fSmall ${\color{rust}\beta_1}$ measures the additional yield sensitivity when hedge funds are positioned, using a presence dummy or the intensity of the position (five-day net position scaled by amount outstanding).\par}
+  {\fSmall ${\color{rust}\beta_1}$ measures the additional yield sensitivity to shocks when hedge funds are active in a given bond.\par}
 \end{tcolorbox}
 
 \vspace{8mm}
 \begin{minipage}[c]{330mm}\fBody
   {\fHead\bfseries\color{navy}Identification\par}\vspace{2mm}
 \begin{itemize}
-  \item Hedge funds select liquid, large, long-duration, cheapest-to-deliver bonds.
+\item Hedge fund positions measured either as binary activity indicator, or continuous intensity measure (five-day net position scaled by the amount outstanding).
+  \item Selection problem: HFs select liquid, large, long-duration, CTD bonds.
   \item Duration $\times$ country $\times$ date fixed effects compare similar bonds of the same issuer on the same day.
   \item A matched design pairs each hedge fund bond with its closest twin.
   \item A dealer-level panel shows the trigger is not dealer behavior.
@@ -198,7 +199,7 @@
   {\fStat\bfseries\color{navy}152} & {\fStat\bfseries\color{navy}477{,}001}\\[1mm]
   {\fSmall hedge funds} & {\fSmall bond-days}\\[6mm]
   {\fStat\bfseries\color{navy}38} & {\fStat\bfseries\color{navy}3\%}\\[1mm]
-  {\fSmall ECB announcements} & {\fSmall of an issue held when active}\\
+  {\fSmall ECB announcements} & {\fSmall of an issue held by HFs when active}\\
 \end{tabular}
 \end{minipage}
 \end{Panel}
@@ -225,9 +226,6 @@
   \draw[-{Latex[length=5mm]},line width=1.5pt,navy] (top.east) -- (rel.west);
 \end{tikzpicture}
 \end{center}
-
-\vspace{3mm}
-{\fBody\textbf{\color{navy}Numerical example} (margin 2\%, duration 7y, sector holds 3\% of the issue):\quad 6 bp surprise $\rightarrow$ price $-0.42\%$ $\rightarrow$ capital buffer $\color{rust}\mathbf{-21\%}$ $\rightarrow$ trading pressure $0.63\%$ of the issue $\rightarrow$ $\color{rust}\mathbf{+3.15}$ \textbf{\color{rust}bp} extra yield move.\par}
 
 \Message{In both states the resulting trading pushes yields further in the direction of the initial shock.}
 \end{Panel}

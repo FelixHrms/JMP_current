@@ -203,19 +203,15 @@
 
 \begin{center}
 \begin{tikzpicture}[box/.style={draw=navy,line width=1.3pt,rounded corners=3mm,align=center,
-    inner xsep=8mm,inner ysep=4.5mm,text=ink,font=\fBody}]
+    inner xsep=10mm,inner ysep=6mm,text=ink,font=\fHead}]
   \node[box,draw=rust,fill=paler] (con)
-    {{\fHead\bfseries\color{rust}Constraining}\\[1.5mm]
-     price moves \textit{against} the position\\
-     the capital buffer erodes\\
-     the fund \textbf{reduces} exposure};
-  \node[box,fill=pale,text=navy,font=\fHead\bfseries,right=14mm of con] (top)
+    {{\fHead\bfseries\color{rust}Constraining}\\[2mm]
+     fund \textbf{reduces} exposure};
+  \node[box,fill=pale,text=navy,font=\fHead\bfseries,right=16mm of con] (top)
     {Shock meets a predetermined\\[1mm] leveraged position};
-  \node[box,draw=grn,fill=paleg,right=14mm of top] (rel)
-    {{\fHead\bfseries\color{grn}Relaxing}\\[1.5mm]
-     price moves \textit{in favor}\\
-     the constraint loosens\\
-     the fund \textbf{expands} exposure};
+  \node[box,draw=grn,fill=paleg,right=16mm of top] (rel)
+    {{\fHead\bfseries\color{grn}Relaxing}\\[2mm]
+     fund \textbf{expands} exposure};
   \draw[-{Latex[length=5mm]},line width=1.5pt,navy] (top.west) -- (con.east);
   \draw[-{Latex[length=5mm]},line width=1.5pt,navy] (top.east) -- (rel.west);
 \end{tikzpicture}

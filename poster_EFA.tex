@@ -78,23 +78,16 @@
 \newtcolorbox{PanelBox}{enhanced,colback=white,colframe=white,boxrule=0pt,arc=5mm,
   width=644mm,left=12mm,right=12mm,top=8mm,bottom=10mm,nobeforeafter}
 \newenvironment{Panel}
-  {\par\vspace{9mm plus 4mm}\noindent\hspace*{-12mm}\begin{PanelBox}}
+  {\par\vspace{8mm plus 4mm}\noindent\hspace*{-12mm}\begin{PanelBox}}
   {\end{PanelBox}\par}
 
 \newcommand{\Section}[1]{%
   {\fSect\bfseries\color{navy}#1\par}
   \vspace{2.5mm}{\color{navy}\rule{\textwidth}{1.5pt}}\par
-  \vspace{6mm}}
-
-\newcommand{\SectionTag}[2]{%
-  {\tcbox[enhanced,nobeforeafter,tcbox raise base,arc=2.5mm,colback=navy,colframe=navy,boxrule=0pt,
-    left=4mm,right=4mm,top=1.8mm,bottom=1.8mm]{\fHead\bfseries\color{white}#1}%
-   \hspace{6mm}{\fSect\bfseries\color{navy}#2}\par}
-  \vspace{2.5mm}{\color{navy}\rule{\textwidth}{1.5pt}}\par
-  \vspace{6mm}}
+  \vspace{5mm}}
 
 \newcommand{\Message}[1]{%
-  \vspace{4mm}
+  \vspace{3.5mm}
   {\fHead\color{navy}\raisebox{1pt}{$\blacktriangleright$}\hspace{0.5em}\textbf{#1}\par}}
 
 \newcommand{\FigNote}[1]{\par\vspace{1.5mm}{\fTiny\color{midgrey}#1\par}}
@@ -206,34 +199,37 @@
 \Section{How leveraged positioning amplifies yields}
 
 {\fBody Leveraged intermediaries manage their balance sheet against the risk environment (Adrian and Shin 2014). The same rule produces opposite position adjustments depending on the sign of the shock.\par}
-\vspace{8mm}
+\vspace{6mm}
 
 \begin{center}
 \begin{tikzpicture}[box/.style={draw=navy,line width=1.3pt,rounded corners=3mm,align=center,
-    inner xsep=9mm,inner ysep=7mm,text=ink,font=\fHead}]
+    inner xsep=8mm,inner ysep=4.5mm,text=ink,font=\fBody}]
   \node[box,draw=rust,fill=paler] (con)
-    {{\fontsize{34}{44}\selectfont\bfseries\color{rust}Constraining}\\[3mm]
-     price moves \textit{against} the position\\[1mm]
-     the capital buffer erodes\\[1mm]
+    {{\fHead\bfseries\color{rust}Constraining}\\[1.5mm]
+     price moves \textit{against} the position\\
+     the capital buffer erodes\\
      the fund \textbf{reduces} exposure};
-  \node[box,fill=pale,text=navy,font=\fontsize{34}{44}\selectfont\bfseries,right=14mm of con] (top)
-    {Shock meets a\\[2mm] predetermined\\[2mm] leveraged position};
+  \node[box,fill=pale,text=navy,font=\fHead\bfseries,right=14mm of con] (top)
+    {Shock meets a predetermined\\[1mm] leveraged position};
   \node[box,draw=grn,fill=paleg,right=14mm of top] (rel)
-    {{\fontsize{34}{44}\selectfont\bfseries\color{grn}Relaxing}\\[3mm]
-     price moves \textit{in favor}\\[1mm]
-     the constraint loosens\\[1mm]
+    {{\fHead\bfseries\color{grn}Relaxing}\\[1.5mm]
+     price moves \textit{in favor}\\
+     the constraint loosens\\
      the fund \textbf{expands} exposure};
-  \draw[-{Latex[length=6mm]},line width=1.8pt,navy] (top.west) -- (con.east);
-  \draw[-{Latex[length=6mm]},line width=1.8pt,navy] (top.east) -- (rel.west);
+  \draw[-{Latex[length=5mm]},line width=1.5pt,navy] (top.west) -- (con.east);
+  \draw[-{Latex[length=5mm]},line width=1.5pt,navy] (top.east) -- (rel.west);
 \end{tikzpicture}
 \end{center}
+
+\vspace{3mm}
+{\fBody\textbf{\color{navy}Numerical example} (margin 2\%, duration 7y, sector holds 3\% of the issue):\quad 6 bp surprise $\rightarrow$ price $-0.42\%$ $\rightarrow$ capital buffer $\color{rust}\mathbf{-21\%}$ $\rightarrow$ trading pressure $0.63\%$ of the issue $\rightarrow$ $\color{rust}\mathbf{+3.15}$ \textbf{\color{rust}bp} extra yield move.\par}
 
 \Message{In both states the resulting trading pushes yields further in the direction of the initial shock.}
 \end{Panel}
 
 % ============================ FINDING 1 ============================
 \begin{Panel}
-\SectionTag{Finding 1}{Hedge funds increase the volatility of bond yields on shock days}
+\Section{Finding 1: Hedge funds increase the volatility of bond yields on shock days}
 
 \begin{minipage}[c]{240mm}
   \includegraphics[width=240mm]{Figures/intensity_volatility_bars.png}
@@ -262,7 +258,7 @@
 
 % ============================ FINDING 2 ============================
 \begin{Panel}
-\SectionTag{Finding 2}{Hedge fund trading raises the sensitivity of yields to shocks}
+\Section{Finding 2: Hedge fund trading raises the sensitivity of yields to shocks}
 
 \begin{minipage}[c]{300mm}
   \fTab\centering
@@ -283,7 +279,7 @@
     Matched pair FE & No & Yes & No\\
     \bottomrule
   \end{tabular}
-  \par\vspace{8mm}
+  \par\vspace{6mm}
   {\fStat\bfseries\color{rust}$>$\,25\%\par}\vspace{2mm}
   {\fSmall of the shock-day yield movement in bonds traded by hedge funds reflects \textbf{positioning} rather than the news itself.\par}
 \end{minipage}\hfill
@@ -298,7 +294,7 @@
 
 % ============================ FINDING 3 ============================
 \begin{Panel}
-\SectionTag{Finding 3}{The amplification holds whether shocks help or hurt the position}
+\Section{Finding 3: The amplification holds whether shocks help or hurt the position}
 
 \begin{minipage}[c]{280mm}
   \fTab\centering
@@ -327,7 +323,7 @@
 
 % ============================ FINDING 4 ============================
 \begin{Panel}
-\SectionTag{Finding 4}{The directionality of the book governs the strength}
+\Section{Finding 4: The directionality of the book governs the strength}
 
 \begin{minipage}[c]{272mm}
   \centering
@@ -359,7 +355,7 @@
 
 % ========================= CONCLUSION =========================
 \begin{Panel}
-\SectionTag{Conclusion}{What this means for risk monitoring}
+\Section{Conclusion: What this means for risk monitoring}
 
 \begin{minipage}[t]{300mm}\fBody
 \begin{itemize}

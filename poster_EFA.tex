@@ -49,6 +49,7 @@
 \definecolor{paler}{cmyk}{0,0.06,0.06,0.015}
 \definecolor{midgrey}{cmyk}{0,0,0,0.55}
 \definecolor{ink}{cmyk}{0,0,0,0.92}
+\definecolor{pagebg}{cmyk}{0.10,0.055,0,0.055}
 
 % Font sizes
 \newcommand{\fTitle}{\fontsize{92}{102}\selectfont}
@@ -56,7 +57,7 @@
 \newcommand{\fSect}{\fontsize{42}{50}\selectfont}
 \newcommand{\fHead}{\fontsize{33}{42}\selectfont}
 \newcommand{\fBody}{\fontsize{25}{33}\selectfont}
-\newcommand{\fTab}{\fontsize{22.5}{31}\selectfont}
+\newcommand{\fTab}{\fontsize{22}{30}\selectfont}
 \newcommand{\fSmall}{\fontsize{21}{28}\selectfont}
 \newcommand{\fTiny}{\fontsize{17}{22.5}\selectfont}
 \newcommand{\fStat}{\fontsize{44}{48}\selectfont}
@@ -67,44 +68,51 @@
 
 \setlist[itemize]{label={\textcolor{navy}{\rule[0.18em]{0.5em}{0.5em}}},leftmargin=1.4em,itemsep=0.35\baselineskip,parsep=0pt,topsep=0.25\baselineskip}
 
+\pagecolor{pagebg}
+
 \newcommand{\fullbleed}[1]{\noindent\makebox[\textwidth][c]{#1}}
 
+% White section cards on the tinted page background
+\newtcolorbox{PanelBox}{enhanced,colback=white,colframe=white,boxrule=0pt,arc=5mm,
+  width=644mm,left=12mm,right=12mm,top=8mm,bottom=10mm,nobeforeafter}
+\newenvironment{Panel}
+  {\par\vspace{9mm plus 4mm}\noindent\hspace*{-12mm}\begin{PanelBox}}
+  {\end{PanelBox}\par}
+
 \newcommand{\Section}[1]{%
-  \vspace{12mm plus 5mm}
   {\fSect\bfseries\color{navy}#1\par}
   \vspace{2.5mm}{\color{navy}\rule{\textwidth}{1.5pt}}\par
-  \vspace{8mm}}
+  \vspace{6mm}}
 
 \newcommand{\Message}[1]{%
-  \vspace{5mm}
+  \vspace{4mm}
   {\fHead\color{navy}\raisebox{1pt}{$\blacktriangleright$}\hspace{0.5em}\textbf{#1}\par}}
 
-\newcommand{\FigNote}[1]{\vspace{1.5mm}{\fTiny\color{midgrey}#1\par}}
+\newcommand{\FigNote}[1]{\par\vspace{1.5mm}{\fTiny\color{midgrey}#1\par}}
 
-\renewcommand{\arraystretch}{1.25}
+\renewcommand{\arraystretch}{1.15}
 
 \begin{document}
 
 % ============================= HEADER =============================
 \fullbleed{%
 \begin{tcolorbox}[colback=navy,colframe=navy,sharp corners,boxrule=0pt,
-    width=710mm,left=50mm,right=50mm,top=26mm,bottom=18mm]
+    width=710mm,left=50mm,right=50mm,top=24mm,bottom=16mm]
   \color{white}
   \centering
   {\fTitle\LatoBlack Hedge Fund Trading and\\[3mm] Sovereign Bond Yield Sensitivity\par}
-  \vspace{8mm}
+  \vspace{6mm}
   {\fSub\bfseries Felix Hermes\par}
   \vspace{2.5mm}
   {\fSub Goethe University Frankfurt \& European Central Bank\par}
 \end{tcolorbox}}
 
-\vspace{4mm}
-
 % ======================= MOTIVATION + QUESTION =======================
+\begin{Panel}
 \Section{Hedge funds hold a growing footprint in government bond markets}
 
-\begin{minipage}[c]{230mm}
-  \includegraphics[width=230mm]{Figures/tradeweb.png}
+\begin{minipage}[c]{215mm}
+  \includegraphics[width=215mm]{Figures/tradeweb.png}
   \FigNote{Hedge fund share of trading volume in government bonds tracked by Tradeweb.}
 \end{minipage}\hfill
 \begin{minipage}[c]{368mm}\fBody
@@ -117,14 +125,14 @@
 
 \vspace{9mm}
 \begin{minipage}[t]{302mm}
-\begin{tcolorbox}[colback=paleg,colframe=grn,boxrule=1.4pt,arc=3mm,left=7mm,right=7mm,top=4.5mm,bottom=4.5mm]
+\begin{tcolorbox}[colback=paleg,colframe=grn,boxrule=1.4pt,arc=3mm,left=7mm,right=7mm,top=3.5mm,bottom=3.5mm]
   \centering{\fHead\bfseries\color{grn}Decrease sensitivity\par}\vspace{2mm}
   {\fBody Arbitrage corrects mispricings.\\Prices are pushed \textit{toward} fundamentals.\par}\vspace{2mm}
   {\fTiny\color{midgrey}Gromb and Vayanos (2002), Cao et al.\ (2018)\par}
 \end{tcolorbox}
 \end{minipage}\hfill
 \begin{minipage}[t]{302mm}
-\begin{tcolorbox}[colback=paler,colframe=rust,boxrule=1.4pt,arc=3mm,left=7mm,right=7mm,top=4.5mm,bottom=4.5mm]
+\begin{tcolorbox}[colback=paler,colframe=rust,boxrule=1.4pt,arc=3mm,left=7mm,right=7mm,top=3.5mm,bottom=3.5mm]
   \centering{\fHead\bfseries\color{rust}Increase sensitivity\par}\vspace{2mm}
   {\fBody Leverage and funding fragility force trades.\\Prices are pushed \textit{away} from fundamentals.\par}\vspace{2mm}
   {\fTiny\color{midgrey}Shleifer and Vishny (1997), Brunnermeier and Pedersen (2009)\par}
@@ -132,8 +140,10 @@
 \end{minipage}
 
 \Message{Research question: does the leveraged positioning of hedge funds amplify sovereign bond yield sensitivity to shocks --- and under what conditions?}
+\end{Panel}
 
 % ============================== DATA ==============================
+\begin{Panel}
 \Section{Data and empirical design}
 
 \begin{minipage}[t]{200mm}
@@ -178,15 +188,17 @@
   {\fSmall ECB announcements} & {\fSmall of an issue held when active}\\
 \end{tabular}
 \end{minipage}
+\end{Panel}
 
 % ============================ MECHANISM ============================
+\begin{Panel}
 \Section{How leveraged positioning amplifies yields}
 
 {\fBody\textbf{Adrian and Shin (2014):} leveraged intermediaries manage their balance sheet against the risk environment --- the same rule produces opposite adjustments depending on the sign of the shock.\par}
 \vspace{8mm}
 
 \begin{center}
-\begin{tikzpicture}[box/.style={draw=navy,line width=1.3pt,rounded corners=3mm,align=center,inner xsep=7mm,inner ysep=5mm}]
+\begin{tikzpicture}[box/.style={draw=navy,line width=1.3pt,rounded corners=3mm,align=center,inner xsep=7mm,inner ysep=4mm}]
   \node[box,draw=rust,fill=paler] (con)
     {\fHead\bfseries\color{rust}Constraining\\[1mm]\fBody\color{ink} price moves \textit{against} the position\\ capital buffer erodes $\rightarrow$ fund \textbf{reduces} exposure};
   \node[box,fill=pale,right=16mm of con] (top) {\fHead\bfseries\color{navy} Shock meets a pre-determined\\[1mm]\fHead\bfseries\color{navy} leveraged position};
@@ -201,12 +213,14 @@
 {\fBody\textbf{\color{navy}Numerical example} (margin 2\%, duration 7y, sector holds 3\% of the issue):\quad 6 bp surprise $\rightarrow$ price $-0.42\%$ $\rightarrow$ capital buffer $\color{rust}\mathbf{-21\%}$ $\rightarrow$ trading pressure $0.63\%$ of the issue $\rightarrow$ $\color{rust}\mathbf{+3.15}$ \textbf{\color{rust}bp} extra yield move.\par}
 
 \Message{In both states the resulting trading pushes yields further in the direction of the initial shock.}
+\end{Panel}
 
 % ============================ FINDING 1 ============================
+\begin{Panel}
 \Section{Finding 1: Hedge funds increase the volatility of bond yields on shock days}
 
-\begin{minipage}[c]{266mm}
-  \includegraphics[width=266mm]{Figures/intensity_volatility_bars.png}
+\begin{minipage}[c]{240mm}
+  \includegraphics[width=240mm]{Figures/intensity_volatility_bars.png}
   \FigNote{Average $|\Delta$yield$|$ (bp) on non-shock days by quartile of hedge fund intensity, next to bonds without hedge funds.}
 \end{minipage}\hfill
 \begin{minipage}[c]{310mm}
@@ -228,8 +242,10 @@
 \end{minipage}
 
 \Message{Hedge funds select volatile bonds, but the excess volatility is shock-conditional --- what changes is how yields react to shocks.}
+\end{Panel}
 
 % ============================ FINDING 2 ============================
+\begin{Panel}
 \Section{Finding 2: Hedge fund trading raises the sensitivity of yields to shocks}
 
 \begin{minipage}[c]{300mm}
@@ -255,15 +271,17 @@
   {\fStat\bfseries\color{rust}$>$\,25\%\par}\vspace{2mm}
   {\fSmall of the shock-day yield movement in hedge-fund-traded bonds reflects \textbf{positioning}, not the news itself.\par}
 \end{minipage}\hfill
-\begin{minipage}[c]{300mm}
+\begin{minipage}[c]{270mm}
   \centering
-  \includegraphics[width=290mm]{Figures/IR_baseline_decomposition_overshoot.png}
+  \includegraphics[width=262mm]{Figures/IR_baseline_decomposition_overshoot.png}
   \FigNote{Cumulative yield response per bp of shock, relative to the common level where both groups settle (local projections, matched sample, Jord\`a 2005). Hedge fund bonds overshoot for $\approx$\,4 days, then revert.}
 \end{minipage}
 
 \Message{Temporary overshooting that other capital gradually absorbs --- amplification, not price discovery.}
+\end{Panel}
 
 % ============================ FINDING 3 ============================
+\begin{Panel}
 \Section{Finding 3: The amplification holds whether shocks help or hurt the position}
 
 \begin{minipage}[c]{280mm}
@@ -282,20 +300,22 @@
   \end{tabular}
   \FigNote{\centering Constraining: the shock moves against the position. Relaxing: in favor. A Wald test cannot distinguish the two ($p=0.16$).\par}
 \end{minipage}\hfill
-\begin{minipage}[c]{298mm}
+\begin{minipage}[c]{270mm}
   \centering
-  \includegraphics[width=296mm]{Figures/IR_on_momentum.png}
+  \includegraphics[width=268mm]{Figures/IR_on_momentum.png}
   \FigNote{Overnight repo positions after the shock: funds contract in the constraining regime and expand in the relaxing regime, as the mechanism predicts.}
 \end{minipage}
 
 \Message{The amplification is symmetric --- it operates whenever shocks meet positions, not only in crises.}
+\end{Panel}
 
 % ============================ FINDING 4 ============================
+\begin{Panel}
 \Section{Finding 4: The directionality of the book governs the strength}
 
-\begin{minipage}[c]{300mm}
+\begin{minipage}[c]{272mm}
   \centering
-  \includegraphics[width=292mm]{Figures/motivation_chart.png}
+  \includegraphics[width=264mm]{Figures/motivation_chart.png}
   \FigNote{Aggregate net repo positions in German (DE) and Italian (IT) sovereigns. Around the hiking cycle: long IT, short DE (hedged book). During it: one-sided short (directional book).}
 \end{minipage}\hfill
 \begin{minipage}[c]{300mm}
@@ -319,8 +339,10 @@
 \end{minipage}
 
 \Message{The amplification rises monotonically with directionality and vanishes when the book is hedged.}
+\end{Panel}
 
 % ========================= CONCLUSION =========================
+\begin{Panel}
 \Section{Conclusion: what this means for risk monitoring}
 
 \begin{minipage}[t]{300mm}\fBody
@@ -335,9 +357,7 @@
   \item The \textbf{\color{rust}directionality} of the book is the key risk metric beyond position size.
 \end{itemize}
 \end{minipage}
-
-\vspace{8mm}
-{\fSmall\color{midgrey}\textbf{Robust to:} dealer $\times$ date fixed effects (0.248--0.294$^{***}$) $\cdot$ GARCH-standardized yields $\cdot$ sovereign credit (CDS) shocks (0.225$^{***}$) $\cdot$ French and Spanish bonds $\cdot$ placebo with shifted shock dates ($-$0.030, n.s.) $\cdot$ randomization inference ($p<0.001$).\par}
+\end{Panel}
 
 \vfill
 

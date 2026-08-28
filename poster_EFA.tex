@@ -1,6 +1,10 @@
-% Roll-up poster, EFA 2026. Visible size 700 x 2000 mm, 5 mm bleed on all sides
-% -> document size 710 x 2010 mm. Compile with lualatex, then run build.sh for
-% the print-ready file (text outlined, CMYK).
+% Roll-up poster, EFA 2026. Visible size 700 x 2000 mm + 5 mm bleed -> 710 x 2010 mm.
+% Build (print-ready: text outlined, CMYK, no crop marks):
+%   lualatex poster_EFA.tex
+%   gs -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNoOutputFonts \
+%      -sColorConversionStrategy=CMYK -dProcessColorModel=/DeviceCMYK \
+%      -dDownsampleColorImages=false -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode \
+%      -o Hermes_EFA_poster_print.pdf poster_EFA.pdf
 \documentclass{article}
 
 \usepackage[paperwidth=710mm,paperheight=2010mm,left=45mm,right=45mm,top=0mm,bottom=0mm]{geometry}
@@ -44,53 +48,47 @@
 \pagestyle{empty}
 \color{ink}
 
-\setlist[itemize]{label={\textcolor{navy}{\rule[0.18em]{0.5em}{0.5em}}},leftmargin=1.4em,itemsep=0.3\baselineskip,parsep=0pt,topsep=0.2\baselineskip}
+\setlist[itemize]{label={\textcolor{navy}{\rule[0.18em]{0.5em}{0.5em}}},leftmargin=1.4em,itemsep=0.3\baselineskip,parsep=0pt,topsep=0.25\baselineskip}
 
 \newcommand{\fullbleed}[1]{\noindent\makebox[\textwidth][c]{#1}}
 
 \newcommand{\Section}[1]{%
-  \vspace{6mm}
+  \vspace{7mm plus 3mm}
   {\fSect\bfseries\color{navy}#1\par}
-  \vspace{2mm}{\color{navy}\rule{\textwidth}{1.5pt}}\par
-  \vspace{5mm}}
+  \vspace{2.5mm}{\color{navy}\rule{\textwidth}{1.5pt}}\par
+  \vspace{7mm}}
 
 \newcommand{\Message}[1]{%
-  \vspace{3.5mm}
+  \vspace{4mm}
   {\fHead\color{navy}\raisebox{1pt}{$\blacktriangleright$}\hspace{0.5em}\textbf{#1}\par}}
 
-\newcommand{\FigNote}[1]{\vspace{1mm}{\fTiny\color{midgrey}#1\par}}
+\newcommand{\FigNote}[1]{\vspace{1.5mm}{\fTiny\color{midgrey}#1\par}}
 
 \begin{document}
 
 % ============================= HEADER =============================
 \fullbleed{%
 \begin{tcolorbox}[colback=navy,colframe=navy,sharp corners,boxrule=0pt,
-    width=710mm,left=50mm,right=50mm,top=25mm,bottom=13mm]
+    width=710mm,left=50mm,right=50mm,top=26mm,bottom=18mm]
   \color{white}
   \centering
-  {\fSub\LatoSB EFA Annual Meeting 2026 --- Poster Session\par}
-  \vspace{6mm}
   {\fTitle\LatoBlack Hedge Fund Trading and\\[3mm] Sovereign Bond Yield Sensitivity\par}
-  \vspace{6.5mm}
-  {\color{pale}\rule{200mm}{1.2pt}\par}
-  \vspace{6mm}
+  \vspace{8mm}
   {\fSub\bfseries Felix Hermes\par}
   \vspace{2.5mm}
   {\fSub Goethe University Frankfurt \& European Central Bank\par}
-  \vspace{3.5mm}
-  {\fBody hermes@finance.uni-frankfurt.de \hspace{2em}$\cdot$\hspace{2em} Best PhD Paper Award, IFABS 2026\par}
 \end{tcolorbox}}
 
-\vspace{4mm}
+\vspace{6mm}
 
 % ======================= MOTIVATION + QUESTION =======================
 \Section{Hedge funds hold a growing footprint in government bond markets}
 
-\begin{minipage}[c]{225mm}
-  \includegraphics[width=225mm]{../Figures/tradeweb.png}
+\begin{minipage}[c]{230mm}
+  \includegraphics[width=230mm]{Figures/tradeweb.png}
   \FigNote{Hedge fund share of trading volume in government bonds tracked by Tradeweb.}
 \end{minipage}\hfill
-\begin{minipage}[c]{370mm}\fBody
+\begin{minipage}[c]{368mm}\fBody
 \begin{itemize}
   \item Their share of trading volume keeps rising since 2020: in Europe from a third to \textbf{more than half} of volumes.
   \item They finance sovereign positions in the \textbf{repo market}, so leverage ties their funding to the value of the collateral.
@@ -100,14 +98,14 @@
 
 \vspace{8mm}
 \begin{minipage}[t]{302mm}
-\begin{tcolorbox}[colback=paleg,colframe=grn,boxrule=1.4pt,arc=3mm,left=7mm,right=7mm,top=3.5mm,bottom=3.5mm]
+\begin{tcolorbox}[colback=paleg,colframe=grn,boxrule=1.4pt,arc=3mm,left=7mm,right=7mm,top=4.5mm,bottom=4.5mm]
   \centering{\fHead\bfseries\color{grn}Decrease sensitivity\par}\vspace{2mm}
   {\fBody Arbitrage corrects mispricings.\\Prices are pushed \textit{toward} fundamentals.\par}\vspace{2mm}
   {\fTiny\color{midgrey}Gromb and Vayanos (2002), Cao et al.\ (2018)\par}
 \end{tcolorbox}
 \end{minipage}\hfill
 \begin{minipage}[t]{302mm}
-\begin{tcolorbox}[colback=paler,colframe=rust,boxrule=1.4pt,arc=3mm,left=7mm,right=7mm,top=3.5mm,bottom=3.5mm]
+\begin{tcolorbox}[colback=paler,colframe=rust,boxrule=1.4pt,arc=3mm,left=7mm,right=7mm,top=4.5mm,bottom=4.5mm]
   \centering{\fHead\bfseries\color{rust}Increase sensitivity\par}\vspace{2mm}
   {\fBody Leverage and funding fragility force trades.\\Prices are pushed \textit{away} from fundamentals.\par}\vspace{2mm}
   {\fTiny\color{midgrey}Shleifer and Vishny (1997), Brunnermeier and Pedersen (2009)\par}
@@ -121,32 +119,32 @@
 
 \begin{minipage}[t]{200mm}
   {\fHead\bfseries\color{navy}Hedge fund repo positions\par}\vspace{1.5mm}
-  {\fSmall\color{midgrey}ECB SFTDS\par}\vspace{2mm}
+  {\fSmall\color{midgrey}ECB SFTDS\par}\vspace{2.5mm}
   {\fBody Transaction-level euro area repo data. German and Italian sovereigns, Jan 2021 -- Nov 2025. 152 identified offshore hedge funds. Repo $=$ long, reverse repo $=$ short.\par}
 \end{minipage}\hfill
 \begin{minipage}[t]{195mm}
   {\fHead\bfseries\color{navy}Bond characteristics\par}\vspace{1.5mm}
-  {\fSmall\color{midgrey}Bloomberg\par}\vspace{2mm}
+  {\fSmall\color{midgrey}Bloomberg\par}\vspace{2.5mm}
   {\fBody Daily yields, duration, bid-ask spread, amount issued, and cheapest-to-deliver status for each individual bond.\par}
 \end{minipage}\hfill
 \begin{minipage}[t]{200mm}
   {\fHead\bfseries\color{navy}Exogenous shocks\par}\vspace{1.5mm}
-  {\fSmall\color{midgrey}EA-MPD (Altavilla et al.\ 2019)\par}\vspace{2mm}
+  {\fSmall\color{midgrey}EA-MPD (Altavilla et al.\ 2019)\par}\vspace{2.5mm}
   {\fBody Intraday 2-year OIS change in the ECB event window. The same shock hits every bond: identification comes from cross-sectional differences in positioning.\par}
 \end{minipage}
 
 \vspace{8mm}
-\begin{tcolorbox}[colback=pale,colframe=pale,arc=3mm,left=9mm,right=9mm,top=6mm,bottom=6mm]
+\begin{tcolorbox}[colback=pale,colframe=pale,arc=3mm,left=9mm,right=9mm,top=6.5mm,bottom=6.5mm]
   \centering\fBody
   $\Delta y_{i,t} \;=\; {\color{rust}\beta_1\,(\mathrm{HF}_{i,t-1} \times \mathrm{Shock}_{t})} \;+\; \beta_2\, \mathrm{HF}_{i,t-1} \;+\; \beta_3\, \mathrm{Shock}_{t} \;+\; \gamma\, \mathbf{X}_{i,t-1} \;+\; \theta_{k} \;+\; \varepsilon_{i,t}$
-  \par\vspace{3mm}
+  \par\vspace{3.5mm}
   {\fSmall ${\color{rust}\beta_1}$ is the \textbf{additional} yield sensitivity to the shock when hedge funds are positioned in a bond, measured by a presence dummy or by intensity (five-day net position / amount outstanding).\par}
 \end{tcolorbox}
 
 \vspace{7mm}
 {\fBody\textbf{\color{navy}Identification.} Hedge funds select liquid, large, longer-duration and cheapest-to-deliver bonds. Therefore: duration\,$\times$\,country\,$\times$\,date fixed effects compare similar bonds of the same issuer on the same day; a matched design pairs each hedge fund bond with its closest twin; a dealer-level panel shows the trigger is not dealer behavior.\par}
 
-\vspace{7mm}
+\vspace{8mm}
 \begin{center}
 \begin{tabular}{c c c c c}
   {\fStat\bfseries\color{navy}152} & {\fStat\bfseries\color{navy}477{,}001} & {\fStat\bfseries\color{navy}38} & {\fStat\bfseries\color{navy}53\%} & {\fStat\bfseries\color{navy}3\%}\\[2.5mm]
@@ -161,7 +159,7 @@
 \vspace{6mm}
 
 \begin{center}
-\begin{tikzpicture}[box/.style={draw=navy,line width=1.3pt,rounded corners=3mm,align=center,inner xsep=7mm,inner ysep=4mm}]
+\begin{tikzpicture}[box/.style={draw=navy,line width=1.3pt,rounded corners=3mm,align=center,inner xsep=7mm,inner ysep=5mm}]
   \node[box,draw=rust,fill=paler] (con)
     {\fHead\bfseries\color{rust}Constraining\\[1mm]\fBody\color{ink} price moves \textit{against} the position\\ capital buffer erodes $\rightarrow$ fund \textbf{reduces} exposure};
   \node[box,fill=pale,right=16mm of con] (top) {\fHead\bfseries\color{navy} Shock meets a pre-determined\\[1mm]\fHead\bfseries\color{navy} leveraged position};
@@ -180,13 +178,13 @@
 % ============================ FINDING 1 ============================
 \Section{Finding 1: Hedge funds increase the volatility of bond yields on shock days}
 
-\begin{minipage}[c]{240mm}
-  \includegraphics[width=240mm]{../Figures/intensity_volatility_bars.png}
+\begin{minipage}[c]{248mm}
+  \includegraphics[width=248mm]{Figures/intensity_volatility_bars.png}
   \FigNote{Average $|\Delta$yield$|$ (bp) on non-shock days by quartile of hedge fund intensity, next to bonds without hedge funds.}
 \end{minipage}\hfill
-\begin{minipage}[c]{325mm}
+\begin{minipage}[c]{330mm}
   {\fBody Hedge funds do select structurally more volatile bonds. But among \textbf{comparable bonds} (duration $\times$ country $\times$ date cells) the level differential disappears, while the interaction with the shock survives:\par}
-  \vspace{5mm}
+  \vspace{6mm}
   \fBody\centering
   \begin{tabular}{l c c}
     \toprule
@@ -205,16 +203,16 @@
 
 \begin{minipage}[c]{300mm}
   \centering
-  \includegraphics[width=276mm]{figs/shock_reaction_scatterplot.png}
+  \includegraphics[width=288mm]{Figures/shock_reaction_scatterplot_2x.png}
   \FigNote{Binned scatter of daily yield changes against monetary policy surprises, with and without active hedge fund positions.}
 \end{minipage}\hfill
 \begin{minipage}[c]{300mm}
   \centering
-  \includegraphics[width=276mm]{../Figures/IR_baseline.png}
+  \includegraphics[width=288mm]{Figures/IR_baseline.png}
   \FigNote{Local projections, matched sample (Jord\`a 2005): flat before the shock, divergence on impact, significant for $\approx$\,4 days, then reversion.}
 \end{minipage}
 
-\vspace{6mm}
+\vspace{7mm}
 \begin{minipage}[c]{330mm}
   \fBody\centering
   \begin{tabular}{l c c c}
@@ -226,12 +224,12 @@
     HF (level) & $-$0.022 & $-$0.002 & $-$0.011\\
     \bottomrule
   \end{tabular}
-  \par\vspace{2mm}
+  \par\vspace{2.5mm}
   \FigNote{Duration $\times$ country $\times$ date FE resp.\ matched-pair FE. Within the same bond, a larger position produces a larger reaction --- pure selection cannot explain this.}
 \end{minipage}\hfill
 \begin{minipage}[c]{270mm}
   \centering
-  {\fStat\bfseries\color{rust}$>$\,25\%\par}\vspace{2mm}
+  {\fStat\bfseries\color{rust}$>$\,25\%\par}\vspace{2.5mm}
   {\fBody of the shock-day yield movement in hedge-fund-traded bonds reflects \textbf{positioning}, not the news itself.\par}
 \end{minipage}
 
@@ -251,12 +249,12 @@
     HF intensity (level) & $-$0.016 & $-$0.009\\
     \bottomrule
   \end{tabular}
-  \par\vspace{4mm}
+  \par\vspace{5mm}
   {\fBody A Wald test cannot distinguish the two regimes ($p=0.16$): the amplification is \textbf{symmetric}.\par}
 \end{minipage}\hfill
-\begin{minipage}[c]{292mm}
+\begin{minipage}[c]{298mm}
   \centering
-  \includegraphics[width=288mm]{../Figures/IR_on_momentum.png}
+  \includegraphics[width=296mm]{Figures/IR_on_momentum.png}
   \FigNote{Overnight repo positions after the shock: funds contract in the constraining regime and expand in the relaxing regime, as the mechanism predicts.}
 \end{minipage}
 
@@ -265,14 +263,14 @@
 % ============================ FINDING 4 ============================
 \Section{Finding 4: The directionality of the book governs the strength}
 
-\begin{minipage}[c]{292mm}
+\begin{minipage}[c]{298mm}
   \centering
-  \includegraphics[width=288mm]{figs/motivation_chart.png}
+  \includegraphics[width=296mm]{Figures/motivation_chart_2x.png}
   \FigNote{Aggregate net repo positions in German (DE) and Italian (IT) sovereigns. Around the hiking cycle: long IT, short DE (hedged book). During it: one-sided short (directional book).}
 \end{minipage}\hfill
 \begin{minipage}[c]{280mm}
   {\fBody A fund manages one pool of capital against its whole book: a duration-hedged book barely loses capital when rates move, a directional book absorbs the full hit.\par}
-  \vspace{4mm}
+  \vspace{5mm}
   \fBody\centering
   \begin{tabular}{l c}
     \toprule
@@ -317,11 +315,9 @@
 \begin{tcolorbox}[colback=navy,colframe=navy,sharp corners,boxrule=0pt,
     width=710mm,left=50mm,right=50mm,top=10mm,bottom=24mm]
   \color{white}\centering
-  {\fSmall Felix Hermes $\cdot$ Goethe University Frankfurt \& European Central Bank $\cdot$ hermes@finance.uni-frankfurt.de\par}
-  \vspace{3mm}
-  {\fTiny\color{pale}References: Adrian--Shin (2014) $\cdot$ Altavilla et al.\ (2019) $\cdot$ Jord\`a (2005) $\cdot$ Jarocinski--Karadi (2020) $\cdot$ Barth--Kahn (2025) $\cdot$ Kruttli et al.\ (2025) $\cdot$ Gromb--Vayanos (2002) $\cdot$ Brunnermeier--Pedersen (2009)\par}
-  \vspace{3mm}
-  {\fTiny\color{pale}This poster should not be reported as representing the views of the European Central Bank (ECB). The views expressed are those of the author and do not necessarily reflect those of the ECB.\par}
+  {\fSub\bfseries Felix Hermes\par}
+  \vspace{2mm}
+  {\fBody Goethe University Frankfurt \& European Central Bank \hspace{1.5em}$\cdot$\hspace{1.5em} hermes@finance.uni-frankfurt.de\par}
 \end{tcolorbox}}
 
 \end{document}

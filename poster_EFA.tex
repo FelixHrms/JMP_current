@@ -86,6 +86,13 @@
   \vspace{2.5mm}{\color{navy}\rule{\textwidth}{1.5pt}}\par
   \vspace{6mm}}
 
+\newcommand{\SectionTag}[2]{%
+  {\tcbox[enhanced,nobeforeafter,tcbox raise base,arc=2.5mm,colback=navy,colframe=navy,boxrule=0pt,
+    left=4mm,right=4mm,top=1.8mm,bottom=1.8mm]{\fHead\bfseries\color{white}#1}%
+   \hspace{6mm}{\fSect\bfseries\color{navy}#2}\par}
+  \vspace{2.5mm}{\color{navy}\rule{\textwidth}{1.5pt}}\par
+  \vspace{6mm}}
+
 \newcommand{\Message}[1]{%
   \vspace{4mm}
   {\fHead\color{navy}\raisebox{1pt}{$\blacktriangleright$}\hspace{0.5em}\textbf{#1}\par}}
@@ -121,7 +128,7 @@
 \begin{minipage}[c]{368mm}\fBody
 \begin{itemize}
   \item Since 2020 their share of trading volume in Europe rose from a third to \textbf{more than half}.
-  \item Positions are financed in the \textbf{repo market}: leverage ties funding to collateral values.
+  \item Positions are financed in the \textbf{repo market}, so leverage ties funding to collateral values.
   \item Granular evidence outside of crises is scarce.
 \end{itemize}
 \end{minipage}
@@ -142,7 +149,7 @@
 \end{tcolorbox}
 \end{minipage}
 
-\Message{Research question: does the leveraged positioning of hedge funds amplify sovereign bond yield sensitivity to shocks --- and under what conditions?}
+\Message{Does the leveraged positioning of hedge funds amplify sovereign bond yield sensitivity to shocks, and under what conditions?}
 \end{Panel}
 
 % ============================== DATA ==============================
@@ -152,7 +159,7 @@
 \begin{minipage}[t]{200mm}
   {\fHead\bfseries\color{navy}Hedge fund repo positions\par}\vspace{1.5mm}
   {\fSmall\color{midgrey}ECB SFTDS\par}\vspace{2.5mm}
-  {\fBody Transaction-level euro area repo data: German and Italian sovereigns, Jan 2021 -- Nov 2025. 152 offshore hedge funds. Repo $=$ long, reverse repo $=$ short.\par}
+  {\fBody Transaction-level data on euro area repo activity in German and Italian sovereigns from Jan 2021 to Nov 2025. 152 offshore hedge funds. Repo proxies long positions and reverse repo proxies short positions.\par}
 \end{minipage}\hfill
 \begin{minipage}[t]{195mm}
   {\fHead\bfseries\color{navy}Bond characteristics\par}\vspace{1.5mm}
@@ -162,7 +169,7 @@
 \begin{minipage}[t]{200mm}
   {\fHead\bfseries\color{navy}Exogenous shocks\par}\vspace{1.5mm}
   {\fSmall\color{midgrey}EA-MPD (Altavilla et al.\ 2019)\par}\vspace{2.5mm}
-  {\fBody Intraday 2-year OIS change in the ECB event window: the same shock hits every bond.\par}
+  {\fBody Intraday 2-year OIS changes in the ECB event window. The same shock hits every bond.\par}
 \end{minipage}
 
 \vspace{9mm}
@@ -170,7 +177,7 @@
   \centering\fBody
   $\Delta y_{i,t} \;=\; {\color{rust}\beta_1\,(\mathrm{HF}_{i,t-1} \times \mathrm{Shock}_{t})} \;+\; \beta_2\, \mathrm{HF}_{i,t-1} \;+\; \beta_3\, \mathrm{Shock}_{t} \;+\; \gamma\, \mathbf{X}_{i,t-1} \;+\; \theta_{k} \;+\; \varepsilon_{i,t}$
   \par\vspace{3.5mm}
-  {\fSmall ${\color{rust}\beta_1}$: additional yield sensitivity when hedge funds are positioned --- presence dummy, or intensity (five-day net position / amount outstanding).\par}
+  {\fSmall ${\color{rust}\beta_1}$ measures the additional yield sensitivity when hedge funds are positioned, using a presence dummy or the intensity of the position (five-day net position scaled by amount outstanding).\par}
 \end{tcolorbox}
 
 \vspace{8mm}
@@ -178,7 +185,8 @@
   {\fHead\bfseries\color{navy}Identification\par}\vspace{2mm}
 \begin{itemize}
   \item Hedge funds select liquid, large, long-duration, cheapest-to-deliver bonds.
-  \item Duration $\times$ country $\times$ date FE compare similar bonds of the same issuer on the same day; a matched design pairs each bond with its closest twin.
+  \item Duration $\times$ country $\times$ date fixed effects compare similar bonds of the same issuer on the same day.
+  \item A matched design pairs each hedge fund bond with its closest twin.
   \item A dealer-level panel shows the trigger is not dealer behavior.
 \end{itemize}
 \end{minipage}\hfill
@@ -197,30 +205,35 @@
 \begin{Panel}
 \Section{How leveraged positioning amplifies yields}
 
-{\fBody\textbf{Adrian and Shin (2014):} leveraged intermediaries manage their balance sheet against the risk environment --- the same rule produces opposite adjustments depending on the sign of the shock.\par}
+{\fBody Leveraged intermediaries manage their balance sheet against the risk environment (Adrian and Shin 2014). The same rule produces opposite position adjustments depending on the sign of the shock.\par}
 \vspace{8mm}
 
 \begin{center}
-\begin{tikzpicture}[box/.style={draw=navy,line width=1.3pt,rounded corners=3mm,align=center,inner xsep=7mm,inner ysep=4mm}]
+\begin{tikzpicture}[box/.style={draw=navy,line width=1.3pt,rounded corners=3mm,align=center,
+    inner xsep=9mm,inner ysep=7mm,text=ink,font=\fHead}]
   \node[box,draw=rust,fill=paler] (con)
-    {\fHead\bfseries\color{rust}Constraining\\[1mm]\fBody\color{ink} price moves \textit{against} the position\\ capital buffer erodes $\rightarrow$ fund \textbf{reduces} exposure};
-  \node[box,fill=pale,right=16mm of con] (top) {\fHead\bfseries\color{navy} Shock meets a pre-determined\\[1mm]\fHead\bfseries\color{navy} leveraged position};
-  \node[box,draw=grn,fill=paleg,right=16mm of top] (rel)
-    {\fHead\bfseries\color{grn}Relaxing\\[1mm]\fBody\color{ink} price moves \textit{in favor}\\ constraint loosens $\rightarrow$ fund \textbf{expands} exposure};
-  \draw[-{Latex[length=5mm]},line width=1.5pt,navy] (top.west) -- (con.east);
-  \draw[-{Latex[length=5mm]},line width=1.5pt,navy] (top.east) -- (rel.west);
+    {{\fontsize{34}{44}\selectfont\bfseries\color{rust}Constraining}\\[3mm]
+     price moves \textit{against} the position\\[1mm]
+     the capital buffer erodes\\[1mm]
+     the fund \textbf{reduces} exposure};
+  \node[box,fill=pale,text=navy,font=\fontsize{34}{44}\selectfont\bfseries,right=14mm of con] (top)
+    {Shock meets a\\[2mm] predetermined\\[2mm] leveraged position};
+  \node[box,draw=grn,fill=paleg,right=14mm of top] (rel)
+    {{\fontsize{34}{44}\selectfont\bfseries\color{grn}Relaxing}\\[3mm]
+     price moves \textit{in favor}\\[1mm]
+     the constraint loosens\\[1mm]
+     the fund \textbf{expands} exposure};
+  \draw[-{Latex[length=6mm]},line width=1.8pt,navy] (top.west) -- (con.east);
+  \draw[-{Latex[length=6mm]},line width=1.8pt,navy] (top.east) -- (rel.west);
 \end{tikzpicture}
 \end{center}
-
-\vspace{6mm}
-{\fBody\textbf{\color{navy}Numerical example} (margin 2\%, duration 7y, sector holds 3\% of the issue):\quad 6 bp surprise $\rightarrow$ price $-0.42\%$ $\rightarrow$ capital buffer $\color{rust}\mathbf{-21\%}$ $\rightarrow$ trading pressure $0.63\%$ of the issue $\rightarrow$ $\color{rust}\mathbf{+3.15}$ \textbf{\color{rust}bp} extra yield move.\par}
 
 \Message{In both states the resulting trading pushes yields further in the direction of the initial shock.}
 \end{Panel}
 
 % ============================ FINDING 1 ============================
 \begin{Panel}
-\Section{Finding 1: Hedge funds increase the volatility of bond yields on shock days}
+\SectionTag{Finding 1}{Hedge funds increase the volatility of bond yields on shock days}
 
 \begin{minipage}[c]{240mm}
   \includegraphics[width=240mm]{Figures/intensity_volatility_bars.png}
@@ -241,15 +254,15 @@
     Duration $\times$ Date $\times$ Country FE & No & Yes\\
     \bottomrule
   \end{tabular}
-  \FigNote{\centering Comparable bonds: similar duration, same issuer, same day.\par}
+  \FigNote{\centering Comparable bonds are bonds of similar duration from the same issuer on the same day.\par}
 \end{minipage}
 
-\Message{Hedge funds select volatile bonds, but the excess volatility is shock-conditional --- what changes is how yields react to shocks.}
+\Message{The excess volatility is shock conditional, so what changes is how yields react to shocks.}
 \end{Panel}
 
 % ============================ FINDING 2 ============================
 \begin{Panel}
-\Section{Finding 2: Hedge fund trading raises the sensitivity of yields to shocks}
+\SectionTag{Finding 2}{Hedge fund trading raises the sensitivity of yields to shocks}
 
 \begin{minipage}[c]{300mm}
   \fTab\centering
@@ -272,7 +285,7 @@
   \end{tabular}
   \par\vspace{8mm}
   {\fStat\bfseries\color{rust}$>$\,25\%\par}\vspace{2mm}
-  {\fSmall of the shock-day yield movement in hedge-fund-traded bonds reflects \textbf{positioning}, not the news itself.\par}
+  {\fSmall of the shock-day yield movement in bonds traded by hedge funds reflects \textbf{positioning} rather than the news itself.\par}
 \end{minipage}\hfill
 \begin{minipage}[c]{270mm}
   \centering
@@ -280,12 +293,12 @@
   \FigNote{Cumulative yield response per bp of shock, relative to the common level where both groups settle (local projections, matched sample, Jord\`a 2005). Hedge fund bonds overshoot for $\approx$\,4 days, then revert.}
 \end{minipage}
 
-\Message{Temporary overshooting that other capital gradually absorbs --- amplification, not price discovery.}
+\Message{Temporary overshooting that other capital gradually absorbs, pointing to amplification rather than price discovery.}
 \end{Panel}
 
 % ============================ FINDING 3 ============================
 \begin{Panel}
-\Section{Finding 3: The amplification holds whether shocks help or hurt the position}
+\SectionTag{Finding 3}{The amplification holds whether shocks help or hurt the position}
 
 \begin{minipage}[c]{280mm}
   \fTab\centering
@@ -301,28 +314,28 @@
     Duration $\times$ Date $\times$ Country FE & Yes & Yes\\
     \bottomrule
   \end{tabular}
-  \FigNote{\centering Constraining: the shock moves against the position. Relaxing: in favor. A Wald test cannot distinguish the two ($p=0.16$).\par}
+  \FigNote{\centering In the constraining regime the shock moves against the position and in the relaxing regime in its favor. A Wald test cannot distinguish the two ($p=0.16$).\par}
 \end{minipage}\hfill
 \begin{minipage}[c]{270mm}
   \centering
   \includegraphics[width=268mm]{Figures/IR_on_momentum.png}
-  \FigNote{Overnight repo positions after the shock: funds contract in the constraining regime and expand in the relaxing regime, as the mechanism predicts.}
+  \FigNote{Overnight repo positions after the shock. Funds contract in the constraining regime and expand in the relaxing regime, as the mechanism predicts.}
 \end{minipage}
 
-\Message{The amplification is symmetric --- it operates whenever shocks meet positions, not only in crises.}
+\Message{The amplification is symmetric. It operates whenever shocks meet positions and not only in crises.}
 \end{Panel}
 
 % ============================ FINDING 4 ============================
 \begin{Panel}
-\Section{Finding 4: The directionality of the book governs the strength}
+\SectionTag{Finding 4}{The directionality of the book governs the strength}
 
 \begin{minipage}[c]{272mm}
   \centering
   \includegraphics[width=264mm]{Figures/motivation_chart.png}
-  \FigNote{Aggregate net repo positions in German (DE) and Italian (IT) sovereigns. Around the hiking cycle: long IT, short DE (hedged book). During it: one-sided short (directional book).}
+  \FigNote{Aggregate net repo positions in German (DE) and Italian (IT) sovereigns. Around the hiking cycle the sector runs a hedged book that is long IT and short DE. During the hiking cycle it runs a one-sided directional book.}
 \end{minipage}\hfill
 \begin{minipage}[c]{300mm}
-  {\fBody A fund manages one pool of capital: a duration-hedged book barely loses capital on a level move, a directional book absorbs the full hit.\par}
+  {\fBody A fund manages one pool of capital against its whole book. A duration-hedged book barely loses capital on a level move while a directional book absorbs the full hit.\par}
   \vspace{6mm}
   \fTab\centering
   \begin{tabular}{l c}
@@ -346,11 +359,11 @@
 
 % ========================= CONCLUSION =========================
 \begin{Panel}
-\Section{Conclusion: what this means for risk monitoring}
+\SectionTag{Conclusion}{What this means for risk monitoring}
 
 \begin{minipage}[t]{300mm}\fBody
 \begin{itemize}
-  \item \textbf{More than a quarter} of the shock-day yield move reflects positioning; it reverts within days.
+  \item \textbf{More than a quarter} of the shock-day yield move reflects positioning and reverts within days.
   \item The amplification is \textbf{symmetric} across constraining and relaxing states.
 \end{itemize}
 \end{minipage}\hfill

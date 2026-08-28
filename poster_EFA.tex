@@ -1,6 +1,11 @@
+% !TeX program = xelatex
 % Roll-up poster, EFA 2026. Visible size 700 x 2000 mm + 5 mm bleed -> 710 x 2010 mm.
-% Build (print-ready: text outlined, CMYK, no crop marks):
-%   lualatex poster_EFA.tex
+%
+% IMPORTANT: compile with XeLaTeX (or LuaLaTeX), NOT pdfLaTeX.
+% On Overleaf: Menu (top left) -> Compiler -> XeLaTeX.
+% Needs the Figures/ folder from the repo next to this file.
+%
+% Print-ready step (text outlined, CMYK, no crop marks) after compiling:
 %   gs -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNoOutputFonts \
 %      -sColorConversionStrategy=CMYK -dProcessColorModel=/DeviceCMYK \
 %      -dDownsampleColorImages=false -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode \
@@ -19,10 +24,21 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta}
 \usepackage[most]{tcolorbox}
+\usepackage{iftex}
+\ifPDFTeX
+  \errmessage{Compile this poster with XeLaTeX or LuaLaTeX, not pdfLaTeX. On Overleaf: Menu -> Compiler -> XeLaTeX}
+\fi
 \usepackage{fontspec}
-\setmainfont{Lato}[BoldFont={Lato Bold},ItalicFont={Lato Italic}]
-\newfontfamily\LatoSB{Lato Semibold}
-\newfontfamily\LatoBlack{Lato Black}
+\IfFontExistsTF{Lato}
+  {\setmainfont{Lato}[BoldFont={Lato Bold},ItalicFont={Lato Italic}]}
+  {\IfFontExistsTF{Lato-Regular.ttf}
+    {\setmainfont{Lato-Regular.ttf}[BoldFont=Lato-Bold.ttf,ItalicFont=Lato-Italic.ttf]}
+    {}}% falls back to the default font, still compiles
+\IfFontExistsTF{Lato Black}
+  {\newfontfamily\LatoBlack{Lato Black}}
+  {\IfFontExistsTF{Lato-Black.ttf}
+    {\newfontfamily\LatoBlack{Lato-Black.ttf}}
+    {\newcommand{\LatoBlack}{\bfseries}}}
 
 % Palette of the slide deck, defined directly in CMYK
 \definecolor{navy}{cmyk}{1,0.39,0,0.58}      % #00416A

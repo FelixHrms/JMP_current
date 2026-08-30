@@ -1515,24 +1515,24 @@ Duration, the characteristic that governs a bond's mechanical sensitivity to rat
 \footnotesize
 \setlength{\tabcolsep}{8pt}
 \renewcommand{\arraystretch}{1.1}
-\begin{tabular}{l c c c c c c}
+\begin{tabular}{l c c c c c}
 \toprule
- & HF Bond & Non-HF Bond & Mean Diff. & Median $|$Diff.$|$ & Std. Diff. & p-value \\
+ & HF Bond & Non-HF Bond & Mean Diff. & Median $|$Diff.$|$ & Std. Diff. \\
 \midrule
-Duration (years) & 5.46 & 5.31 & 0.15 & 0.55 & 0.03 & $<$0.01 \\
-Residual Maturity (years) & 6.66 & 5.39 & 1.27 & 0.79 & 0.20 & $<$0.01 \\
-Amount Issued (\euro\ bn) & 19.81 & 11.36 & 8.45 & 8.28 & 1.43 & $<$0.01 \\
-Bid-Ask Spread (\euro) & 0.08 & 0.20 & $-$0.13 & 0.05 & $-$0.83 & $<$0.01 \\
+Duration (years) & 5.46 & 5.31 & 0.15 & 0.55 & 0.03 \\
+Residual Maturity (years) & 6.66 & 5.39 & 1.27 & 0.79 & 0.20 \\
+Amount Issued (\euro\ bn) & 19.81 & 11.36 & 8.45 & 8.28 & 1.43 \\
+Bid-Ask Spread (\euro) & 0.08 & 0.20 & $-$0.13 & 0.05 & $-$0.83 \\
 \midrule
-Pairs & \multicolumn{6}{c}{240,912} \\
-Distinct HF bonds & \multicolumn{6}{c}{471} \\
-Distinct non-HF bonds & \multicolumn{6}{c}{582} \\
-Distinct dates & \multicolumn{6}{c}{1,242} \\
-CTD mismatch rate & \multicolumn{6}{c}{6.4\%} \\
+Pairs & \multicolumn{5}{c}{240,912} \\
+Distinct HF bonds & \multicolumn{5}{c}{471} \\
+Distinct non-HF bonds & \multicolumn{5}{c}{582} \\
+Distinct dates & \multicolumn{5}{c}{1,242} \\
+CTD mismatch rate & \multicolumn{5}{c}{6.4\%} \\
 \bottomrule
 \end{tabular}
 \label{tab:pair_balance}
-\caption*{\textit{Notes:} This table reports balance statistics for the matched sample used in Column (5) of Table \ref{tab:baseline}. Each hedge fund bond-day is paired with the non-hedge fund bond in the same duration-country-date cell that is closest in terms of bid-ask spread, with replacement. \textit{HF Bond} and \textit{Non-HF Bond} report the means of each characteristic across the two sides of the pairs. \textit{Mean Diff.} and \textit{Median $|$Diff.$|$} refer to the within-pair difference (HF minus non-HF) and the absolute within-pair difference. \textit{Std. Diff.} is the mean difference divided by the square root of the average of the two group variances. The p-value tests the mean within-pair difference against zero, with standard errors clustered by business date. The \textit{CTD mismatch rate} is the share of pairs in which the two bonds differ in cheapest-to-deliver status. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\caption*{\textit{Notes:} This table reports balance statistics for the matched sample used in Column (5) of Table \ref{tab:baseline}. Each hedge fund bond-day is paired with the non-hedge fund bond in the same duration-country-date cell that is closest in terms of bid-ask spread, with replacement. \textit{HF Bond} and \textit{Non-HF Bond} report the means of each characteristic across the two sides of the pairs. \textit{Mean Diff.} and \textit{Median $|$Diff.$|$} refer to the within-pair difference (HF minus non-HF) and the absolute within-pair difference. \textit{Std. Diff.} is the mean difference divided by the square root of the average of the two group variances. The \textit{CTD mismatch rate} is the share of pairs in which the two bonds differ in cheapest-to-deliver status. \\ Sample period: 2021-01-01 -- 2025-11-01}
 \end{table}
 
 Table \ref{tab:pair_quality} shows that these residual within-pair differences do not drive the amplification. Column (1) repeats the matched-sample specification of Table \ref{tab:baseline} on the full matched sample. Columns (2) to (4) restrict the sample to increasingly tightly matched pairs, with within-pair bid-ask differences below 0.10 \euro, below the median difference of 0.05 \euro, and below the 25th-percentile difference of 0.004 \euro, the latter constituting near-exact liquidity matches. If residual liquidity differences drove the estimate, the coefficient should fall as the pairs become tighter. Instead, it ranges between 0.31 and 0.41 and never falls below the full-sample estimate. Column (5) allows the yield response to the shock to vary with the bid-ask spread on the full matched sample. The liquidity interaction is positive and statistically insignificant, indicating that, if anything, less liquid bonds react more strongly to shocks. Since the hedge fund bond is the more liquid side of almost every pair, residual liquidity mismatch biases the estimated amplification toward zero, and the hedge fund interaction indeed rises to 0.35 once liquidity-dependent shock sensitivity is absorbed. Column (6) additionally allows the shock response to vary with residual maturity and amount issued, so that the hedge fund interaction is identified only from variation in hedge fund status among bonds with comparable exposure to all characteristics in which the pairs are imbalanced. The coefficient is 0.376 and remains significant at the 1\% level, while none of the characteristic interactions is statistically distinguishable from zero. The amplification attaches to the hedge fund position itself rather than to the characteristics of the bonds hedge funds select. \\

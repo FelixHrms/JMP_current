@@ -373,80 +373,38 @@ Panel C provides evidence for the leveraged nature of hedge fund activity. Hairc
 
 
 
-\section{Leveraged Positioning and Yield Amplification}
+\section{A Framework for Leveraged Positioning and Yield Amplification}
 \label{sec:mechanism}
 
-In this section, I draw on the literature to explain how leveraged hedge fund positioning amplifies yield sensitivity to shocks. \citet{adrian2014} provide the broader intuition that leveraged intermediaries actively manage their balance sheets in response to the risk environment, expanding positions when constraints are loose and contracting them when constraints bind. The key insight is that the state of the constraint environment can generate symmetric amplification effects with opposite signs of position adjustment depending on the direction of the shock.
+This section lays out the interpretation that organizes the empirical analysis. It is not a model. Its purpose is to motivate the sample splits used below and to fix the language in which the results are discussed, and the contribution of the paper lies in the measurement rather than in the framework. One distinction matters throughout. The response of a leveraged fund to a shock that moves prices against its position follows from margin mechanics. The response to a shock that moves prices in its favor is a hypothesis, and the data can check whether the position adjusts in the predicted direction but not why it does. Appendix \ref{subsec:calibration} works through a calibrated example of both sides with sample moments.
 
-While \citet{adrian2014} focus on US broker-dealers, I apply this logic to hedge funds, where the constraint environment shifts directly with the value of the collateral backing their positions. A shock that moves prices against a fund's position erodes its capital buffer and tightens its balance sheet constraint, forcing position reduction. A shock that moves prices in favor of the position relaxes the constraint and frees capacity for additional risk-taking. Both responses are thus governed by the same rule of keeping the position aligned with the capital backing it, with the sign of the shock in combination with the position of the fund determining whether positions contract or expand. The two sides differ in their nature, however. The contraction is enforced by the requirement to keep meeting margin, while the expansion is voluntary. The end of this section discusses the conditions under which the expansion is nonetheless the optimal response. In both cases, the resulting trading pushes yields further in the direction of the initial shock.
-
-To illustrate the amplification implied by leveraged positioning, I now present a numerical example based on the constraining side of the mechanism, and then turn to the relaxing side.
-
-Consider a hedge fund financing a long bond position via the repo market. To hold this position, the fund must post capital equal to the margin requirement $m_i$. Since the repo loan principal is fixed, any exogenous price shock $\Delta P_{i,t}$ is absorbed entirely by the capital buffer. The rate of capital erosion depends on the leverage ratio $1/m_i$:
+Consider a hedge fund financing a long bond position via the repo market. To hold this position, the fund must post capital equal to the margin requirement $m_i$. Since the repo loan principal is fixed, any exogenous price shock $\Delta P_{i,t}$ is absorbed entirely by the capital buffer. The rate of capital erosion depends on the leverage ratio $1/m_i$.
 
 \begin{equation}
 \frac{\Delta E_{i,t}}{E_{i,t-1}} \approx \frac{1}{m_i} \times \frac{\Delta P_{i,t}}{P_{i,t-1}}
+\label{eq:capital}
 \end{equation}
 
-To illustrate the mechanism, I use representative sample moments. The average monetary policy tightening surprise in the sample is approximately 6 basis points. Regarding leverage, the transaction data in Table \ref{tab:summary_stats} shows haircuts averaging 0.24\% for long positions. However, these raw figures may understate the true capital committed by funds due to practices such as portfolio margining, netting, unobserved cash buffers, or hedging activity that reduces the net price exposure relative to the raw repo position \citep{hempel2023, hill2025, hermes2025a}. Therefore, to capture these effects in a stylized way, I assume an effective margin ($m_i$) of 2\%.
+The magnitudes involved are not small. The average tightening surprise in the sample is approximately 6 basis points, which moves the price of a representative bond with a duration of about seven years by roughly 0.42\%. Under an effective margin of 2\%, which is conservative relative to the haircuts reported in Table \ref{tab:summary_stats}, Equation (\ref{eq:capital}) implies that a single surprise moves the capital buffer by about a fifth.
 
-Now, consider a hedge fund holding a representative sovereign bond (duration $\approx 7$ years) financed via repo under this 2\% margin assumption. A positive monetary policy shock of 6 basis points induces a price decline of approximately $0.42\%$ ($6\text{ bps} \times 7$). Substituting these values into Equation (1) reveals the magnitude of the margin pressure:
+The fund keeps the position aligned with the capital backing it. A shock that moves prices against the position erodes the buffer and tightens the balance sheet constraint, forcing position reduction. A shock that moves prices in favor of the position relaxes the constraint and frees capacity for additional risk-taking. Both responses are thus governed by the same rule, with the sign of the shock in combination with the position of the fund determining whether positions contract or expand. In both cases, the resulting trading pushes yields further in the direction of the initial shock. The two sides differ in their nature, however. The contraction is enforced by the requirement to keep meeting margin, while the expansion is voluntary. When a surprise moves in favor of the position, the fund receives the corresponding variation margin in cash, and nothing compels it to redeploy this capacity.
 
-\begin{equation*}
-\frac{\Delta E}{E} = \frac{-0.42\%}{2\%} = -21\%
-\end{equation*}
+Redeployment is nonetheless the optimal response for a fund whose position reflects a view that its balance sheet does not let it express in full. Consider a fund that expects yields to fall below what is currently priced and holds the bond at the maximum size its margin permits. The expected return on the capital backing the position is then large, and the position sits at the funding constraint rather than at an interior optimum. The fund would hold more if its capacity allowed it. A favorable surprise does two things at once. It consumes part of the expected return and it raises the fund's capacity. As long as the remaining view still justifies more position than the balance sheet permits, capacity stays the binding limit, and the fund expands by the same proportion that the capital erosion forces on the constraining side.\footnote{In the calibrated example of Appendix \ref{subsec:calibration}, a favorable 6 basis point surprise lowers the expected return on capital from about 88\% to about 66\%, so the position justified by the view continues to exceed what the balance sheet permits.} Once yields reach the view, the expected return is exhausted. The fund stops adding and eventually unwinds, so the expansion ends on its own. This behavior corresponds to that of arbitrageurs facing margin constraints, whose holdings track their capital whenever desired positions exceed funding capacity \citep{gromb2002, brunnermeier2009}, and hedge funds are documented to raise leverage when asset values rise and funding costs fall \citep{ang2011}. Leverage management toward a target ratio, as \citet{adrian2014} document for US broker-dealers, produces the same two-sided response, and the analysis below does not distinguish between these motives.
 
-Thus, even under this conservative margin assumption, a standard 6 basis point yield move is sufficient to wipe out 21\% of the daily margin buffer.
+The yield reaction to the position adjustment depends on the market's ability to absorb it. The trading pressure equals the proportional adjustment multiplied by the share of the bond that the hedge fund sector holds, and its price impact depends on the depth of the market for that bond. Amplification should therefore increase with the size of the position relative to the amount outstanding. It should also be temporary, because the additional yield move reflects trading pressure rather than a change in fundamentals, and it should revert as the adjustment is completed and other capital absorbs the imbalance.
 
-To restore the margin ratio, the fund must adjust its position. The resulting yield reaction depends on the market's ability to absorb this activity. Let $\lambda$ denote the inverse market elasticity, meaning how much yields react in response to net trading pressure. The additional yield change attributable to the position adjustment can be expressed as:
+The reasoning applies to books with net exposure to the shock. A duration-hedged book gains or loses little capital from a level move because its legs offset, so the mechanism assigns it neither a forced contraction nor a voluntary expansion. Section \ref{sec:directionality} exploits exactly this distinction, and discusses how hedged books appear in the repo data.
 
-\begin{equation}
-\Delta y_{i,t}^{\text{Amp}} = \lambda \times \left( \frac{\Delta E_{i,t}}{E_{i,t-1}} \times \frac{Q_{i,t-1}}{Q^{\text{Total}}_{i}} \right)
-\end{equation}
+The framework yields four predictions that structure the remainder of the paper.
 
-where the term in parentheses represents the volume of trading normalized by the bond's total amount outstanding.
+\begin{enumerate}[label=(P\arabic*), ref=P\arabic*, leftmargin=*]
+\item \label{pred:amplification} Bonds in which hedge funds hold leveraged positions react more strongly to a monetary policy surprise than otherwise comparable bonds, and the differential increases with the size of the position relative to the amount outstanding.
+\item \label{pred:symmetry} The differential is present both when the surprise moves prices against the position and when it moves in its favor. The underlying position adjustments have opposite signs, a contraction in the first case and an expansion in the second.
+\item \label{pred:reversion} The differential is temporary. It appears on the announcement day and reverts within days, because it reflects trading pressure rather than a difference in fundamentals.
+\item \label{pred:hedged} The differential is confined to books with net exposure to the shock and is absent for duration-hedged books.
+\end{enumerate}
 
-In this example, I assume the hedge fund sector holds 3\% of the bond's total outstanding volume ($Q_{HF}/Q_{Total} = 0.03$), in line with the conditional sample in Table \ref{tab:summary_stats}. Recall from the previous step that the exogenous price change necessitates adjusting the position by 21\%. Consequently, the aggregate trading pressure amounts to:
-
-\begin{equation*}
-\text{Trading pressure} = 21\% \times 3\% = 0.63\% \text{ of outstanding debt}
-\end{equation*}
-
-To quantify the yield impact, I choose a market elasticity of $\lambda = 5$ basis points per percentage point of outstanding traded, based on empirical estimates for US and euro area sovereign bond markets \citep{damico2013, eser2016, desantis2020}.
-
-Substituting these parameters into Equation (2) yields the total amplification:
-
-\begin{equation*}
-\Delta y^{\text{Amp}} = 5 \text{ bps/pp} \times 0.63 \text{ pp} = \textbf{3.15 bps}
-\end{equation*}
-
-Thus, in this example, the position adjustment triggered by a 6 basis point policy surprise generates sufficient trading pressure to amplify the yield reaction by an additional 3.15 basis points. In terms of price, this implies that the position adjustment triggered by the 42 basis point valuation change leads to an additional 22.05 basis point price movement in the direction of the shock.
-
-The requirement to keep meeting margin makes the constraining side mechanical. The relaxing side is not. When the same 6 basis point surprise moves in favor of the position, the bond gains $0.42\%$, the fund receives the corresponding variation margin in cash, and its capital buffer rises by 21\%. Nothing compels the fund to redeploy this capacity, so the symmetric expansion cannot be taken for granted.
-
-To see when redeployment is nonetheless the optimal response, consider the same fund when its position reflects a view on the path of policy rates. Suppose the fund expects the yield of the seven year bond to fall 25 basis points below what is currently priced and holds the bond at the maximum size its margin permits. In analogy to Equation (1), the position then offers
-
-\begin{equation*}
-\text{Expected return on capital} = \frac{25\text{ bps} \times 7}{2\%}
-= \frac{1.75\%}{2\%} \approx 88\%
-\end{equation*}
-
-\noindent The numerator is the expected price gain and the denominator is the margin capital backing the position. Such a return puts the position at the funding constraint rather than at an interior optimum. The fund would hold more if its capacity allowed it.
-
-A favorable 6 basis point surprise then does two things at once. It consumes 6 of the 25 expected basis points and it raises the fund's capacity by 21\%. The remaining gap still offers
-
-\begin{equation*}
-\text{Expected return on capital} = \frac{19\text{ bps} \times 7}{2\%}
-= \frac{1.33\%}{2\%} \approx 66\%
-\end{equation*}
-
-\noindent so the position justified by the view continues to exceed what the balance sheet permits. Expanding to the new capacity is the optimal response, and the fund buys an additional 21\% of its position, the same magnitude that the capital erosion forces on the constraining side. As long as the view stays ahead of the market, capacity is the binding limit, and favorable and unfavorable shocks move the position symmetrically with opposite sign. Once yields reach the view, the expected return is exhausted. The fund stops adding and eventually unwinds, so the expansion ends on its own. This behavior corresponds to that of arbitrageurs facing margin constraints, whose holdings track their capital whenever desired positions exceed funding capacity \citep{gromb2002, brunnermeier2009}, and hedge funds are documented to raise leverage when asset values rise and funding costs fall \citep{ang2011}.
-
-Two remarks qualify this reasoning. First, the expansion, unlike the contraction, is a choice. The example shows that expanding is consistent with the optimal behavior of a constrained fund whose view the surprise has not exhausted, not that it is compelled, and the empirical analysis accordingly treats symmetric amplification as a prediction to be tested rather than as an implication of margin mechanics alone. Second, the reasoning applies to books with net exposure to the shock. A duration-hedged book gains little capital from a level move because its legs offset, so the mechanism assigns it neither a forced contraction nor a voluntary expansion. Section \ref{sec:directionality} exploits exactly this distinction, and discusses how hedged books appear in the repo data.
-
-
-
-
+Section \ref{subsec:amplification} tests Predictions \ref{pred:amplification} and \ref{pred:reversion}, Section \ref{subsec:asymmetries} tests Prediction \ref{pred:symmetry}, and Section \ref{sec:directionality} tests Prediction \ref{pred:hedged}. The predictions concern the sign, symmetry, timing, and incidence of the yield response and the direction of the position response, not the motive behind the expansion, which Section \ref{subsec:asymmetries} discusses once the evidence is on the table.
 
 \section{Empirical Strategy}
 \label{sec:empirical_strategy}
@@ -668,6 +626,8 @@ Column (5) presents the matched-sample estimation. While the duration-country-da
 The estimated amplification is economically substantial. To put the coefficients into perspective, consider the impact of an average six basis point monetary policy tightening surprise. The baseline reaction of a typical bond (captured by the direct Shock coefficient in Column 1 or 2) implies a yield change of approximately $0.757 \times 6 \text{ bps} \approx 4.54 \text{ bps}$.
 
 For a bond with hedge fund participation, the interaction term adds an excess movement of $0.288 \times 6 \text{ bps} \approx 1.73 \text{ bps}$. Consequently, the total yield reaction for hedge fund-held bonds rises to 6.27 basis points. This implies that the trading of hedge funds in specific bonds accounts for approximately 28\% of the total yield movement on shock days. In other words, more than one-quarter of the price action in these bonds is associated not with the fundamental news, but with the type of entity trading them. \footnote{Because hedge funds may also hold leveraged positions through instruments beyond the repo market, a natural concern is that the estimated amplification reflects unobserved derivative exposure transmitting to cash yields through the cheapest-to-deliver linkage. Appendix \ref{subsec:ctd} re-estimates the main specifications on the subsample of non-CTD bonds and finds nearly identical coefficients.}
+Appendix \ref{subsec:calibration} benchmarks this magnitude against a calibrated version of the framework in Section \ref{sec:mechanism}. With the haircuts and holdings of the sample and market-depth estimates from the literature, the position adjustment implied by a six basis point surprise produces an additional yield move of roughly 3 basis points, which is the same order of magnitude as the 1.73 basis points estimated here.
+
 
 
 \subsubsection{Persistence}
@@ -1351,6 +1311,68 @@ R-squared & 0.738 & 0.738 & 0.734 & 0.735 \\
 \label{tab:fimacro}
 \caption*{\textit{Notes:} This table re-estimates the main specifications with hedge fund positioning measured exclusively from funds classified as fixed income relative value or global macro. The dependent variable is the daily change in bond yield (bps). \textit{HF Involved} indicates the presence of repo activity by these funds. \textit{Log HF Intensity} is the natural log of one plus their average absolute net position over the prior five trading days, scaled by the bond's total amount outstanding. Bond-days on which only hedge funds of other strategy types are active are excluded from the sample. Column (1) corresponds to Column (4) in Table \ref{tab:baseline}, Column (2) to Column (4) in Table \ref{tab:intensity}, and Columns (3) and (4) to Columns (1) and (2) in Table \ref{tab:asymmetry}. The Shock main effect is absorbed by the fixed effects. Standard errors are clustered by date and bond and reported in parentheses. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
 \end{table}
+
+
+\clearpage
+\subsection{Calibrated example of the amplification mechanism}
+\label{subsec:calibration}
+
+This appendix works through the framework of Section \ref{sec:mechanism} with representative sample moments. It first quantifies the constraining side, then the relaxing side, and finally compares the implied amplification with the estimates of Section \ref{subsec:amplification}. The example is a plausibility check on magnitudes and not an estimate.
+
+The average monetary policy tightening surprise in the sample is approximately 6 basis points. Regarding leverage, the transaction data in Table \ref{tab:summary_stats} shows haircuts averaging 0.24\% for long positions. However, these raw figures may understate the true capital committed by funds due to practices such as portfolio margining, netting, unobserved cash buffers, or hedging activity that reduces the net price exposure relative to the raw repo position \citep{hempel2023, hill2025, hermes2025a}. Therefore, to capture these effects in a stylized way, I assume an effective margin ($m_i$) of 2\%. The representative sovereign bond has a duration of approximately 7 years, and the hedge fund sector is assumed to hold 3\% of its total outstanding volume ($Q_{HF}/Q_{Total} = 0.03$), in line with the conditional sample in Table \ref{tab:summary_stats}.
+
+Consider first the constraining side. A positive monetary policy shock of 6 basis points induces a price decline of approximately $0.42\%$ ($6\text{ bps} \times 7$) for a fund holding the representative bond financed via repo under the 2\% margin assumption. Substituting these values into Equation (\ref{eq:capital}) gives the change in the capital buffer.
+
+\begin{equation*}
+\frac{\Delta E}{E} = \frac{-0.42\%}{2\%} = -21\%
+\end{equation*}
+
+Thus, even under this conservative margin assumption, a standard 6 basis point yield move is sufficient to wipe out 21\% of the daily margin buffer.
+
+To restore the margin ratio, the fund must adjust its position. The resulting yield reaction depends on the market's ability to absorb this activity. Let $\lambda$ denote the inverse market elasticity, meaning how much yields react in response to net trading pressure. The additional yield change attributable to the position adjustment can be expressed as in Equation (\ref{eq:pressure}), where the term in parentheses represents the volume of trading normalized by the bond's total amount outstanding.
+
+\begin{equation}
+\Delta y_{i,t}^{\text{Amp}} = \lambda \times \left( \frac{\Delta E_{i,t}}{E_{i,t-1}} \times \frac{Q_{i,t-1}}{Q^{\text{Total}}_{i}} \right)
+\label{eq:pressure}
+\end{equation}
+
+Recall that the exogenous price change necessitates adjusting the position by 21\%. With the hedge fund sector holding 3\% of the bond, the aggregate trading pressure amounts to
+
+\begin{equation*}
+\text{Trading pressure} = 21\% \times 3\% = 0.63\% \text{ of outstanding debt}
+\end{equation*}
+
+To quantify the yield impact, I choose a market elasticity of $\lambda = 5$ basis points per percentage point of outstanding traded, based on empirical estimates for US and euro area sovereign bond markets \citep{damico2013, eser2016, desantis2020}. Substituting these parameters into Equation (\ref{eq:pressure}) yields the total amplification.
+
+\begin{equation*}
+\Delta y^{\text{Amp}} = 5 \text{ bps/pp} \times 0.63 \text{ pp} = \textbf{3.15 bps}
+\end{equation*}
+
+Thus, in this example, the position adjustment triggered by a 6 basis point policy surprise generates sufficient trading pressure to amplify the yield reaction by an additional 3.15 basis points. In terms of price, this implies that the position adjustment triggered by the 42 basis point valuation change leads to an additional 22.05 basis point price movement in the direction of the shock.
+
+The requirement to keep meeting margin makes the constraining side mechanical. The relaxing side is not. When the same 6 basis point surprise moves in favor of the position, the bond gains $0.42\%$, the fund receives the corresponding variation margin in cash, and its capital buffer rises by 21\%. Nothing compels the fund to redeploy this capacity, so the symmetric expansion cannot be taken for granted.
+
+To see when redeployment is nonetheless the optimal response, consider the same fund when its position reflects a view on the path of policy rates. Suppose the fund expects the yield of the seven year bond to fall 25 basis points below what is currently priced and holds the bond at the maximum size its margin permits. In analogy to Equation (\ref{eq:capital}), the position then offers
+
+\begin{equation*}
+\text{Expected return on capital} = \frac{25\text{ bps} \times 7}{2\%}
+= \frac{1.75\%}{2\%} \approx 88\%
+\end{equation*}
+
+\noindent The numerator is the expected price gain and the denominator is the margin capital backing the position. Such a return puts the position at the funding constraint rather than at an interior optimum. The fund would hold more if its capacity allowed it.
+
+A favorable 6 basis point surprise then does two things at once. It consumes 6 of the 25 expected basis points and it raises the fund's capacity by 21\%. The remaining gap still offers
+
+\begin{equation*}
+\text{Expected return on capital} = \frac{19\text{ bps} \times 7}{2\%}
+= \frac{1.33\%}{2\%} \approx 66\%
+\end{equation*}
+
+\noindent so the position justified by the view continues to exceed what the balance sheet permits. Expanding to the new capacity is the optimal response, and the fund buys an additional 21\% of its position, the same magnitude that the capital erosion forces on the constraining side. As long as the view stays ahead of the market, capacity is the binding limit, and favorable and unfavorable shocks move the position symmetrically with opposite sign. Once yields reach the view, the expected return is exhausted. The fund stops adding and eventually unwinds, so the expansion ends on its own. Under the same market elasticity, the expansion generates the same trading pressure as the contraction and an additional yield move of 3.15 basis points in the direction of the shock.
+
+The size of the expansion deserves a remark. Relative to the gain in capital, the fund adds fifty times as much bond as it earned, which can look excessive at first sight. The multiplier is the leverage ratio $1/m_i$, and it is the same multiplier that turns a 0.42\% price loss into a 21\% position reduction on the constraining side. The symmetry of the response therefore follows from the leverage of the position and not from an additional assumption.
+
+Finally, the calibrated amplification can be compared with the estimates of Section \ref{subsec:amplification}. The binary interaction coefficient of 0.288 in Table \ref{tab:baseline} implies an additional yield move of approximately 1.73 basis points for a 6 basis point surprise, and the intensity specification in Table \ref{tab:intensity} implies approximately 1.36 basis points at an average intensity of 3\%. The calibrated value of 3.15 basis points is of the same order of magnitude and lies within a factor of two of the estimates. Given the stylized parameters, in particular the effective margin and the market elasticity, the example confirms that the mechanism can produce amplification of the observed size, and it should not be read as a quantitative prediction. A higher effective margin or a deeper market would lower the calibrated value toward the estimates.
 
 
 \clearpage

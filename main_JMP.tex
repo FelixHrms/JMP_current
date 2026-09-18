@@ -1869,10 +1869,11 @@ R-squared & 0.743 & 0.743 \\
 \caption*{\textit{Notes:} The dependent variable is the average matched difference in daily yield changes between hedge fund bonds and their paired controls on each announcement day (bps), as in Appendix \ref{subsec:announcement}. \textit{Surprise} is the change in the 2-year OIS rate during the ECB event window (bps). \textit{Sector Dir.}\ is the position-weighted average of holder directionality across bonds on the announcement day, demeaned (sample mean 0.35). \textit{2022} is an indicator for announcements in 2022. One announcement precedes the first available directionality measurement, leaving 37 of the 38 announcements. Robust standard errors in parentheses. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
 \end{table}
 
+
 \clearpage
 \subsection{Position side, constraint regime, and book directionality}
 \label{subsec:side_book}
-Table \ref{tab:side_book} splits the constraint-regime regressions of Table \ref{tab:asymmetry} by the side of the hedge fund position and by the directionality of the books holding the bond, using the median split of holder directionality from Table \ref{tab:directionality}. Panel A shows that within directional books the amplification is present in all four cells. On the constraining side it is the same for long and short positions, at 0.185 and 0.172, as a margin constraint that binds mechanically implies. On the relaxing side it is 0.124 for long positions and 0.379 for short positions on tightening surprises, the configuration in which the coordinated net-short book of the hiking cycle meets a surprise that confirms its direction. Panel B shows that within hedged books the amplification lies between 0.03 and 0.06 in every cell. The absence of amplification within hedged books therefore holds regardless of the side of the position and of whether the shock moves against it or in its favor. The larger average amplification of short positions in the full sample reflects that long positions are held disproportionately within hedged books, and not a difference in the response of the two sides. \\
+Table \ref{tab:side_book} splits the constraint-regime regressions of Table \ref{tab:asymmetry} by the side of the hedge fund position and by the directionality of the books holding the bond. Panel A shows that within directional books the amplification is present in all four cells. On the constraining side it is almost the same for long and short positions, as a margin constraint that binds mechanically implies. On the relaxing side it is 0.124 for long positions and 0.379 for short positions, which is the configuration in which the coordinated net-short book of the hiking cycle meets a surprise that confirms its direction. Panel B shows that within hedged books the amplification is close to zero in every cell. The absence of amplification within hedged books therefore holds regardless of the side of the position and of whether the shock moves against it or in its favor. \\
 \begin{table}[h!]
 \centering
 \caption{\textbf{Amplification by Position Side, Constraint Regime, and Book}}
@@ -1885,7 +1886,6 @@ Table \ref{tab:side_book} splits the constraint-regime regressions of Table \ref
 \cmidrule(lr){2-5}
  & \multicolumn{2}{c}{Net long} & \multicolumn{2}{c}{Net short} \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
- & (1) & (2) & (3) & (4) \\
  & Constraining & Relaxing & Constraining & Relaxing \\
 \midrule
 \multicolumn{5}{l}{\textit{Panel A: Bonds held within directional books}} \\
@@ -1912,8 +1912,10 @@ Bid-Ask Spread and CTD Controls & Yes & Yes & Yes & Yes \\
 \bottomrule
 \end{tabular}
 \label{tab:side_book}
-\caption*{\textit{Notes:} The dependent variable is the daily change in bond yield (bps). Each column re-estimates the intensity regression of Table \ref{tab:asymmetry} on one cell. \textit{Net long} and \textit{Net short} refer to the sign of the hedge fund net position in the bond, and the constraining and relaxing regimes are defined as in Table \ref{tab:asymmetry}. Panel A restricts the hedge fund bond-days on shock days to bonds held within directional books and Panel B to bonds held within hedged books, split at the median of holder directionality as in Table \ref{tab:directionality}. All non-shock days and all bond-days with zero hedge fund intensity are included in every column as the within-bond baseline. The Shock main effect is absorbed by the fixed effects. Standard errors are clustered by business date and bond. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
+\caption*{\textit{Notes:} The dependent variable is the daily change in bond yield (bps). Each column re-estimates the intensity regression of Table \ref{tab:asymmetry} on one cell. \textit{Net long} and \textit{Net short} refer to the sign of the hedge fund sectors net position in the bond, and the constraining and relaxing regimes are defined as in Table \ref{tab:asymmetry}. Panel A restricts the hedge fund bond-days on shock days to bonds held within directional books and Panel B to bonds held within hedged books, split at the median of holder directionality as in Table \ref{tab:directionality}. All non-shock days and all bond-days with zero hedge fund intensity are included in every column as the within-bond baseline. The Shock main effect is absorbed by the fixed effects. Standard errors are clustered by business date and bond. *** p$<$0.01, ** p$<$0.05, * p$<$0.10. \\ Sample period: 2021-01-01 -- 2025-11-01}
 \end{table}
+
+
 \clearpage
 \subsection{Exceedance probability CDS shocks}
 \label{subsec:cds}

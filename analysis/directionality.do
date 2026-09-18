@@ -137,6 +137,110 @@ reghdfe delta_y i.hf_dirq##c.ois_2y bid_ask_spread ctd_flag, ///
     absorb(duration_match isin) vce(cluster business_date isin)
 test 1.hf_dirq#c.ois_2y = 4.hf_dirq#c.ois_2y
 
+* (4) Two-by-two: position side (net long vs net short) x regime (loss vs profit).
+* Purpose: (a) the regime tilt within each side separately, so that it cannot be
+* the sign of the surprise; (b) whether the short-long level gap is the
+* directionality result, by re-running the block within directional-held and
+* within hedged-held bonds. Baseline in every cell as in main_results.do: all
+* non-shock days and all bond-days without HF activity. Long and short intensity
+* are mutually exclusive at the bond-day level (net position), so each HF shock
+* bond-day sits in exactly one of the four cells.
+cap drop side constraining relaxing baseline intxshock short_hf ixs_*
+cap label drop side_lbl
+gen side = .
+replace side = 1 if hf_intensity_long  > 0
+replace side = 2 if hf_intensity_short > 0
+label define side_lbl 1 "Net long" 2 "Net short"
+label values side side_lbl
+
+gen constraining = ((ois_2y > 0 & side == 1) | (ois_2y < 0 & side == 2))   // loss side
+gen relaxing     = ((ois_2y > 0 & side == 2) | (ois_2y < 0 & side == 1))   // profit side
+gen baseline     = (ois_2y == 0) | (present == 0)
+
+* (4a) Four cell regressions in the style of Table VIII, collected in one matrix.
+matrix cells = J(4, 3, .)
+matrix rownames cells = long_loss long_profit short_loss short_profit
+matrix colnames cells = b se t
+local r = 0
+foreach s in 1 2 {
+    foreach reg in constraining relaxing {
+        local ++r
+        reghdfe delta_y c.log_hf_intensity##c.ois_2y bid_ask_spread ctd_flag ///
+            if baseline | (side == `s' & `reg'), ///
+            absorb(duration_match isin) vce(cluster business_date isin)
+        matrix cells[`r', 1] = _b[c.log_hf_intensity#c.ois_2y]
+        matrix cells[`r', 2] = _se[c.log_hf_intensity#c.ois_2y]
+        matrix cells[`r', 3] = _b[c.log_hf_intensity#c.ois_2y] / _se[c.log_hf_intensity#c.ois_2y]
+    }
+}
+di _n "==== 2x2, all HF-held bonds: log HF intensity x shock by side and regime ===="
+matlist cells, format(%9.3f)
+
+* (4b) Same cells in one pooled regression, so that the contrasts can be tested.
+*   intxshock        = net long, loss
+*   ixs_relax        = profit minus loss, net long           (regime tilt)
+*   ixs_short        = net short minus net long, loss side   (level gap)
+*   ixs_short_relax  = change in the level gap on the profit side
+gen intxshock       = log_hf_intensity * ois_2y
+gen short_hf        = (side == 2)
+gen ixs_short       = intxshock * short_hf
+gen ixs_relax       = intxshock * relaxing
+gen ixs_short_relax = intxshock * short_hf * relaxing
+
+local pooled_rhs log_hf_intensity c.log_hf_intensity#c.short_hf ///
+    relaxing c.relaxing#c.short_hf ///
+    intxshock ixs_short ixs_relax ixs_short_relax bid_ask_spread ctd_flag
+
+reghdfe delta_y `pooled_rhs', ///
+    absorb(duration_match isin) vce(cluster business_date isin)
+di _n "Regime tilt within net long (profit - loss):"
+test ixs_relax = 0
+di _n "Regime tilt within net short (profit - loss):"
+test ixs_relax + ixs_short_relax = 0
+di _n "Level gap, net short - net long, loss side:"
+test ixs_short = 0
+di _n "Level gap, net short - net long, profit side:"
+test ixs_short + ixs_short_relax = 0
+
+* (4c) Pooled block within directional-held (hf_dir3 == 2) and within hedged-held
+* (hf_dir3 == 1) bonds. If the short-long level gap is the directionality result,
+* it should shrink toward zero within each group. HF bond-days on non-shock days
+* remain in the sample as the within-bond baseline whatever their directionality.
+foreach g in 2 1 {
+    local lab : label hf_dir3_lbl `g'
+    di _n "==== Pooled 2x2 within `lab' bonds ===="
+    reghdfe delta_y `pooled_rhs' if baseline | hf_dir3 == `g', ///
+        absorb(duration_match isin) vce(cluster business_date isin)
+    di _n "Regime tilt within net long (profit - loss):"
+    test ixs_relax = 0
+    di _n "Regime tilt within net short (profit - loss):"
+    test ixs_relax + ixs_short_relax = 0
+    di _n "Level gap, net short - net long, loss side:"
+    test ixs_short = 0
+    di _n "Level gap, net short - net long, profit side:"
+    test ixs_short + ixs_short_relax = 0
+}
+
+* (4d) Continuous complement: let each cell's amplification vary with holder
+* directionality. The un-interacted terms are then the cells at hd = 0 and the
+* *_hd terms how they open as books become directional. hd = 0 is an
+* extrapolation for the hiking-cycle shorts, so (4c) is the primary check.
+gen ixs_hd             = intxshock * hd
+gen ixs_short_hd       = ixs_short * hd
+gen ixs_relax_hd       = ixs_relax * hd
+gen ixs_short_relax_hd = ixs_short_relax * hd
+
+reghdfe delta_y `pooled_rhs' ///
+    c.log_hf_intensity#c.hd c.log_hf_intensity#c.hd#c.short_hf ///
+    ixs_hd ixs_short_hd ixs_relax_hd ixs_short_relax_hd, ///
+    absorb(duration_match isin) vce(cluster business_date isin)
+di _n "Level gap at hd = 0, net short - net long, loss side:"
+test ixs_short = 0
+di _n "Level gap at hd = 0, net short - net long, profit side:"
+test ixs_short + ixs_short_relax = 0
+di _n "Does the level gap open with directionality (loss side)?"
+test ixs_short_hd = 0
+
 
 *===============================================================================
 * 5. LOCAL PROJECTIONS, MATCHED DECOMPOSITION (mirrors paper Figure 4b)
